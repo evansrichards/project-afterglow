@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm test -- --run src/lib/analytics/)"
+      "Bash(npm test -- --run src/lib/analytics/)",
+      "Bash(perl -pi -e \"s/''/''/g\" /Users/evanrichards/Code/project-afterglow/src/lib/analytics/insight-generation.ts)",
+      "Bash(git checkout /Users/evanrichards/Code/project-afterglow/src/lib/analytics/insight-generation.ts)"
     ],
     "deny": [],
     "ask": []
