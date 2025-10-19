@@ -6,7 +6,9 @@
       "Bash(npm install)",
       "Bash(npm run build)",
       "Bash(npm run lint)",
-      "Bash(tree -L 3 -I 'node_modules|dist|.git' /Users/evanrichards/Code/project-afterglow)"
+      "Bash(tree -L 3 -I 'node_modules|dist|.git' /Users/evanrichards/Code/project-afterglow)",
+      "Bash(npm test -- --run)",
+      "Bash(npm run format)"
     ],
     "deny": [],
     "ask": []

@@ -6,11 +6,7 @@ interface ContainerProps {
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full'
 }
 
-export default function Container({
-  children,
-  className = '',
-  maxWidth = 'xl',
-}: ContainerProps) {
+export default function Container({ children, className = '', maxWidth = 'xl' }: ContainerProps) {
   const maxWidthClasses = {
     sm: 'max-w-2xl',
     md: 'max-w-4xl',

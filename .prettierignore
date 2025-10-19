@@ -1,0 +1,27 @@
+# Build outputs
+dist
+build
+.vite
+*.tsbuildinfo
+
+# Dependencies
+node_modules
+package-lock.json
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+
+# Cache
+.cache
+.parcel-cache
+.eslintcache
+
+# Coverage
+coverage
+
+# Misc
+.DS_Store

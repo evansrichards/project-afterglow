@@ -10,23 +10,18 @@ export default function Header({ variant = 'transparent' }: HeaderProps) {
       }`}
     >
       <div className="container-app">
-        <div className="flex items-center justify-between h-16 md:h-20">
+        <div className="flex h-16 items-center justify-between md:h-20">
           {/* Logo */}
           <div className="flex items-center gap-2">
             <span className="text-2xl">✨</span>
-            <h1 className="text-xl md:text-2xl font-display font-semibold text-warm-900">
+            <h1 className="font-display text-xl font-semibold text-warm-900 md:text-2xl">
               Project Afterglow
             </h1>
           </div>
 
           {/* Privacy badge */}
           <div className="privacy-badge">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"

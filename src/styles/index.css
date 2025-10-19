@@ -13,12 +13,17 @@
 
   /* Base typography with warm, accessible defaults */
   body {
-    @apply font-sans text-base text-warm-900 bg-warm-50 antialiased;
+    @apply bg-warm-50 font-sans text-base text-warm-900 antialiased;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
 
   /* Headings use display font for warmth */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-display font-semibold text-warm-900;
   }
 
@@ -41,53 +46,45 @@
 
   /* Focus styles for accessibility */
   *:focus-visible {
-    @apply outline-none ring-2 ring-afterglow-500 ring-offset-2 ring-offset-warm-50 rounded;
+    @apply rounded outline-none ring-2 ring-afterglow-500 ring-offset-2 ring-offset-warm-50;
   }
 }
 
 @layer components {
   /* Button variants aligned to brand voice */
   .btn {
-    @apply inline-flex items-center justify-center px-6 py-3 rounded-xl font-medium
-           transition-all duration-200 focus-visible:outline-none focus-visible:ring-2
-           focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center rounded-xl px-6 py-3 font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .btn-primary {
-    @apply btn bg-afterglow-500 text-white hover:bg-afterglow-600
-           focus-visible:ring-afterglow-500 shadow-soft hover:shadow-soft-lg;
+    @apply btn bg-afterglow-500 text-white shadow-soft hover:bg-afterglow-600 hover:shadow-soft-lg focus-visible:ring-afterglow-500;
   }
 
   .btn-secondary {
-    @apply btn bg-twilight-100 text-twilight-700 hover:bg-twilight-200
-           focus-visible:ring-twilight-500;
+    @apply btn bg-twilight-100 text-twilight-700 hover:bg-twilight-200 focus-visible:ring-twilight-500;
   }
 
   .btn-ghost {
-    @apply btn bg-transparent text-warm-700 hover:bg-warm-100
-           focus-visible:ring-warm-500;
+    @apply btn bg-transparent text-warm-700 hover:bg-warm-100 focus-visible:ring-warm-500;
   }
 
   /* Card component for insight displays */
   .card {
-    @apply bg-white rounded-2xl shadow-soft p-6 transition-all duration-300
-           hover:shadow-soft-lg border border-warm-100;
+    @apply rounded-2xl border border-warm-100 bg-white p-6 shadow-soft transition-all duration-300 hover:shadow-soft-lg;
   }
 
   .card-interactive {
-    @apply card cursor-pointer hover:border-afterglow-200 hover:-translate-y-0.5;
+    @apply card cursor-pointer hover:-translate-y-0.5 hover:border-afterglow-200;
   }
 
   /* Input styling */
   .input {
-    @apply w-full px-4 py-3 rounded-xl border border-warm-200 bg-white
-           text-warm-900 placeholder-warm-400 transition-colors duration-200
-           focus:border-afterglow-400 focus:ring-2 focus:ring-afterglow-200;
+    @apply w-full rounded-xl border border-warm-200 bg-white px-4 py-3 text-warm-900 placeholder-warm-400 transition-colors duration-200 focus:border-afterglow-400 focus:ring-2 focus:ring-afterglow-200;
   }
 
   /* Badge/tag components for metadata */
   .badge {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+    @apply inline-flex items-center rounded-full px-3 py-1 text-sm font-medium;
   }
 
   .badge-positive {
@@ -112,17 +109,16 @@
   }
 
   .section-title {
-    @apply text-3xl font-display font-semibold text-warm-900;
+    @apply font-display text-3xl font-semibold text-warm-900;
   }
 
   .section-description {
-    @apply text-lg text-warm-600 max-w-2xl;
+    @apply max-w-2xl text-lg text-warm-600;
   }
 
   /* Privacy assurance styling */
   .privacy-badge {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-full
-           bg-twilight-50 text-twilight-700 text-sm font-medium border border-twilight-200;
+    @apply inline-flex items-center gap-2 rounded-full border border-twilight-200 bg-twilight-50 px-4 py-2 text-sm font-medium text-twilight-700;
   }
 }
 
@@ -138,15 +134,19 @@
 
   /* Gradient backgrounds for hero sections */
   .gradient-warm {
-    background: linear-gradient(135deg,
+    background: linear-gradient(
+      135deg,
       theme('colors.afterglow.50') 0%,
-      theme('colors.twilight.50') 100%);
+      theme('colors.twilight.50') 100%
+    );
   }
 
   .gradient-sunset {
-    background: linear-gradient(135deg,
+    background: linear-gradient(
+      135deg,
       theme('colors.afterglow.400') 0%,
-      theme('colors.afterglow.600') 100%);
+      theme('colors.afterglow.600') 100%
+    );
   }
 
   /* Container with brand-aligned max width */
@@ -160,27 +160,26 @@
   }
 
   .prose-warm h2 {
-    @apply text-warm-900 font-display;
+    @apply font-display text-warm-900;
   }
 
   .prose-warm p {
-    @apply text-warm-700 leading-relaxed;
+    @apply leading-relaxed text-warm-700;
   }
 
   .prose-warm a {
-    @apply text-afterglow-600 hover:text-afterglow-700 no-underline;
+    @apply text-afterglow-600 no-underline hover:text-afterglow-700;
   }
 }
 
 /* Loading states */
 .skeleton {
-  @apply animate-pulse-gentle bg-warm-200 rounded;
+  @apply animate-pulse-gentle rounded bg-warm-200;
 }
 
 /* Tooltip base styles */
 .tooltip {
-  @apply absolute z-50 px-3 py-2 text-sm text-white bg-warm-800 rounded-lg
-         shadow-soft-lg pointer-events-none opacity-0 transition-opacity duration-200;
+  @apply pointer-events-none absolute z-50 rounded-lg bg-warm-800 px-3 py-2 text-sm text-white opacity-0 shadow-soft-lg transition-opacity duration-200;
 }
 
 /* Responsive breakpoint helpers */

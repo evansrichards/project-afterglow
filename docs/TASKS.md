@@ -7,7 +7,7 @@
 
 ## 2. Project Setup & Infrastructure
 - [x] 2.1 Scaffold React + TypeScript + Vite frontend with Tailwind CSS theme aligned to brand.
-- [ ] 2.2 Configure module aliases, linting (ESLint), formatting (Prettier), and Jest + Testing Library base config.
+- [x] 2.2 Configure module aliases, linting (ESLint), formatting (Prettier), and Jest + Testing Library base config.
 - [ ] 2.3 Set up IndexedDB access utilities (using `idb`) and persistent state management strategy.
 
 ## 3. Data Ingestion & Normalization
