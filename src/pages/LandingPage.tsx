@@ -1,9 +1,125 @@
+import { useState } from 'react'
 import Header from '@components/layout/Header'
 import Footer from '@components/layout/Footer'
 import Container from '@components/layout/Container'
 
 export interface LandingPageProps {
   onNavigate?: () => void
+}
+
+// Interactive PII Demo Component
+function PIIDemo() {
+  const [displayText, setDisplayText] = useState("Hey Sarah! I work at Google in Manhattan. Want to grab coffee on 23rd street?")
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [isComplete, setIsComplete] = useState(false)
+  const [removedCount, setRemovedCount] = useState(0)
+
+  const originalText = "Hey Sarah! I work at Google in Manhattan. Want to grab coffee on 23rd street?"
+
+  const piiReplacements = [
+    { original: "Sarah", replacement: "[PERSON]", type: "person name" },
+    { original: "Google", replacement: "[WORKPLACE]", type: "workplace" },
+    { original: "Manhattan", replacement: "[PLACE]", type: "location" },
+    { original: "23rd street", replacement: "[PLACE_2]", type: "location" }
+  ]
+
+  const handleStripPII = async () => {
+    setIsProcessing(true)
+    setRemovedCount(0)
+
+    let currentText = originalText
+
+    for (let i = 0; i < piiReplacements.length; i++) {
+      const { original, replacement } = piiReplacements[i]
+
+      // Highlight the text being replaced
+      const highlightedText = currentText.replace(
+        original,
+        `<mark class="bg-red-200 animate-pulse">${original}</mark>`
+      )
+
+      // Show highlighted version briefly
+      setDisplayText(highlightedText)
+      await new Promise(resolve => setTimeout(resolve, 800))
+
+      // Replace with token
+      currentText = currentText.replace(original, replacement)
+      setDisplayText(currentText)
+      setRemovedCount(i + 1)
+
+      await new Promise(resolve => setTimeout(resolve, 400))
+    }
+
+    setIsProcessing(false)
+    setIsComplete(true)
+  }
+
+  const handleReset = () => {
+    setDisplayText(originalText)
+    setIsProcessing(false)
+    setIsComplete(false)
+    setRemovedCount(0)
+  }
+
+  return (
+    <div className="mx-auto max-w-2xl space-y-6 rounded-xl bg-white p-6 shadow-soft-md">
+      <h3 className="font-display text-xl font-semibold text-warm-900">
+        Watch PII protection in action
+      </h3>
+
+      <div className="space-y-4">
+        <div className="rounded-lg bg-warm-50 p-4">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-sm font-medium text-warm-600">
+              {isComplete ? 'Sanitized' : 'Original'}:
+            </span>
+            {isProcessing && (
+              <div className="flex items-center gap-2 text-sm text-twilight-600">
+                <div className="h-3 w-3 animate-spin rounded-full border-2 border-twilight-300 border-t-twilight-600"></div>
+                Processing...
+              </div>
+            )}
+          </div>
+          <div
+            className="font-mono text-sm text-warm-800"
+            dangerouslySetInnerHTML={{ __html: `"${displayText}"` }}
+          />
+        </div>
+
+        {(isProcessing || isComplete) && (
+          <div className="rounded-lg bg-insight-positive-light p-4">
+            <div className="text-sm font-medium text-insight-positive">
+              {isProcessing && removedCount > 0 && (
+                `Processing... Removed: ${removedCount} item${removedCount !== 1 ? 's' : ''}`
+              )}
+              {isComplete && (
+                `Removed: 1 person name, 1 workplace, 2 locations`
+              )}
+            </div>
+          </div>
+        )}
+
+        <div className="flex gap-3">
+          {!isComplete && !isProcessing ? (
+            <button
+              onClick={handleStripPII}
+              className="btn-primary px-4 py-2"
+            >
+              Strip PII
+            </button>
+          ) : (
+            <button
+              onClick={handleReset}
+              className="btn-ghost px-4 py-2"
+              disabled={isProcessing}
+            >
+              Reset Demo
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default function LandingPage({ onNavigate }: LandingPageProps) {
@@ -16,21 +132,29 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
         <Container maxWidth="lg">
           <div className="animate-fade-in space-y-8 text-center">
             <h1 className="text-balance font-display text-5xl font-bold text-warm-900 md:text-6xl">
-              Turn your dating data into{' '}
-              <span className="text-afterglow-600">compassionate insights</span>
+              Turn your dating chats into insights that{' '}
+              <span className="text-afterglow-600">cheer you on</span>
             </h1>
 
             <p className="mx-auto max-w-3xl text-balance text-xl text-warm-700 md:text-2xl">
-              Upload your dating app exports and discover what's working, where you shine, and
-              gentle experiments to keep dating hopeful instead of draining.
+              Project Afterglow transforms Tinder and Hinge exports into a warm reflection space that highlights your strengths, spots gentle growth edges, and protects your privacy every step of the way.
             </p>
 
             <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row">
               <button onClick={onNavigate} className="btn-primary px-8 py-4 text-lg">
-                Get Started — It's Free
+                Upload your data
               </button>
-              <button onClick={onNavigate} className="btn-ghost px-8 py-4 text-lg">
-                Try Sample Data First
+              <button
+                onClick={() => {
+                  const demoSection = document.querySelector('#privacy-demo')
+                  demoSection?.scrollIntoView({ behavior: 'smooth' })
+                }}
+                className="btn-ghost px-8 py-4 text-lg"
+              >
+                Try the privacy demo
+              </button>
+              <button onClick={onNavigate} className="btn-ghost px-6 py-3 text-base">
+                Browse a sample first
               </button>
             </div>
 
@@ -49,7 +173,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
                   d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                 />
               </svg>
-              <span>100% private — all processing happens on your device</span>
+              <span>PII stripped client-side. Optional encrypted sync. Clear data anytime.</span>
             </div>
           </div>
         </Container>
@@ -246,10 +370,10 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
         </Container>
       </section>
 
-      {/* Privacy Promise */}
+      {/* Privacy & Data Security Section */}
       <section className="bg-twilight-50 py-20">
-        <Container maxWidth="md">
-          <div className="space-y-6 text-center">
+        <Container maxWidth="lg">
+          <div className="space-y-12 text-center">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-twilight-600 text-white">
               <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -261,18 +385,75 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
               </svg>
             </div>
 
-            <h2 className="font-display text-3xl font-bold text-warm-900 md:text-4xl">
-              Your privacy is sacred
-            </h2>
+            <div className="space-y-4">
+              <h2 className="font-display text-3xl font-bold text-warm-900 md:text-4xl">
+                See exactly how we protect your privacy
+              </h2>
+              <p className="mx-auto max-w-2xl text-lg text-warm-700">
+                Dating conversations are deeply personal. Here's precisely how we keep them safe:
+              </p>
+            </div>
 
-            <p className="mx-auto max-w-2xl text-lg text-warm-700">
-              We know you're trusting us with vulnerable data. That's why everything happens locally
-              in your browser. Your messages never touch our servers, and you can delete everything
-              instantly at any time.
-            </p>
+            {/* Interactive Privacy Demo */}
+            <div id="privacy-demo">
+              <PIIDemo />
+            </div>
 
-            <div className="pt-4">
-              <button className="btn-secondary">Learn more about our privacy practices</button>
+            {/* Privacy Guarantees */}
+            <div className="grid grid-cols-1 gap-6 text-left md:grid-cols-2">
+              <div className="card">
+                <div className="space-y-3">
+                  <h3 className="font-display font-semibold text-warm-900">Client-Side Processing</h3>
+                  <p className="text-warm-700">
+                    All PII detection and sanitization happens in your browser. Raw messages never touch our servers.
+                  </p>
+                </div>
+              </div>
+
+              <div className="card">
+                <div className="space-y-3">
+                  <h3 className="font-display font-semibold text-warm-900">User Control</h3>
+                  <p className="text-warm-700">
+                    Review every redaction before deciding to sync. Choose local-only or encrypted cloud storage.
+                  </p>
+                </div>
+              </div>
+
+              <div className="card">
+                <div className="space-y-3">
+                  <h3 className="font-display font-semibold text-warm-900">Anonymous Accounts</h3>
+                  <p className="text-warm-700">
+                    Sign in with Apple or magic links. No personal information required.
+                  </p>
+                </div>
+              </div>
+
+              <div className="card">
+                <div className="space-y-3">
+                  <h3 className="font-display font-semibold text-warm-900">Data Expiration</h3>
+                  <p className="text-warm-700">
+                    Set automatic deletion after 30, 60, or 90 days. One-click complete removal anytime.
+                  </p>
+                </div>
+              </div>
+
+              <div className="card">
+                <div className="space-y-3">
+                  <h3 className="font-display font-semibold text-warm-900">Open Source</h3>
+                  <p className="text-warm-700">
+                    Our PII detection code is open for audit. Verify our privacy claims yourself.
+                  </p>
+                </div>
+              </div>
+
+              <div className="card">
+                <div className="space-y-3">
+                  <h3 className="font-display font-semibold text-warm-900">Encryption at Rest</h3>
+                  <p className="text-warm-700">
+                    If you choose cloud sync, data is encrypted with your device key and isolated by user.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </Container>

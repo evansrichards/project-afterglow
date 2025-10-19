@@ -1,7 +1,7 @@
 # Project Afterglow — MVP Technical Implementation Overview
 
 ## Guiding Principles
-- **Privacy-first:** All processing happens client-side in the browser or in an isolated local runtime; no dating data leaves the user's device.
+- **Privacy-first:** Client-side PII sanitization with user review before optional cloud sync for enhanced insights and persistence.
 - **Lightweight stack:** Favor proven libraries and hosted services with generous free tiers to shorten build time while keeping maintenance low.
 - **Explainable insights:** Every surfaced pattern should link to clear evidence and suggestions so users feel supported, not surveilled.
 - **Modular data pipeline:** Treat Tinder and Hinge exports as interchangeable inputs that normalize into one schema for downstream analysis.
@@ -9,7 +9,7 @@
 ## System Architecture Snapshot
 1. **Frontend (React + TypeScript + Vite):** Handles file upload, parsing, visualization, and reflections. Deployed on a static host (e.g., Netlify or Vercel).
 2. **Local Worker Layer (Web Workers + WASM-enabled libs):** Performs CPU-heavy parsing, NLP tagging, and trend detection without blocking the UI.
-3. **Optional Secure Sync (Supabase Edge Functions + Postgres):** Opt-in cloud sync for users who want to revisit insights later; defaults to local storage if declined.
+3. **Cloud Sync with PII Sanitization (Supabase Edge Functions + Postgres):** Opt-in cloud storage of sanitized data for enhanced insights and cross-device access; defaults to local storage if declined.
 4. **Design System:** Tailwind CSS with a custom theme that echoes the brand's calm, affirming tone.
 
 ## Data Ingestion & Normalization
@@ -152,9 +152,27 @@ interface ParserAdapter {
 - Emphasize user agency; avoid diagnosing matches but spotlight patterns needing boundaries.
 
 ## Data Security & Privacy
-- Default to client-side storage; if cloud sync enabled, encrypt exports using user passphrase before upload.
-- Leverage Supabase Row Level Security to isolate user data; keys stored in environment variables server-side.
-- Provide one-click "Forget Me" that wipes IndexedDB and remote records.
+
+### MVP PII Sanitization Flow
+1. **Basic PII Detection:** Use regex patterns to identify emails, phone numbers, URLs, and common name patterns
+2. **Contextual Redaction:** Replace detected PII with typed placeholders:
+   - Names → `[PERSON]`, `[PERSON_2]` (numbered for multiple people)
+   - Locations → `[PLACE]`, `[PLACE_2]`
+   - Emails → `[EMAIL]`
+   - Phone numbers → `[PHONE]`
+   - Organizations → `[WORKPLACE]`, `[SCHOOL]`
+3. **User Review Interface:** Show side-by-side diff of original vs sanitized data with:
+   - Highlighted redactions with counts by type
+   - Manual redaction tools for additional privacy
+   - Option to skip cloud sync and stay local-only
+4. **Anonymous Authentication:** Sign in with Apple or magic links for privacy-preserving accounts
+5. **Cloud Storage:** Upload only sanitized data with encryption at rest
+
+### Security Features
+- Leverage Supabase Row Level Security to isolate user data
+- One-click "Forget Me" that wipes IndexedDB and remote records
+- Automatic data expiration options (30/60/90 days)
+- Open-source PII detection for user audit
 
 ## Analytics & Telemetry
 - Track anonymized events only (no message content): onboarding completion, time-to-first insight, cards viewed.
@@ -169,6 +187,10 @@ interface ParserAdapter {
 - **Near-Term Enhancements:**
   - Expand parser adapters for Bumble/OKCupid using same schema.
   - Add journaling timeline to correlate insights with real-life outcomes.
-  - Introduce optional AI coach (GPT-4o mini) for reflective prompts, ensuring on-device processing where possible.
+  - Introduce optional AI coach (GPT-4o mini) for reflective prompts.
+- **Advanced Privacy Features (Post-MVP):**
+  - Sophisticated entity tokenization with consistent identifiers across conversations
+  - Cross-match entity resolution for mutual friends/places
+  - Zero-knowledge encryption options
 - **Scalability:** Keep architecture modular so heavy NLP modules can be swapped for cloud functions if datasets grow.
 

@@ -2,10 +2,11 @@
 
 ## Hero
 - **Headline:** "Turn your dating chats into insights that cheer you on."
-- **Subheadline:** "Project Afterglow transforms Tinder and Hinge exports into a warm reflection space that highlights your strengths, spots gentle growth edges, and keeps everything private on your device."
+- **Subheadline:** "Project Afterglow transforms Tinder and Hinge exports into a warm reflection space that highlights your strengths, spots gentle growth edges, and protects your privacy every step of the way."
 - **Primary CTA Button:** "Upload your data"
-- **Secondary CTA Link:** "Browse a sample first"
-- **Supporting Note:** "No account needed. Processing happens locally and can be cleared anytime."
+- **Secondary CTA Link:** "Try the privacy demo"
+- **Tertiary CTA Link:** "Browse a sample first"
+- **Supporting Note:** "PII stripped client-side. Optional encrypted sync. Clear data anytime."
 
 ## Social Proof / Reassurance Ribbon
 - "Designed with therapists and mindful daters to celebrate what’s working and soften the sticky spots."
@@ -19,14 +20,34 @@
   2. **Understand your rhythms.** "Visualize response tempo, conversation arcs, and when you’re carrying the energy solo."
   3. **Try gentle experiments.** "Get reflection prompts that invite small tweaks—never prescriptions or judgment."
 
-## Privacy & Safety Section
-- **Section Title:** "Your messages stay with you"
-- **Paragraph 1:** "Dating data is deeply personal. Afterglow runs entirely in your browser so raw files never leave your device."
-- **Paragraph 2:** "You can clear your upload and IndexedDB storage in a single click whenever you want a fresh start."
-- **Callout List:**
-  - "No servers capture your messages."
-  - "Open the inspector anytime to verify local processing."
-  - "Optional sync will only arrive later as an encrypted opt-in." (Label as "Coming soon".)
+## Privacy & Data Security Section
+- **Section Title:** "See exactly how we protect your privacy"
+- **Intro:** "Dating conversations are deeply personal. Here's precisely how we keep them safe:"
+
+### Interactive Privacy Demo
+- **Demo Title:** "Watch PII protection in action"
+- **Sample Message Display:**
+  ```
+  Original: "Hey Sarah! I work at Google in Manhattan. Want to grab coffee on 23rd street?"
+  ```
+- **Demo Button:** "Strip PII"
+- **After Clicking:**
+  ```
+  Sanitized: "Hey [PERSON]! I work at [WORKPLACE] in [PLACE]. Want to grab coffee on [PLACE_2]?"
+  ```
+- **Stats Display:** "Removed: 1 person name, 1 workplace, 2 locations"
+
+### Privacy Guarantees
+- **Client-Side Processing:** "All PII detection and sanitization happens in your browser. Raw messages never touch our servers."
+- **User Control:** "Review every redaction before deciding to sync. Choose local-only or encrypted cloud storage."
+- **Anonymous Accounts:** "Sign in with Apple or magic links. No personal information required."
+- **Data Expiration:** "Set automatic deletion after 30, 60, or 90 days. One-click complete removal anytime."
+- **Open Source:** "Our PII detection code is open for audit. Verify our privacy claims yourself."
+
+### Technical Safeguards
+- **Encryption at Rest:** "If you choose cloud sync, data is encrypted with your device key"
+- **Row-Level Security:** "Database isolation ensures users can only access their own data"
+- **No Analytics on Content:** "We track usage patterns (like 'insight viewed') but never message content"
 
 ## How It Works Section
 - **Section Title:** "Upload, explore, reflect"
@@ -50,11 +71,13 @@
 
 ## FAQ Preview
 - **Q:** "Do you store my dating data?"
-  - **A:** "No. Everything stays on your device. You control when to clear it."
-- **Q:** "Can I use Afterglow without uploading my own chats?"
-  - **A:** "Yes—load the sample export to explore the dashboard and see how it feels."
+  - **A:** "Raw messages never leave your device. If you choose cloud sync, only PII-stripped data is uploaded with encryption."
+- **Q:** "Can I see how PII protection works before uploading?"
+  - **A:** "Yes—try our interactive demo above or load the sample export to see the full experience."
+- **Q:** "What if I don't trust your PII detection?"
+  - **A:** "Review every redaction before syncing. Choose local-only mode, or manually redact additional content. Our detection code is open source."
 - **Q:** "Which dating apps are next?"
-  - **A:** "We’re focused on Tinder and Hinge for the MVP. Vote on the next integrations from your dashboard."
+  - **A:** "We're focused on Tinder and Hinge for the MVP. Vote on the next integrations from your dashboard."
 
 ## Footer Reminder
 - Gentle sign-off: "You deserve insights that feel like support, not scrutiny. When you’re ready, Afterglow is here to notice what’s already working."
