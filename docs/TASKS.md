@@ -23,14 +23,20 @@
 - [x] 4.2 Create basic data persistence layer for sanitized entities in both IndexedDB (local) and Supabase (cloud).
 - [x] 4.3 Generate simple derived metrics (message counts, basic response times, conversation length) with straightforward calculations.
 
-## 5. Basic Analytics Pipeline (MVP Scope)
-- [x] 5.1 Build simple message processing utilities for sanitized data (basic cleanup, timestamp extraction, message counting).
-- [x] 5.2 Implement 3 core metrics calculations:
-  - Message volume balance (ratio of user to match messages per conversation)
-  - Response timing patterns (average response times between exchanges)
-  - Conversation length distribution (number of messages per conversation)
-- [x] 5.3 Create basic pattern recognition for message imbalances and timing categories.
-- [ ] 5.4 Generate simple insights with friendly summaries and sanitized examples.
+## 5. AI-Heavy Analytics Pipeline (Value-Proving MVP)
+- [x] 5.1 Build message processing utilities for sanitized data preparation for AI analysis.
+- [x] 5.2 Implement basic metrics calculations as foundation for AI context.
+- [x] 5.3 Create pattern recognition framework for AI prompt optimization.
+- [x] 5.3.1 Build insight generation system with friendly summaries and sanitized examples (foundation for AI insights).
+- [ ] 5.4 Integrate OpenRouter for dynamic AI model selection and cost optimization.
+- [ ] 5.5 Implement comprehensive AI conversation analysis:
+  - Deep attachment style detection using GPT-4
+  - Manipulation and red flag pattern identification
+  - Communication strength and authenticity analysis
+  - Personalized growth opportunity recognition
+- [ ] 5.6 Build AI insight generation system with personalized recommendations.
+- [ ] 5.7 Create cost tracking and monitoring for AI usage against $2000 budget.
+- [ ] 5.8 Implement model selection strategy (GPT-4 for analysis, GPT-3.5 for summaries, etc.).
 
 ## 6. Minimal Dashboard (Email-First Approach)
 - [ ] 6.1 Design high-level statistics overview (total matches, messages, conversations).
@@ -46,13 +52,15 @@
 - [ ] 7.2 Enable export of recap (PDF via `react-pdf`) summarizing insights and user notes.
 - [ ] 7.3 Add gentle wrap-up flow allowing note saving, recap download, and optional future check-ins.
 
-## 7. Email System & Monthly Insights (Core MVP Feature)
+## 7. AI-Powered Email System & Monthly Insights
 - [ ] 7.1 Build email verification system requiring verified email before data upload
-- [ ] 7.2 Create email template system for monthly insight delivery
-- [ ] 7.3 Implement "First Tuesday" scheduling system for consistent monthly delivery
+- [ ] 7.2 Create dynamic email template system for AI-generated insight delivery
+- [ ] 7.3 Implement "First Tuesday" scheduling system with AI analysis pipeline
 - [ ] 7.4 Build user email preference management (pause/resume insights)
-- [ ] 7.5 Create first 2-3 insight types that can be applied to any user's static data
+- [ ] 7.5 Create AI-powered monthly theme generation based on user patterns and trends
 - [ ] 7.6 Set up email delivery infrastructure (SendGrid/Mailgun integration)
+- [ ] 7.7 Implement AI insight personalization system for individual user contexts
+- [ ] 7.8 Build feedback collection system to improve AI prompt effectiveness
 
 ## 8. Privacy & Security (Simplified MVP Strategy)
 - [x] 8.1 Update landing page with privacy-focused copy and interactive PII demo component
@@ -71,30 +79,52 @@
 - [ ] 9.4 Implement Row Level Security policies isolating data by email/user ID
 - [ ] 9.5 Create data retention policies and user-initiated deletion flows
 
-## 10. Analytics & Telemetry
-- [ ] 10.1 Integrate privacy-friendly analytics (self-hosted Plausible) capturing anonymized events only.
-- [ ] 10.2 Instrument key funnels: onboarding completion, time-to-first insight, insight card views, reflection note saves.
-- [ ] 10.3 Ensure telemetry can be disabled entirely by the user.
+## 10. AI Cost Monitoring & Analytics
+- [ ] 10.1 Build AI cost tracking dashboard with real-time budget monitoring against $2000 limit.
+- [ ] 10.2 Implement cost alerts and user capacity limits (85 users/month) to prevent budget overruns.
+- [ ] 10.3 Track AI model usage and cost per analysis type for optimization insights.
+- [ ] 10.4 Monitor AI analysis quality metrics (user ratings, engagement, feedback).
+- [ ] 10.5 Integrate privacy-friendly analytics (self-hosted Plausible) for user behavior tracking.
+- [ ] 10.6 Instrument AI-specific funnels: upload-to-insight time, AI insight engagement, model effectiveness.
+- [ ] 10.7 Create cost optimization recommendations based on usage patterns.
+- [ ] 10.8 Build automated budget warnings and emergency cost reduction protocols.
 
-## 11. Basic Testing & Quality Assurance (MVP Scope)
-- [ ] 11.1 Author basic unit tests for parsers, PII sanitization, and simple metric calculations.
-- [ ] 11.2 Create simple integration test that validates upload → sanitize → basic insight flow.
-- [ ] 11.3 Test PII detection accuracy with common patterns (names, emails, phones).
-- [ ] 11.4 Manual testing of UI flow and error handling.
-- [ ] 11.5 Basic deployment validation and smoke tests.
+## 11. AI-Focused Testing & Quality Assurance
+- [ ] 11.1 Author unit tests for parsers, PII sanitization, and AI integration components.
+- [ ] 11.2 Create integration test that validates upload → sanitize → AI analysis → insight generation flow.
+- [ ] 11.3 Test AI prompt effectiveness and output quality with sample conversation data.
+- [ ] 11.4 Implement AI cost testing with mock data to validate budget projections.
+- [ ] 11.5 Test OpenRouter model selection and fallback mechanisms.
+- [ ] 11.6 Manual testing of AI insight quality and user experience.
+- [ ] 11.7 Validate AI analysis accuracy against expert review for safety-critical insights.
+- [ ] 11.8 Test email delivery system with AI-generated content.
 
-## 12. MVP Launch Preparation
-- [ ] 12.1 Create basic documentation for setup and email-first approach.
-- [ ] 12.2 Set up deployment pipeline to Netlify or Vercel with email system integration.
-- [ ] 12.3 Create privacy policy reflecting email-linked data storage and monthly insights.
-- [ ] 12.4 Set up email deliverability monitoring and engagement tracking.
-- [ ] 12.5 Prepare first month's insight email template and schedule first delivery.
+## 12. AI-Heavy MVP Launch Preparation
+- [ ] 12.1 Create documentation for AI analysis approach and cost optimization strategy.
+- [ ] 12.2 Set up deployment pipeline with OpenRouter integration and monitoring.
+- [ ] 12.3 Create privacy policy reflecting AI analysis of sanitized data.
+- [ ] 12.4 Implement AI cost monitoring dashboard and budget alerts.
+- [ ] 12.5 Set up email deliverability monitoring and AI insight engagement tracking.
+- [ ] 12.6 Prepare AI-generated first month insight templates and test delivery.
+- [ ] 12.7 Implement user capacity limits (85 users/month) to manage AI costs.
+- [ ] 12.8 Create AI analysis quality metrics and feedback collection system.
 
-## Post-MVP: Advanced Features & Quality (Phase 2+)
-- [ ] Advanced NLP Pipeline: Add `wink-nlp`, sentiment analysis, and sophisticated pattern detection
-- [ ] Enhanced Testing: Comprehensive unit tests, Cypress integration tests, expert review sessions
-- [ ] Rich Visualizations: Violin plots, heatmaps, advanced dashboard features
-- [ ] Reflection Features: Rich-text workspace, PDF export, guided prompts
-- [ ] Advanced Privacy: Full review interface, zero-knowledge encryption, open-source PII detection
-- [ ] Platform Expansion: Bumble and OKCupid parser adapters
-- [ ] AI Integration: GPT-4o mini coaching and personalized guidance
+## OpenRouter Model Selection Strategy
+- [ ] Set up OpenRouter integration for dynamic model selection and cost optimization
+- [ ] Implement model selection logic based on analysis type:
+  - **GPT-4 (High Cost, High Quality):** Complex manipulation detection, attachment style analysis
+  - **GPT-4 Turbo (Medium Cost):** Comprehensive conversation analysis, personalized insights
+  - **GPT-3.5 Turbo (Low Cost):** Summary generation, simple pattern descriptions
+  - **Claude-3 Haiku (Ultra Low Cost):** Basic categorization, data validation
+- [ ] Create fallback model hierarchy for cost management and availability
+- [ ] Implement cost tracking per model to optimize budget allocation
+- [ ] Build A/B testing framework for model effectiveness vs. cost
+
+## Post-MVP: AI Optimization & Advanced Features (Phase 2+)
+- [ ] Cost Optimization Pipeline: Transition to hybrid AI/rule-based system based on 6 months of data
+- [ ] Enhanced AI Testing: Prompt optimization, model comparison studies, expert validation
+- [ ] Rich AI Visualizations: AI-generated charts and insights visualization
+- [ ] Advanced AI Features: Multi-conversation analysis, trend prediction, behavioral modeling
+- [ ] AI Privacy Enhancements: Local AI processing options, differential privacy for aggregate insights
+- [ ] Platform Expansion: AI analysis for Bumble and OKCupid with platform-specific prompts
+- [ ] Enterprise AI Features: Therapist collaboration tools, research insights, B2B offerings

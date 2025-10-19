@@ -109,22 +109,21 @@ interface ParserAdapter {
 - Store normalized data in IndexedDB via `idb` library for snappy offline queries.
 - Generate derived metrics (response times, word counts, conversation length) using memoized selectors to avoid recomputation.
 
-## Basic Analytics Pipeline (MVP Scope)
-1. **Simple Message Processing:**
-   - Basic text cleanup (normalize whitespace, handle empty messages)
-   - Extract timestamps and message direction (user vs match)
-   - Count total messages per conversation and participant
-2. **Core Metrics Calculation:**
-   - **Message Volume Balance:** Calculate ratio of user messages to match messages per conversation
-   - **Response Timing Patterns:** Compute average response times between message exchanges
-   - **Conversation Length Distribution:** Analyze number of messages per conversation to identify engagement patterns
-3. **Basic Pattern Recognition:**
-   - Flag conversations with significant message imbalances (e.g., user sends >70% of messages)
-   - Identify quick vs slow responders based on timing patterns
-   - Categorize conversations by length (brief, moderate, extended exchanges)
-4. **Simple Insights Generation:**
-   - Create friendly summaries of user's messaging patterns with sanitized examples
-   - Provide gentle observations about conversation dynamics without complex analysis
+## AI-Heavy Analytics Pipeline (Value-Proving MVP)
+1. **Comprehensive AI Analysis ($3-5 per user):**
+   - **Deep Conversation Analysis:** GPT-4 analysis of entire dating history for attachment styles, red flags, and communication patterns
+   - **Personalized Insight Generation:** AI-crafted insights tailored to individual patterns and growth opportunities
+   - **Safety Pattern Detection:** Sophisticated manipulation and emotional abuse identification
+   - **Authentic Voice Analysis:** Recognition of when users are most genuine vs. performative
+2. **Dynamic Monthly Insights:**
+   - **AI-Generated Themes:** Monthly focus areas determined by AI based on user patterns and current dating trends
+   - **Evolving Analysis:** Each month applies new AI frameworks to static data for fresh discoveries
+   - **Aggregate Intelligence:** Cross-user pattern analysis for contextual insights
+3. **Cost Optimization Framework:**
+   - **Budget:** $2,000 over 6 months (75% for AI analysis)
+   - **Capacity:** 400-500 users with full AI treatment
+   - **Tracking:** Document optimization opportunities for Phase 2 efficiency
+   - **Transition Plan:** Hybrid AI/rule-based system after value validation
 
 ## Minimal Dashboard (Email-First Approach)
 - **High-Level Statistics:** Basic data overview for immediate validation:
@@ -176,42 +175,47 @@ interface ParserAdapter {
 - **Integration Tests:** Cypress component tests for upload-to-insight flow with sample ZIPs.
 - **Manual Review:** Involve subject-matter experts (dating coaches, therapists) to vet tone of flagged snippets.
 
-## 2-Week MVP Timeline (Email-First)
+## 2-Week MVP Timeline (AI-Heavy Value Proving)
 
-### Week 1: Core Infrastructure + Email Foundation
-- **Days 1-2:** Email verification system and user account creation
+### Week 1: Core Infrastructure + AI Integration
+- **Days 1-2:** Email verification system, user accounts, and OpenAI API integration
 - **Days 3-4:** PII sanitization pipeline with typed placeholders
-- **Days 5-7:** Cloud storage setup with email-linked accounts
+- **Days 5-7:** Cloud storage setup and AI analysis pipeline foundation
 
-### Week 2: Minimal Dashboard + Email System
-- **Days 8-10:** Basic statistics dashboard with email insight status card
-- **Days 11-12:** Email template system and monthly scheduling setup
-- **Days 13-14:** 2-3 starter insights, onboarding flow, and deployment
+### Week 2: AI Analysis + Email System
+- **Days 8-10:** Implement comprehensive AI conversation analysis (GPT-4 integration)
+- **Days 11-12:** Email template system, AI insight generation, and monthly scheduling
+- **Days 13-14:** Dashboard with AI-generated insights, onboarding flow, and deployment
 
-### Post-Launch: Monthly Insight Development
-- **First Tuesday After Launch:** Send first insight email to all users
-- **Monthly Cadence:** Develop new analytical lenses to apply to static user data
-- **Ongoing:** Build library of insight types that can be applied to any user's data
+### Post-Launch: AI-Powered Monthly Insights
+- **First Tuesday After Launch:** Send first AI-generated insight email to all users
+- **Monthly Cadence:** Develop new AI analysis frameworks and prompts
+- **Ongoing:** Build library of AI analysis types while tracking optimization opportunities
 
-## Post-MVP Roadmap (Email-First Development)
-- **Phase 2 (Month 1-2):** Advanced Insight Types
-  - Attachment style analysis algorithms
-  - Communication pattern sophistication
-  - Red flag detection patterns
-  - Aggregate comparison insights ("users like you...")
-- **Phase 3 (Month 3-4):** Expert Partnerships & Content
-  - Therapist and dating expert collaboration
-  - Evidence-based insight development
-  - Sponsored insight opportunities
-  - Community wisdom integration
-- **Phase 4 (Month 5-6):** Platform Enhancement
-  - Mobile-optimized email templates
-  - Advanced email personalization
-  - Premium insight tiers
-  - Additional platform support (Bumble, OKCupid)
+### Budget Management
+- **Monthly cost monitoring:** Track AI usage against $330/month budget
+- **User capacity limits:** Cap at 85 new users per month to stay within budget
+- **Quality metrics:** Monitor AI insight effectiveness for future optimization
+
+## Post-MVP Roadmap (AI-First Development)
+- **Phase 2 (Month 1-3):** AI Analysis Sophistication
+  - Deep attachment style analysis with personalized recommendations
+  - Advanced manipulation and red flag detection
+  - Authentic voice recognition and growth opportunities
+  - AI-generated monthly themes based on user patterns and trends
+- **Phase 3 (Month 4-6):** Value Validation & Optimization Prep
+  - Expert partnership integration (therapists, dating coaches)
+  - User feedback integration into AI prompt optimization
+  - Cost tracking and efficiency analysis
+  - Premium tier development with advanced AI features
+- **Phase 4 (Month 7-9):** Cost Optimization Implementation
+  - Hybrid AI/rule-based system based on 6 months of data
+  - Template creation for common patterns
+  - Selective AI usage for complex cases only
+  - Target cost reduction to <$0.50 per user per month
 - **Future Releases:**
-  - AI-powered insight generation
-  - Interactive email elements
-  - Community features and anonymous sharing
-  - International expansion with localized insights
+  - Multi-platform support (Bumble, OKCupid) with AI analysis
+  - Interactive email elements and community features
+  - International expansion with culturally-aware AI insights
+  - Enterprise partnerships and B2B insight offerings
 
