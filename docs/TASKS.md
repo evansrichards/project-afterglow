@@ -24,7 +24,7 @@
 - [x] 4.3 Generate simple derived metrics (message counts, basic response times, conversation length) with straightforward calculations.
 
 ## 5. Basic Analytics Pipeline (MVP Scope)
-- [ ] 5.1 Build simple message processing utilities for sanitized data (basic cleanup, timestamp extraction, message counting).
+- [x] 5.1 Build simple message processing utilities for sanitized data (basic cleanup, timestamp extraction, message counting).
 - [ ] 5.2 Implement 3 core metrics calculations:
   - Message volume balance (ratio of user to match messages per conversation)
   - Response timing patterns (average response times between exchanges)

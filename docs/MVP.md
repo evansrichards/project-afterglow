@@ -6,11 +6,12 @@
 - **Explainable insights:** Every surfaced pattern should link to clear evidence and suggestions so users feel supported, not surveilled.
 - **Modular data pipeline:** Treat Tinder and Hinge exports as interchangeable inputs that normalize into one schema for downstream analysis.
 
-## System Architecture Snapshot (Simplified for 2-Week MVP)
-1. **Frontend (React + TypeScript + Vite):** Handles file upload, parsing, PII sanitization, and basic insights. Deployed on a static host (e.g., Netlify or Vercel).
-2. **Cloud Storage (Supabase + Postgres):** Essential for session persistence - stores sanitized data only with anonymous authentication.
-3. **Basic Analytics:** Simple client-side calculations for message counts, timing patterns, and conversation length.
-4. **Design System:** Tailwind CSS with a custom theme that echoes the brand's calm, affirming tone.
+## System Architecture Snapshot (Email-First MVP)
+1. **Frontend (React + TypeScript + Vite):** Handles file upload, parsing, PII sanitization, and minimal dashboard. One-time engagement after upload, then redirects to email. Deployed on a static host (e.g., Netlify or Vercel).
+2. **Cloud Storage (Supabase + Postgres):** Stores sanitized data with email-linked accounts for monthly insight generation.
+3. **Email System:** Monthly insight delivery system with scheduled analysis of static user data.
+4. **Minimal Dashboard:** Basic statistics and email preference management - designed for brief visits, not retention.
+5. **Design System:** Tailwind CSS with a custom theme that echoes the brand's calm, affirming tone.
 
 ## Data Ingestion & Normalization
 - **Supported Inputs:**
@@ -125,17 +126,22 @@ interface ParserAdapter {
    - Create friendly summaries of user's messaging patterns with sanitized examples
    - Provide gentle observations about conversation dynamics without complex analysis
 
-## Simplified Insight Layer (MVP Scope)
-- **Basic Insight Cards:** Simple cards with friendly messaging:
-  - Title (e.g., "Your conversation style")
-  - Basic metric (e.g., "You typically send 2.3 messages for every 1 message from matches")
-  - Gentle observation with sanitized example
-  - Encouraging note or simple suggestion
-- **Simple Charts:** Use `recharts` for basic visualizations:
-  - Bar chart showing message counts per conversation
-  - Simple timeline of response frequency
-  - Basic distribution of conversation lengths
-- **Local Data Management:** Simple toggle to clear all data with confirmation dialog
+## Minimal Dashboard (Email-First Approach)
+- **High-Level Statistics:** Basic data overview for immediate validation:
+  - Total matches analyzed
+  - Total messages processed
+  - Average conversation length
+  - Data upload date and sanitization summary
+- **Email Insight Status Card:** Prominent card showing:
+  - "✅ Monthly insights: ON/OFF"
+  - "📅 Next insight arrives: [First Tuesday of Month]"
+  - "💌 Delivered to: [user email]"
+  - Toggle to pause/resume insight emails
+- **2-3 Starter Insights:** Simple examples to demonstrate value:
+  - Basic conversation balance insight
+  - Response timing overview
+  - Most common conversation length
+- **Data Management:** Simple toggle to clear all data and cancel insights
 
 
 ## Data Security & Privacy
@@ -170,33 +176,42 @@ interface ParserAdapter {
 - **Integration Tests:** Cypress component tests for upload-to-insight flow with sample ZIPs.
 - **Manual Review:** Involve subject-matter experts (dating coaches, therapists) to vet tone of flagged snippets.
 
-## 2-Week MVP Timeline
+## 2-Week MVP Timeline (Email-First)
 
-### Week 1: Core Infrastructure
-- **Days 1-2:** Complete PII sanitization pipeline with typed placeholders
-- **Days 3-4:** Set up Supabase authentication and sanitized data storage
-- **Days 5-7:** Build upload flow: sanitize → summary → cloud storage
+### Week 1: Core Infrastructure + Email Foundation
+- **Days 1-2:** Email verification system and user account creation
+- **Days 3-4:** PII sanitization pipeline with typed placeholders
+- **Days 5-7:** Cloud storage setup with email-linked accounts
 
-### Week 2: Basic Analytics & Polish
-- **Days 8-10:** Implement 3 core metrics (message balance, timing, conversation length)
-- **Days 11-12:** Create simple insight cards and basic charts
-- **Days 13-14:** UI polish, error handling, and deployment
+### Week 2: Minimal Dashboard + Email System
+- **Days 8-10:** Basic statistics dashboard with email insight status card
+- **Days 11-12:** Email template system and monthly scheduling setup
+- **Days 13-14:** 2-3 starter insights, onboarding flow, and deployment
 
-## Post-MVP Roadmap
-- **Phase 2 (Weeks 3-4):** Advanced NLP and Pattern Detection
-  - Add `wink-nlp` tokenization and sentiment analysis
-  - Implement 5 sophisticated pattern detection engines
-  - Harmful pattern detection with lexicon-based analysis
-- **Phase 3 (Weeks 5-6):** Enhanced UX & Features
-  - Rich visualizations (violin plots, heatmaps, timeline views)
-  - Reflection workspace with rich-text notes
-  - PDF export functionality
-- **Phase 4 (Weeks 7-8):** Advanced Privacy & Expansion
-  - Full user review interface with side-by-side diff view
-  - Cross-match entity resolution for consistent identifiers
+### Post-Launch: Monthly Insight Development
+- **First Tuesday After Launch:** Send first insight email to all users
+- **Monthly Cadence:** Develop new analytical lenses to apply to static user data
+- **Ongoing:** Build library of insight types that can be applied to any user's data
+
+## Post-MVP Roadmap (Email-First Development)
+- **Phase 2 (Month 1-2):** Advanced Insight Types
+  - Attachment style analysis algorithms
+  - Communication pattern sophistication
+  - Red flag detection patterns
+  - Aggregate comparison insights ("users like you...")
+- **Phase 3 (Month 3-4):** Expert Partnerships & Content
+  - Therapist and dating expert collaboration
+  - Evidence-based insight development
+  - Sponsored insight opportunities
+  - Community wisdom integration
+- **Phase 4 (Month 5-6):** Platform Enhancement
+  - Mobile-optimized email templates
+  - Advanced email personalization
+  - Premium insight tiers
   - Additional platform support (Bumble, OKCupid)
 - **Future Releases:**
-  - AI coach integration (GPT-4o mini) for personalized guidance
-  - Zero-knowledge encryption options
-  - Social features and community insights
+  - AI-powered insight generation
+  - Interactive email elements
+  - Community features and anonymous sharing
+  - International expansion with localized insights
 
