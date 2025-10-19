@@ -1,0 +1,195 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Root variables */
+  :root {
+    --color-background: theme('colors.warm.50');
+    --color-foreground: theme('colors.warm.900');
+  }
+
+  /* Base typography with warm, accessible defaults */
+  body {
+    @apply font-sans text-base text-warm-900 bg-warm-50 antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  /* Headings use display font for warmth */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-semibold text-warm-900;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl;
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl;
+  }
+
+  /* Smooth scroll behavior */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Focus styles for accessibility */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-afterglow-500 ring-offset-2 ring-offset-warm-50 rounded;
+  }
+}
+
+@layer components {
+  /* Button variants aligned to brand voice */
+  .btn {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-xl font-medium
+           transition-all duration-200 focus-visible:outline-none focus-visible:ring-2
+           focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn bg-afterglow-500 text-white hover:bg-afterglow-600
+           focus-visible:ring-afterglow-500 shadow-soft hover:shadow-soft-lg;
+  }
+
+  .btn-secondary {
+    @apply btn bg-twilight-100 text-twilight-700 hover:bg-twilight-200
+           focus-visible:ring-twilight-500;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent text-warm-700 hover:bg-warm-100
+           focus-visible:ring-warm-500;
+  }
+
+  /* Card component for insight displays */
+  .card {
+    @apply bg-white rounded-2xl shadow-soft p-6 transition-all duration-300
+           hover:shadow-soft-lg border border-warm-100;
+  }
+
+  .card-interactive {
+    @apply card cursor-pointer hover:border-afterglow-200 hover:-translate-y-0.5;
+  }
+
+  /* Input styling */
+  .input {
+    @apply w-full px-4 py-3 rounded-xl border border-warm-200 bg-white
+           text-warm-900 placeholder-warm-400 transition-colors duration-200
+           focus:border-afterglow-400 focus:ring-2 focus:ring-afterglow-200;
+  }
+
+  /* Badge/tag components for metadata */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+  }
+
+  .badge-positive {
+    @apply badge bg-insight-positive-light text-green-800;
+  }
+
+  .badge-growth {
+    @apply badge bg-insight-growth-light text-amber-800;
+  }
+
+  .badge-caution {
+    @apply badge bg-insight-caution-light text-orange-800;
+  }
+
+  .badge-reflection {
+    @apply badge bg-insight-reflection-light text-purple-800;
+  }
+
+  /* Section headers with breathing room */
+  .section-header {
+    @apply mb-8 space-y-2;
+  }
+
+  .section-title {
+    @apply text-3xl font-display font-semibold text-warm-900;
+  }
+
+  .section-description {
+    @apply text-lg text-warm-600 max-w-2xl;
+  }
+
+  /* Privacy assurance styling */
+  .privacy-badge {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-full
+           bg-twilight-50 text-twilight-700 text-sm font-medium border border-twilight-200;
+  }
+}
+
+@layer utilities {
+  /* Custom utilities for brand alignment */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  /* Gradient backgrounds for hero sections */
+  .gradient-warm {
+    background: linear-gradient(135deg,
+      theme('colors.afterglow.50') 0%,
+      theme('colors.twilight.50') 100%);
+  }
+
+  .gradient-sunset {
+    background: linear-gradient(135deg,
+      theme('colors.afterglow.400') 0%,
+      theme('colors.afterglow.600') 100%);
+  }
+
+  /* Container with brand-aligned max width */
+  .container-app {
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Prose styling for reflection notes */
+  .prose-warm {
+    @apply prose prose-warm prose-lg max-w-none;
+  }
+
+  .prose-warm h2 {
+    @apply text-warm-900 font-display;
+  }
+
+  .prose-warm p {
+    @apply text-warm-700 leading-relaxed;
+  }
+
+  .prose-warm a {
+    @apply text-afterglow-600 hover:text-afterglow-700 no-underline;
+  }
+}
+
+/* Loading states */
+.skeleton {
+  @apply animate-pulse-gentle bg-warm-200 rounded;
+}
+
+/* Tooltip base styles */
+.tooltip {
+  @apply absolute z-50 px-3 py-2 text-sm text-white bg-warm-800 rounded-lg
+         shadow-soft-lg pointer-events-none opacity-0 transition-opacity duration-200;
+}
+
+/* Responsive breakpoint helpers */
+@media (max-width: 640px) {
+  .section-title {
+    @apply text-2xl;
+  }
+
+  .btn {
+    @apply px-4 py-2.5 text-sm;
+  }
+}

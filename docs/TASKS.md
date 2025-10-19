@@ -6,7 +6,7 @@
 - [x] 1.3 Define MVP success metrics dashboard (onboarding completion, deep-dive engagement, reflection notes, NPS).
 
 ## 2. Project Setup & Infrastructure
-- [ ] 2.1 Scaffold React + TypeScript + Vite frontend with Tailwind CSS theme aligned to brand.
+- [x] 2.1 Scaffold React + TypeScript + Vite frontend with Tailwind CSS theme aligned to brand.
 - [ ] 2.2 Configure module aliases, linting (ESLint), formatting (Prettier), and Jest + Testing Library base config.
 - [ ] 2.3 Set up IndexedDB access utilities (using `idb`) and persistent state management strategy.
 
