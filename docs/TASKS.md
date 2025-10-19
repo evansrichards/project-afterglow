@@ -18,24 +18,30 @@
 - [x] 3.5 Persist raw schema snapshots and run validation checks (required columns, message counts) with friendly error messaging.
 - [x] 3.6 Capture unknown fields into `CustomAttribute` metadata and log schema diffs with adapter versioning.
 
-## 4. Unified Data Model & Storage
+## 4. Simplified Data Model & Storage (MVP Scope)
 - [x] 4.1 Implement TypeScript interfaces for normalized data (participants, matches, messages, raw records, field mappings).
-- [ ] 4.2 Create data persistence layer saving normalized entities to IndexedDB with efficient query helpers.
-- [ ] 4.3 Generate derived metrics (response times, word counts, conversation length) using memoized selectors.
+- [ ] 4.2 Create basic data persistence layer for sanitized entities in both IndexedDB (local) and Supabase (cloud).
+- [ ] 4.3 Generate simple derived metrics (message counts, basic response times, conversation length) with straightforward calculations.
 
-## 5. Conversation Analyzer Pipeline (Updated for Sanitized Data)
-- [ ] 5.1 Build preprocessing utilities for sanitized message cleanup, tokenization via `wink-nlp`, language detection, and metadata merging.
-- [ ] 5.2 Implement feature extraction modules (response latency, initiation patterns, sentiment, thematic keywords, behavioral annotations) working with tokenized data.
-- [ ] 5.3 Develop pattern detection engines adapted for sanitized content: Momentum Tracker, Emotional Climate Monitor, Boundary & Respect Scanner, Self-Reflection Mirrors, Reciprocity Gauge.
-- [ ] 5.4 Store representative snippets for flagged patterns using sanitized data with typed placeholders for context.
+## 5. Basic Analytics Pipeline (MVP Scope)
+- [ ] 5.1 Build simple message processing utilities for sanitized data (basic cleanup, timestamp extraction, message counting).
+- [ ] 5.2 Implement 3 core metrics calculations:
+  - Message volume balance (ratio of user to match messages per conversation)
+  - Response timing patterns (average response times between exchanges)
+  - Conversation length distribution (number of messages per conversation)
+- [ ] 5.3 Create basic pattern recognition for message imbalances and timing categories.
+- [ ] 5.4 Generate simple insights with friendly summaries and sanitized examples.
 
-## 6. Insight Layer & Visualization
-- [ ] 6.1 Design insight card component with title, metric summary, evidence snippets, reflective prompts, and suggestions.
-- [ ] 6.2 Implement dashboard visualizations (e.g., response time violin plot, conversation arc timeline, positivity heatmap) using `recharts` or `nivo`.
-- [ ] 6.3 Build navigation for overview vs. deep-dive sections aligned with user journey.
-- [ ] 6.4 Ensure insights link back to underlying data for explainability and user trust.
+## 6. Simple Insight Layer & Basic Charts (MVP Scope)
+- [ ] 6.1 Design basic insight card component with title, simple metric, gentle observation, and encouraging note.
+- [ ] 6.2 Implement simple visualizations using `recharts`:
+  - Bar chart showing message counts per conversation
+  - Basic timeline of response frequency
+  - Simple distribution of conversation lengths
+- [ ] 6.3 Build straightforward dashboard layout showing cards and charts.
+- [ ] 6.4 Add local data management with simple clear data toggle.
 
-## 7. Reflection Workspace & Recap
+## 7. Post-MVP: Reflection Workspace & Recap (Phase 3)
 - [ ] 7.1 Implement rich-text reflection workspace with guided prompts and local persistence.
 - [ ] 7.2 Enable export of recap (PDF via `react-pdf`) summarizing insights and user notes.
 - [ ] 7.3 Add gentle wrap-up flow allowing note saving, recap download, and optional future check-ins.
@@ -65,16 +71,24 @@
 - [ ] 10.2 Instrument key funnels: onboarding completion, time-to-first insight, insight card views, reflection note saves.
 - [ ] 10.3 Ensure telemetry can be disabled entirely by the user.
 
-## 11. Testing & Quality Assurance
-- [ ] 11.1 Author unit tests for parsers, PII sanitization, normalization utilities, analyzer modules, and derived metric selectors.
-- [ ] 11.2 Create Cypress component/integration tests that run sample ZIPs through upload → sanitize → insight flow.
-- [ ] 11.3 Test PII detection accuracy with various edge cases and international name patterns.
-- [ ] 11.4 Schedule manual review sessions with subject-matter experts to vet tone and sensitive pattern handling.
-- [ ] 11.5 Establish regression test checklist and automated CI pipeline including privacy protection tests.
+## 11. Basic Testing & Quality Assurance (MVP Scope)
+- [ ] 11.1 Author basic unit tests for parsers, PII sanitization, and simple metric calculations.
+- [ ] 11.2 Create simple integration test that validates upload → sanitize → basic insight flow.
+- [ ] 11.3 Test PII detection accuracy with common patterns (names, emails, phones).
+- [ ] 11.4 Manual testing of UI flow and error handling.
+- [ ] 11.5 Basic deployment validation and smoke tests.
 
-## 12. Launch Preparation
-- [ ] 12.1 Prepare documentation for setup, updated privacy promises, PII sanitization process, and troubleshooting common import issues.
-- [ ] 12.2 Set up deployment pipeline to Netlify or Vercel with environment configuration for Supabase integration.
-- [ ] 12.3 Create privacy policy and terms of service reflecting new data handling approach.
-- [ ] 12.4 Craft onboarding emails or in-app copy for optional future check-ins post-MVP launch.
-- [ ] 12.5 Prepare open-source repository for PII detection code and documentation.
+## 12. MVP Launch Preparation
+- [ ] 12.1 Create basic documentation for setup and PII sanitization process.
+- [ ] 12.2 Set up deployment pipeline to Netlify or Vercel with Supabase integration.
+- [ ] 12.3 Create simple privacy policy reflecting MVP data handling approach.
+- [ ] 12.4 Basic error monitoring and logging setup.
+
+## Post-MVP: Advanced Features & Quality (Phase 2+)
+- [ ] Advanced NLP Pipeline: Add `wink-nlp`, sentiment analysis, and sophisticated pattern detection
+- [ ] Enhanced Testing: Comprehensive unit tests, Cypress integration tests, expert review sessions
+- [ ] Rich Visualizations: Violin plots, heatmaps, advanced dashboard features
+- [ ] Reflection Features: Rich-text workspace, PDF export, guided prompts
+- [ ] Advanced Privacy: Full review interface, zero-knowledge encryption, open-source PII detection
+- [ ] Platform Expansion: Bumble and OKCupid parser adapters
+- [ ] AI Integration: GPT-4o mini coaching and personalized guidance

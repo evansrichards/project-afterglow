@@ -6,10 +6,10 @@
 - **Explainable insights:** Every surfaced pattern should link to clear evidence and suggestions so users feel supported, not surveilled.
 - **Modular data pipeline:** Treat Tinder and Hinge exports as interchangeable inputs that normalize into one schema for downstream analysis.
 
-## System Architecture Snapshot
-1. **Frontend (React + TypeScript + Vite):** Handles file upload, parsing, visualization, and reflections. Deployed on a static host (e.g., Netlify or Vercel).
-2. **Local Worker Layer (Web Workers + WASM-enabled libs):** Performs CPU-heavy parsing, NLP tagging, and trend detection without blocking the UI.
-3. **Cloud Sync with PII Sanitization (Supabase Edge Functions + Postgres):** Opt-in cloud storage of sanitized data for enhanced insights and cross-device access; defaults to local storage if declined.
+## System Architecture Snapshot (Simplified for 2-Week MVP)
+1. **Frontend (React + TypeScript + Vite):** Handles file upload, parsing, PII sanitization, and basic insights. Deployed on a static host (e.g., Netlify or Vercel).
+2. **Cloud Storage (Supabase + Postgres):** Essential for session persistence - stores sanitized data only with anonymous authentication.
+3. **Basic Analytics:** Simple client-side calculations for message counts, timing patterns, and conversation length.
 4. **Design System:** Tailwind CSS with a custom theme that echoes the brand's calm, affirming tone.
 
 ## Data Ingestion & Normalization
@@ -108,48 +108,35 @@ interface ParserAdapter {
 - Store normalized data in IndexedDB via `idb` library for snappy offline queries.
 - Generate derived metrics (response times, word counts, conversation length) using memoized selectors to avoid recomputation.
 
-## Conversation Analyzer Pipeline
-1. **Preprocessing:**
-   - Clean message text (strip emojis selectively, preserve sentiment cues, normalize whitespace).
-   - Tokenize using `wink-nlp` (compact footprint) with support for sentence boundaries.
-   - Detect language; fallback to basic sentiment if not English.
-   - Merge `CustomAttribute` metadata (prompt titles, delivery states, reactions) into analyzer-friendly keys so new columns stay actionable without code changes.
-2. **Feature Extraction:**
-   - Calculate response latency distributions and conversation initiation patterns.
-   - Tag tone using rule-based heuristics plus sentiment (e.g., `vader-sentiment` port for JS).
-   - Identify thematic keywords via TF-IDF and curated lexicons (affection, logistics, red flags).
-   - Annotate user vs. match behaviors (e.g., question rate, empathy statements, compliment frequency).
-3. **Pattern Detection Modules:**
-   - **Momentum Tracker:** Flags frequent stalls (user sends ≥2 unanswered messages) and successful escalations (conversation moves to date/topic). Links to snippets of pivotal exchanges.
-   - **Emotional Climate Monitor:** Highlights stretches with negative or anxious sentiment from either party and pairs them with supportive reframes.
-   - **Boundary & Respect Scanner:** Looks for red-flag phrases (e.g., gaslighting, negging) using curated lexicon + contextual rules; surfaces anonymized snippets.
-   - **Self-Reflection Mirrors:** Surfaces recurring self-sabotaging patterns (e.g., apologizing excessively) using regex + frequency thresholds.
-   - **Reciprocity Gauge:** Compares message counts, initiation rates, and response speed to reveal imbalances.
-4. **Snippet Generation:**
-   - For each flagged pattern, store 2–3 representative message pairs (one user line + one match line) with timestamps.
-   - Redact names/emails and highlight the trigger phrase to keep insights actionable but private.
+## Basic Analytics Pipeline (MVP Scope)
+1. **Simple Message Processing:**
+   - Basic text cleanup (normalize whitespace, handle empty messages)
+   - Extract timestamps and message direction (user vs match)
+   - Count total messages per conversation and participant
+2. **Core Metrics Calculation:**
+   - **Message Volume Balance:** Calculate ratio of user messages to match messages per conversation
+   - **Response Timing Patterns:** Compute average response times between message exchanges
+   - **Conversation Length Distribution:** Analyze number of messages per conversation to identify engagement patterns
+3. **Basic Pattern Recognition:**
+   - Flag conversations with significant message imbalances (e.g., user sends >70% of messages)
+   - Identify quick vs slow responders based on timing patterns
+   - Categorize conversations by length (brief, moderate, extended exchanges)
+4. **Simple Insights Generation:**
+   - Create friendly summaries of user's messaging patterns with sanitized examples
+   - Provide gentle observations about conversation dynamics without complex analysis
 
-## Insight Layer & Recommendations
-- **Insight Cards:** Each pattern becomes a card with:
-  - Title (e.g., "When you keep the conversation alive solo")
-  - Metric summary (e.g., "In 35% of matches, you sent three or more unanswered messages")
-  - Evidence snippet(s)
-  - Reflective prompt and gentle next-step suggestion.
-- **Trend Dashboards:** Use `recharts` or `nivo` for accessible visualizations (response time violin plot, conversation arc timeline, positivity heatmap).
-- **Reflection Workspace:** Rich-text notes saved locally with optional export (PDF via `react-pdf`).
-- **Privacy Nudges:** Inline reminders about local processing; simple toggle to purge data instantly.
+## Simplified Insight Layer (MVP Scope)
+- **Basic Insight Cards:** Simple cards with friendly messaging:
+  - Title (e.g., "Your conversation style")
+  - Basic metric (e.g., "You typically send 2.3 messages for every 1 message from matches")
+  - Gentle observation with sanitized example
+  - Encouraging note or simple suggestion
+- **Simple Charts:** Use `recharts` for basic visualizations:
+  - Bar chart showing message counts per conversation
+  - Simple timeline of response frequency
+  - Basic distribution of conversation lengths
+- **Local Data Management:** Simple toggle to clear all data with confirmation dialog
 
-## Narcissistic or Harmful Pattern Detection
-- Combine lexicon of narcissistic traits ("you're too sensitive", "I never said that") with behavioral signals:
-  - High prevalence of blame-shifting or belittling language.
-  - Love-bombing followed by sudden withdrawal (detected through sentiment swings + response gaps).
-- Provide contextual snippet bundles:
-  - **Example:**
-    - _Match:_ "I only date people who can keep up with me. Most of my exes were too needy."
-    - _You:_ "I just want clear communication."
-    - _Match:_ "Sounds like you need to toughen up." (Flagged as dismissive)
-- Offer guidance: "If comments like these feel familiar, consider pausing and asking how you want to be treated."
-- Emphasize user agency; avoid diagnosing matches but spotlight patterns needing boundaries.
 
 ## Data Security & Privacy
 
@@ -183,15 +170,33 @@ interface ParserAdapter {
 - **Integration Tests:** Cypress component tests for upload-to-insight flow with sample ZIPs.
 - **Manual Review:** Involve subject-matter experts (dating coaches, therapists) to vet tone of flagged snippets.
 
-## Roadmap Considerations
-- **Near-Term Enhancements:**
-  - Expand parser adapters for Bumble/OKCupid using same schema.
-  - Add journaling timeline to correlate insights with real-life outcomes.
-  - Introduce optional AI coach (GPT-4o mini) for reflective prompts.
-- **Advanced Privacy Features (Post-MVP):**
+## 2-Week MVP Timeline
+
+### Week 1: Core Infrastructure
+- **Days 1-2:** Complete PII sanitization pipeline with typed placeholders
+- **Days 3-4:** Set up Supabase authentication and sanitized data storage
+- **Days 5-7:** Build upload flow: sanitize → summary → cloud storage
+
+### Week 2: Basic Analytics & Polish
+- **Days 8-10:** Implement 3 core metrics (message balance, timing, conversation length)
+- **Days 11-12:** Create simple insight cards and basic charts
+- **Days 13-14:** UI polish, error handling, and deployment
+
+## Post-MVP Roadmap
+- **Phase 2 (Weeks 3-4):** Advanced NLP and Pattern Detection
+  - Add `wink-nlp` tokenization and sentiment analysis
+  - Implement 5 sophisticated pattern detection engines
+  - Harmful pattern detection with lexicon-based analysis
+- **Phase 3 (Weeks 5-6):** Enhanced UX & Features
+  - Rich visualizations (violin plots, heatmaps, timeline views)
+  - Reflection workspace with rich-text notes
+  - PDF export functionality
+- **Phase 4 (Weeks 7-8):** Advanced Privacy & Expansion
   - Full user review interface with side-by-side diff view
-  - Sophisticated entity tokenization with consistent identifiers across conversations
-  - Cross-match entity resolution for mutual friends/places
+  - Cross-match entity resolution for consistent identifiers
+  - Additional platform support (Bumble, OKCupid)
+- **Future Releases:**
+  - AI coach integration (GPT-4o mini) for personalized guidance
   - Zero-knowledge encryption options
-- **Scalability:** Keep architecture modular so heavy NLP modules can be swapped for cloud functions if datasets grow.
+  - Social features and community insights
 
