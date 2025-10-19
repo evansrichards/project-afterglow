@@ -18,6 +18,7 @@ import {
   formatExtractionSummary,
   type ExtractedFile,
 } from '@lib/upload/zip-extractor'
+import { parseExtractedFiles, type ParseResult } from '@lib/parsers'
 
 export default function UploadPage() {
   const [error, setError] = useState<string | null>(null)
@@ -28,6 +29,7 @@ export default function UploadPage() {
   const [detectedPlatform, setDetectedPlatform] = useState<'tinder' | 'hinge' | 'unknown' | null>(
     null
   )
+  const [parseResult, setParseResult] = useState<ParseResult | null>(null)
 
   const handleFileSelect = async (file: File, validationResult: FileValidationResult) => {
     console.log('File selected:', file.name, validationResult)
@@ -59,26 +61,62 @@ export default function UploadPage() {
 
         console.log('ZIP extraction summary:', formatExtractionSummary(result))
         console.log('Detected platform:', platform)
+
+        // Parse the extracted files
+        if (platform !== 'unknown') {
+          const parseResult = await parseExtractedFiles(result.files, platform)
+
+          if (!parseResult.success) {
+            setError(
+              `Failed to parse ${platform} data: ${parseResult.errors?.map((e) => e.message).join(', ')}`,
+            )
+            setIsProcessing(false)
+            return
+          }
+
+          setParseResult(parseResult)
+          console.log('Parse result:', parseResult.metadata)
+
+          if (parseResult.warnings && parseResult.warnings.length > 0) {
+            console.warn('Parse warnings:', parseResult.warnings)
+          }
+        }
       } else {
-        // For JSON files, store as-is (will be parsed in next task)
+        // For JSON files, store as-is and parse
         const content = await file.text()
-        setExtractedFiles([
+        const files = [
           {
             filename: file.name,
             content,
             extension: 'json',
             size: content.length,
           },
-        ])
-        setDetectedPlatform(validationResult.platform || 'unknown')
+        ]
+        setExtractedFiles(files)
+        const platform = validationResult.platform || 'unknown'
+        setDetectedPlatform(platform)
+
+        // Parse JSON file
+        if (platform !== 'unknown') {
+          const parseResult = await parseExtractedFiles(files, platform)
+
+          if (!parseResult.success) {
+            setError(
+              `Failed to parse ${platform} data: ${parseResult.errors?.map((e) => e.message).join(', ')}`,
+            )
+            setIsProcessing(false)
+            return
+          }
+
+          setParseResult(parseResult)
+          console.log('Parse result:', parseResult.metadata)
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to process file')
     } finally {
       setIsProcessing(false)
     }
-
-    // TODO: In next task (3.3), we'll parse the extracted files
   }
 
   const handleError = (errorMessage: string) => {
@@ -100,6 +138,7 @@ export default function UploadPage() {
     setExtractedFiles([])
     setDetectedPlatform(null)
     setIsProcessing(false)
+    setParseResult(null)
   }
 
   return (
@@ -195,14 +234,21 @@ export default function UploadPage() {
                         />
                       </svg>
                       <div>
-                        <h4 className="font-semibold text-green-900">File ready to process</h4>
+                        <h4 className="font-semibold text-green-900">
+                          {parseResult ? 'Data parsed successfully' : 'File ready to process'}
+                        </h4>
                         <p className="text-sm text-green-700">
                           {selectedFile.name}
                           {detectedPlatform && detectedPlatform !== 'unknown' && (
                             <> · Detected: {detectedPlatform}</>
                           )}
                         </p>
-                        {extractedFiles.length > 0 && (
+                        {parseResult && parseResult.metadata && (
+                          <p className="mt-1 text-sm text-green-600">
+                            Parsed {parseResult.metadata.messageCount} messages, {parseResult.metadata.matchCount} matches, {parseResult.metadata.participantCount} participants
+                          </p>
+                        )}
+                        {extractedFiles.length > 0 && !parseResult && (
                           <p className="mt-1 text-sm text-green-600">
                             Extracted {extractedFiles.length} file
                             {extractedFiles.length !== 1 ? 's' : ''}:{' '}

@@ -14,7 +14,8 @@
       "Bash(npm install jszip)",
       "Bash(npm install --save-dev @types/jszip)",
       "Bash(npm test -- --run src/lib/upload/zip-extractor.test.ts)",
-      "Bash(npm test -- --run src/pages/UploadPage.test.tsx)"
+      "Bash(npm test -- --run src/pages/UploadPage.test.tsx)",
+      "Bash(npm test -- --run src/lib/parsers/)"
     ],
     "deny": [],
     "ask": []
