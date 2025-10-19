@@ -2,7 +2,8 @@
  * AI Integration Module
  *
  * Provides OpenRouter client configuration, model selection,
- * cost tracking, and comprehensive conversation analysis.
+ * cost tracking, comprehensive conversation analysis, and
+ * AI-powered insight generation.
  */
 
 export {
@@ -44,3 +45,15 @@ export {
   type ConversationAnalysis,
   type ConversationContext,
 } from './conversation-analysis'
+
+export {
+  generateAttachmentInsight,
+  generateSafetyInsight,
+  generateCommunicationInsight,
+  generateGrowthInsights,
+  generateAIInsights,
+  generateInsightSummary,
+  filterInsightsBySeverity,
+  filterInsightsByCategory,
+  sortInsightsByPriority,
+} from './ai-insights'
