@@ -8,6 +8,7 @@ import type { DataParser, ParseResult } from './types'
 import { tinderParser } from './tinder-parser'
 import { hingeParser } from './hinge-parser'
 import { createParseError } from './types'
+import { deduplicateParticipants, normalizeTimestamp } from './normalization'
 
 /**
  * Get parser for a specific platform
@@ -53,7 +54,36 @@ export async function parseExtractedFiles(
       }
     }
 
-    return parser.parse(jsonFile.content, jsonFile.filename)
+    const result = await parser.parse(jsonFile.content, jsonFile.filename)
+
+    // Apply normalization and deduplication
+    if (result.success && result.data) {
+      result.data.participants = deduplicateParticipants(result.data.participants)
+
+      // Normalize timestamps in messages
+      result.data.messages = result.data.messages.map((msg) => ({
+        ...msg,
+        sentAt: normalizeTimestamp(msg.sentAt) || msg.sentAt,
+        reactions: msg.reactions?.map((r) => ({
+          ...r,
+          sentAt: normalizeTimestamp(r.sentAt) || r.sentAt,
+        })),
+      }))
+
+      // Normalize timestamps in matches
+      result.data.matches = result.data.matches.map((match) => ({
+        ...match,
+        createdAt: normalizeTimestamp(match.createdAt) || match.createdAt,
+        closedAt: match.closedAt ? normalizeTimestamp(match.closedAt) || match.closedAt : undefined,
+      }))
+
+      // Update participant count after deduplication
+      if (result.metadata) {
+        result.metadata.participantCount = result.data.participants.length
+      }
+    }
+
+    return result
   }
 
   // For Hinge, parse CSV files and merge results
@@ -86,7 +116,32 @@ export async function parseExtractedFiles(
     }
 
     // Merge successful results
-    return mergeParseResults(results.filter((r) => r.success), platform)
+    const merged = mergeParseResults(results.filter((r) => r.success), platform)
+
+    // Apply normalization and deduplication
+    if (merged.success && merged.data) {
+      merged.data.participants = deduplicateParticipants(merged.data.participants)
+
+      // Normalize timestamps in messages
+      merged.data.messages = merged.data.messages.map((msg) => ({
+        ...msg,
+        sentAt: normalizeTimestamp(msg.sentAt) || msg.sentAt,
+      }))
+
+      // Normalize timestamps in matches
+      merged.data.matches = merged.data.matches.map((match) => ({
+        ...match,
+        createdAt: normalizeTimestamp(match.createdAt) || match.createdAt,
+        closedAt: match.closedAt ? normalizeTimestamp(match.closedAt) || match.closedAt : undefined,
+      }))
+
+      // Update participant count after deduplication
+      if (merged.metadata) {
+        merged.metadata.participantCount = merged.data.participants.length
+      }
+    }
+
+    return merged
   }
 
   return {

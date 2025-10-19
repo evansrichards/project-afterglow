@@ -15,7 +15,10 @@
       "Bash(npm install --save-dev @types/jszip)",
       "Bash(npm test -- --run src/lib/upload/zip-extractor.test.ts)",
       "Bash(npm test -- --run src/pages/UploadPage.test.tsx)",
-      "Bash(npm test -- --run src/lib/parsers/)"
+      "Bash(npm test -- --run src/lib/parsers/)",
+      "Bash(npm install date-fns date-fns-tz)",
+      "Bash(npm test -- --run src/lib/parsers/normalization.test.ts)",
+      "Bash(node -e \"console.log(new Date(1689200473000).toISOString())\")"
     ],
     "deny": [],
     "ask": []

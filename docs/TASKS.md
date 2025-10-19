@@ -14,7 +14,7 @@
 - [x] 3.1 Implement drag-and-drop upload zone with file type/size validation and sample data links.
 - [x] 3.2 Integrate `jszip` pipeline to unzip Tinder JSON bundles and Hinge ZIP exports client-side.
 - [x] 3.3 Build schema-specific parser adapters for Tinder and Hinge that output unified `Match`, `Message`, `Participant`, `Metadata` structures.
-- [ ] 3.4 Normalize timestamps to ISO strings with `date-fns-tz` and deduplicate participant identities across files.
+- [x] 3.4 Normalize timestamps to ISO strings with `date-fns-tz` and deduplicate participant identities across files.
 - [ ] 3.5 Persist raw schema snapshots and run validation checks (required columns, message counts) with friendly error messaging.
 - [ ] 3.6 Capture unknown fields into `CustomAttribute` metadata and log schema diffs with adapter versioning.
 
