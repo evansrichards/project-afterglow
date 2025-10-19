@@ -12,6 +12,7 @@ import type {
 } from '@/types/data-model'
 import type { DataParser, ParseResult, ParseError } from './types'
 import { createParseError, createParseWarning, calculateDateRange } from './types'
+import { captureSchemaSnapshot, validateParseResult } from './validation'
 
 const PARSER_VERSION = '1.0.0'
 const USER_ID = 'user' // Hinge doesn't provide user ID, use constant
@@ -184,7 +185,12 @@ export class HingeParser implements DataParser {
       },
     ]
 
-    return {
+    // Create raw data structure for schema snapshot
+    const rawData = {
+      matches: rows.slice(1).map((row) => this.rowToObject(header, row)),
+    }
+
+    const result: ParseResult = {
       success: true,
       data: {
         participants,
@@ -199,8 +205,20 @@ export class HingeParser implements DataParser {
         matchCount: matches.length,
         participantCount: participants.length,
       },
+      schemaSnapshot: captureSchemaSnapshot(rawData, 'hinge', this.version),
       warnings: warnings.length > 0 ? warnings : undefined,
     }
+
+    // Validate parsed result
+    const resultValidation = validateParseResult(result)
+    if (resultValidation.errors.length > 0) {
+      result.errors = [...(result.errors || []), ...resultValidation.errors]
+    }
+    if (resultValidation.warnings.length > 0) {
+      result.warnings = [...(result.warnings || []), ...resultValidation.warnings]
+    }
+
+    return result
   }
 
   /**
@@ -323,7 +341,12 @@ export class HingeParser implements DataParser {
 
     const dateRange = calculateDateRange(messages)
 
-    return {
+    // Create raw data structure for schema snapshot
+    const rawData = {
+      messages: rows.slice(1).map((row) => this.rowToObject(header, row)),
+    }
+
+    const result: ParseResult = {
       success: true,
       data: {
         participants,
@@ -339,8 +362,20 @@ export class HingeParser implements DataParser {
         participantCount: participants.length,
         dateRange,
       },
+      schemaSnapshot: captureSchemaSnapshot(rawData, 'hinge', this.version),
       warnings: warnings.length > 0 ? warnings : undefined,
     }
+
+    // Validate parsed result
+    const resultValidation = validateParseResult(result)
+    if (resultValidation.errors.length > 0) {
+      result.errors = [...(result.errors || []), ...resultValidation.errors]
+    }
+    if (resultValidation.warnings.length > 0) {
+      result.warnings = [...(result.warnings || []), ...resultValidation.warnings]
+    }
+
+    return result
   }
 
   /**

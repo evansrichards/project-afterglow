@@ -12,6 +12,7 @@ import type {
 } from '@/types/data-model'
 import type { DataParser, ParseResult, ParseError } from './types'
 import { createParseError, createParseWarning, calculateDateRange } from './types'
+import { validateParseResult, validateRawSchema } from './validation'
 
 const PARSER_VERSION = '1.0.0'
 
@@ -101,14 +102,19 @@ export class TinderParser implements DataParser {
         }
       }
 
-      // Validate structure
-      const validation = this.validate(content)
-      if (!validation.valid) {
+      // Validate raw schema and capture snapshot
+      const schemaValidation = validateRawSchema(data, 'tinder')
+      if (!schemaValidation.valid) {
         return {
           success: false,
-          errors: validation.errors,
+          errors: schemaValidation.errors,
+          warnings: schemaValidation.warnings.length > 0 ? schemaValidation.warnings : undefined,
+          schemaSnapshot: schemaValidation.snapshot,
         }
       }
+
+      // Merge schema warnings into parser warnings
+      warnings.push(...schemaValidation.warnings)
 
       // Extract user ID
       const userId = data.user?._id || 'unknown_user'
@@ -163,7 +169,7 @@ export class TinderParser implements DataParser {
       // Calculate metadata
       const dateRange = calculateDateRange(messages)
 
-      return {
+      const result: ParseResult = {
         success: true,
         data: {
           participants: Array.from(participantMap.values()),
@@ -179,9 +185,21 @@ export class TinderParser implements DataParser {
           participantCount: participantMap.size,
           dateRange,
         },
+        schemaSnapshot: schemaValidation.snapshot,
         errors: errors.length > 0 ? errors : undefined,
         warnings: warnings.length > 0 ? warnings : undefined,
       }
+
+      // Validate parsed result
+      const resultValidation = validateParseResult(result)
+      if (resultValidation.errors.length > 0) {
+        result.errors = [...(result.errors || []), ...resultValidation.errors]
+      }
+      if (resultValidation.warnings.length > 0) {
+        result.warnings = [...(result.warnings || []), ...resultValidation.warnings]
+      }
+
+      return result
     } catch (err) {
       return {
         success: false,

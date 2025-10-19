@@ -11,6 +11,36 @@ import type {
 } from '@/types/data-model'
 
 /**
+ * Schema snapshot - captures observed fields in raw data for auditing
+ */
+export interface SchemaSnapshot {
+  platform: Platform
+  capturedAt: string
+  version: string
+  entities: {
+    matches?: {
+      observedFields: string[]
+      sampleCount: number
+      requiredFields: string[]
+      missingFields?: string[]
+    }
+    messages?: {
+      observedFields: string[]
+      sampleCount: number
+      requiredFields: string[]
+      missingFields?: string[]
+    }
+    profiles?: {
+      observedFields: string[]
+      sampleCount: number
+      requiredFields: string[]
+      missingFields?: string[]
+    }
+  }
+  unknownFields: Record<string, string[]> // entity -> field names
+}
+
+/**
  * Result of parsing operation
  */
 export interface ParseResult {
@@ -32,6 +62,7 @@ export interface ParseResult {
       latest: string
     }
   }
+  schemaSnapshot?: SchemaSnapshot
   errors?: ParseError[]
   warnings?: ParseWarning[]
 }

@@ -42,7 +42,7 @@ describe('UploadPage - ZIP Integration', () => {
     // Wait for success message (processing may be too fast to catch)
     await waitFor(
       () => {
-        expect(screen.getByText(/file ready to process/i)).toBeInTheDocument()
+        expect(screen.getByText(/data parsed successfully|file ready to process/i)).toBeInTheDocument()
       },
       { timeout: 3000 },
     )
@@ -144,10 +144,10 @@ describe('UploadPage - ZIP Integration', () => {
     const fileInput = screen.getByLabelText(/upload file/i)
     await user.upload(fileInput, zipFile)
 
-    // Wait for success
+    // Wait for success - file is parsed now, so message changes
     await waitFor(
       () => {
-        expect(screen.getByText(/file ready to process/i)).toBeInTheDocument()
+        expect(screen.getByText(/data parsed successfully|file ready to process/i)).toBeInTheDocument()
       },
       { timeout: 3000 },
     )
@@ -175,7 +175,7 @@ describe('UploadPage - ZIP Integration', () => {
 
     await waitFor(
       () => {
-        expect(screen.getByText(/file ready to process/i)).toBeInTheDocument()
+        expect(screen.getByText(/data parsed successfully|file ready to process/i)).toBeInTheDocument()
       },
       { timeout: 3000 },
     )
@@ -201,7 +201,7 @@ describe('UploadPage - ZIP Integration', () => {
     // Wait for completion (processing may be too fast to test reliably in sync tests)
     await waitFor(
       () => {
-        expect(screen.getByText(/file ready to process/i)).toBeInTheDocument()
+        expect(screen.getByText(/data parsed successfully|file ready to process/i)).toBeInTheDocument()
       },
       { timeout: 3000 },
     )
@@ -222,7 +222,7 @@ describe('UploadPage - ZIP Integration', () => {
 
     await waitFor(
       () => {
-        expect(screen.getByText(/file ready to process/i)).toBeInTheDocument()
+        expect(screen.getByText(/data parsed successfully|file ready to process/i)).toBeInTheDocument()
       },
       { timeout: 3000 },
     )
