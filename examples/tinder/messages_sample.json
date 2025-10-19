@@ -1,0 +1,89 @@
+{
+  "data_creation": "2023-09-01T00:00:00.000Z",
+  "messages": [
+    {
+      "_id": "msg_001",
+      "match_id": "match_100",
+      "sent_date": "2023-07-12T22:41:13.000Z",
+      "message": "Hey! You look familiar—have we met at the climbing gym?",
+      "from": "user_abc",
+      "to": "match_xyz",
+      "liked": false,
+      "reactions": []
+    },
+    {
+      "_id": "msg_002",
+      "match_id": "match_100",
+      "sent_date": "2023-07-12T22:44:02.000Z",
+      "message": "Haha maybe! I'm there Tuesdays. I'm Mia :)",
+      "from": "match_xyz",
+      "to": "user_abc",
+      "liked": true,
+      "reactions": [
+        {
+          "emoji": "😊",
+          "actor": "user_abc",
+          "sent_date": "2023-07-12T22:44:05.000Z"
+        }
+      ]
+    },
+    {
+      "_id": "msg_003",
+      "match_id": "match_101",
+      "sent_date": "2023-06-01T03:11:09.000Z",
+      "message": "I'm not really into messaging here, let's grab a drink tonight.",
+      "from": "match_uvw",
+      "to": "user_abc",
+      "liked": false,
+      "reactions": []
+    }
+  ],
+  "matches": [
+    {
+      "_id": "match_100",
+      "person": {
+        "_id": "match_xyz",
+        "name": "Mia",
+        "birth_date": "1991-05-22T00:00:00.000Z",
+        "gender": 1,
+        "bio": "Product designer. Fluent in memes and matcha.",
+        "jobs": [
+          { "company": { "name": "Bright Labs" }, "title": { "name": "Design Lead" } }
+        ],
+        "schools": [
+          { "name": "Parsons" }
+        ]
+      },
+      "created_date": "2023-07-11T15:05:33.000Z",
+      "last_activity_date": "2023-07-12T22:44:05.000Z",
+      "is_super_like": false,
+      "is_boost_match": false,
+      "is_tutorial": false,
+      "closed": false
+    },
+    {
+      "_id": "match_101",
+      "person": {
+        "_id": "match_uvw",
+        "name": "Alex",
+        "birth_date": "1990-10-12T00:00:00.000Z",
+        "gender": 0,
+        "bio": "Marketing consultant. Always traveling.",
+        "jobs": [],
+        "schools": []
+      },
+      "created_date": "2023-05-29T20:18:01.000Z",
+      "last_activity_date": "2023-06-01T03:11:09.000Z",
+      "is_super_like": true,
+      "is_boost_match": false,
+      "is_tutorial": false,
+      "closed": true
+    }
+  ],
+  "user": {
+    "_id": "user_abc",
+    "bio": "Recovering overthinker. Here for connection.",
+    "gender": 1,
+    "birth_date": "1992-03-08T00:00:00.000Z"
+  }
+}

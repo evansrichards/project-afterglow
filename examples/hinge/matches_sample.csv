@@ -1,0 +1,4 @@
+match_id,conversation_id,matched_at,match_origin,match_type,match_status,profile_name,profile_age,profile_location,icebreaker_sent
+match_001,conv_001,2023-07-14T19:20:55Z,discover,like,open,Jordan,31,Brooklyn NY,true
+match_002,conv_002,2023-08-02T02:10:03Z,standouts,rose,open,Morgan,34,Queens NY,false
+match_003,conv_003,2023-04-19T15:58:11Z,discover,like,closed,Jamie,33,Jersey City NJ,true
