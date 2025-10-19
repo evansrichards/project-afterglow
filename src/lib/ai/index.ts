@@ -2,7 +2,7 @@
  * AI Integration Module
  *
  * Provides OpenRouter client configuration, model selection,
- * cost tracking, and AI request utilities.
+ * cost tracking, and comprehensive conversation analysis.
  */
 
 export {
@@ -26,3 +26,21 @@ export {
   getOpenRouterAppName,
   isOpenRouterConfigured,
 } from './config'
+
+export {
+  prepareConversationContext,
+  analyzeAttachmentStyle,
+  analyzeRedFlags,
+  analyzeCommunicationStrength,
+  generateGrowthOpportunities,
+  analyzeConversation,
+  type AttachmentStyle,
+  type AttachmentAnalysis,
+  type RedFlagSeverity,
+  type RedFlagCategory,
+  type RedFlagAnalysis,
+  type CommunicationStrength,
+  type GrowthOpportunity,
+  type ConversationAnalysis,
+  type ConversationContext,
+} from './conversation-analysis'
