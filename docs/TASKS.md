@@ -11,7 +11,7 @@
 - [x] 2.3 Set up IndexedDB access utilities (using `idb`) and persistent state management strategy.
 
 ## 3. Data Ingestion & Normalization
-- [ ] 3.1 Implement drag-and-drop upload zone with file type/size validation and sample data links.
+- [x] 3.1 Implement drag-and-drop upload zone with file type/size validation and sample data links.
 - [ ] 3.2 Integrate `jszip` pipeline to unzip Tinder JSON bundles and Hinge ZIP exports client-side.
 - [ ] 3.3 Build schema-specific parser adapters for Tinder and Hinge that output unified `Match`, `Message`, `Participant`, `Metadata` structures.
 - [ ] 3.4 Normalize timestamps to ISO strings with `date-fns-tz` and deduplicate participant identities across files.

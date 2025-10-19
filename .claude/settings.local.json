@@ -9,7 +9,8 @@
       "Bash(tree -L 3 -I 'node_modules|dist|.git' /Users/evanrichards/Code/project-afterglow)",
       "Bash(npm test -- --run)",
       "Bash(npm run format)",
-      "Bash(npm test -- --run src/lib/db/queries.test.ts)"
+      "Bash(npm test -- --run src/lib/db/queries.test.ts)",
+      "Bash(npm test -- --run src/lib/upload/validation.test.ts src/components/upload/FileUploadZone.test.tsx)"
     ],
     "deny": [],
     "ask": []

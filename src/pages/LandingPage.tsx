@@ -2,7 +2,11 @@ import Header from '@components/layout/Header'
 import Footer from '@components/layout/Footer'
 import Container from '@components/layout/Container'
 
-export default function LandingPage() {
+export interface LandingPageProps {
+  onNavigate?: () => void
+}
+
+export default function LandingPage({ onNavigate }: LandingPageProps) {
   return (
     <div className="flex min-h-screen flex-col">
       <Header variant="transparent" />
@@ -22,8 +26,12 @@ export default function LandingPage() {
             </p>
 
             <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row">
-              <button className="btn-primary px-8 py-4 text-lg">Get Started — It's Free</button>
-              <button className="btn-ghost px-8 py-4 text-lg">Try Sample Data First</button>
+              <button onClick={onNavigate} className="btn-primary px-8 py-4 text-lg">
+                Get Started — It's Free
+              </button>
+              <button onClick={onNavigate} className="btn-ghost px-8 py-4 text-lg">
+                Try Sample Data First
+              </button>
             </div>
 
             {/* Privacy reassurance */}
@@ -284,7 +292,10 @@ export default function LandingPage() {
             </p>
 
             <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row">
-              <button className="btn bg-white px-8 py-4 text-lg text-afterglow-600 shadow-soft-lg hover:bg-warm-50">
+              <button
+                onClick={onNavigate}
+                className="btn bg-white px-8 py-4 text-lg text-afterglow-600 shadow-soft-lg hover:bg-warm-50"
+              >
                 Start Your Reflection
               </button>
             </div>
