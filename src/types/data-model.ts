@@ -25,6 +25,7 @@ export interface ParticipantProfile {
   prompts?: Array<{ title: string; response: string }>
   traits?: string[] // derived (e.g., job titles, schools)
   isUser: boolean
+  attributes?: Record<string, CustomAttributeValue> // unknown fields from source data
   raw?: RawRecord // optional pointer to source
 }
 
@@ -51,6 +52,7 @@ export interface NormalizedMessage {
   promptContext?: { title?: string; response?: string }
   reactions?: Array<{ emoji: string; actorId: string; sentAt: string }>
   attachments?: Array<{ type: 'image' | 'video' | 'voice' | 'link'; url?: string }>
+  attributes?: Record<string, CustomAttributeValue> // unknown fields from source data
   raw?: RawRecord
 }
 

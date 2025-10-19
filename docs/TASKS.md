@@ -16,7 +16,7 @@
 - [x] 3.3 Build schema-specific parser adapters for Tinder and Hinge that output unified `Match`, `Message`, `Participant`, `Metadata` structures.
 - [x] 3.4 Normalize timestamps to ISO strings with `date-fns-tz` and deduplicate participant identities across files.
 - [x] 3.5 Persist raw schema snapshots and run validation checks (required columns, message counts) with friendly error messaging.
-- [ ] 3.6 Capture unknown fields into `CustomAttribute` metadata and log schema diffs with adapter versioning.
+- [x] 3.6 Capture unknown fields into `CustomAttribute` metadata and log schema diffs with adapter versioning.
 
 ## 4. Unified Data Model & Storage
 - [ ] 4.1 Implement TypeScript interfaces for normalized data (participants, matches, messages, raw records, field mappings).

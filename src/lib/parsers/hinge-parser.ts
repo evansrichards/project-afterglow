@@ -12,7 +12,7 @@ import type {
 } from '@/types/data-model'
 import type { DataParser, ParseResult, ParseError } from './types'
 import { createParseError, createParseWarning, calculateDateRange } from './types'
-import { captureSchemaSnapshot, validateParseResult } from './validation'
+import { captureSchemaSnapshot, validateParseResult, extractUnknownFields } from './validation'
 
 const PARSER_VERSION = '1.0.0'
 const USER_ID = 'user' // Hinge doesn't provide user ID, use constant
@@ -126,6 +126,10 @@ export class HingeParser implements DataParser {
 
         // Create match participant
         if (!participantIds.has(matchPersonId)) {
+          // Known participant fields
+          const knownParticipantFields = ['profile_name', 'profile_age', 'profile_location']
+          const participantAttributes = extractUnknownFields(matchData, knownParticipantFields)
+
           participants.push({
             id: matchPersonId,
             platform: 'hinge',
@@ -133,6 +137,7 @@ export class HingeParser implements DataParser {
             age: matchData.profile_age ? parseInt(matchData.profile_age, 10) : undefined,
             location: matchData.profile_location,
             isUser: false,
+            attributes: participantAttributes,
           })
           participantIds.add(matchPersonId)
         }
@@ -146,6 +151,21 @@ export class HingeParser implements DataParser {
           else if (statusLower === 'expired') status = 'expired'
         }
 
+        // Known match fields
+        const knownMatchFields = [
+          'match_id',
+          'conversation_id',
+          'matched_at',
+          'match_type',
+          'match_origin',
+          'match_status',
+          'icebreaker_sent',
+          'profile_name',
+          'profile_age',
+          'profile_location',
+        ]
+        const unknownAttrs = extractUnknownFields(matchData, knownMatchFields)
+
         matches.push({
           id: matchId,
           platform: 'hinge',
@@ -156,6 +176,7 @@ export class HingeParser implements DataParser {
           attributes: {
             conversation_id: matchData.conversation_id,
             icebreaker_sent: matchData.icebreaker_sent === 'true',
+            ...unknownAttrs,
           },
           raw: {
             platform: 'hinge',
@@ -293,6 +314,21 @@ export class HingeParser implements DataParser {
           }
         }
 
+        // Known message fields
+        const knownMessageFields = [
+          'match_id',
+          'conversation_id',
+          'sent_at',
+          'message_text',
+          'sender_role',
+          'sender_name',
+          'recipient_name',
+          'delivery_status',
+          'prompt_title',
+          'prompt_response',
+        ]
+        const messageAttributes = extractUnknownFields(msgData, knownMessageFields)
+
         messages.push({
           id: messageId,
           matchId,
@@ -302,6 +338,7 @@ export class HingeParser implements DataParser {
           direction: isUserMessage ? 'user' : 'match',
           delivery,
           promptContext,
+          attributes: messageAttributes,
           raw: {
             platform: 'hinge',
             entity: 'message',

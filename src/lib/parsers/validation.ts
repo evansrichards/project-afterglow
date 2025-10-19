@@ -86,6 +86,173 @@ function getFriendlyMessage(code: string, context?: Record<string, unknown>): st
 }
 
 /**
+ * Extract unknown fields from raw data into CustomAttribute format
+ */
+export function extractUnknownFields(
+  rawData: Record<string, unknown>,
+  knownFields: string[],
+): Record<string, string | number | boolean | null | string[] | number[]> | undefined {
+  const unknownFields: Record<string, string | number | boolean | null | string[] | number[]> = {}
+
+  for (const [key, value] of Object.entries(rawData)) {
+    if (knownFields.includes(key)) continue
+
+    // Convert value to CustomAttributeValue type
+    if (value === null) {
+      unknownFields[key] = null
+    } else if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+      unknownFields[key] = value
+    } else if (Array.isArray(value)) {
+      // Check if array contains only strings or numbers
+      const allStrings = value.every((v) => typeof v === 'string')
+      const allNumbers = value.every((v) => typeof v === 'number')
+
+      if (allStrings) {
+        unknownFields[key] = value as string[]
+      } else if (allNumbers) {
+        unknownFields[key] = value as number[]
+      } else {
+        // Mixed or complex array - convert to JSON string
+        unknownFields[key] = JSON.stringify(value)
+      }
+    } else if (typeof value === 'object') {
+      // Complex object - convert to JSON string
+      unknownFields[key] = JSON.stringify(value)
+    }
+  }
+
+  return Object.keys(unknownFields).length > 0 ? unknownFields : undefined
+}
+
+/**
+ * Schema diff - represents changes between schema versions
+ */
+export interface SchemaDiff {
+  platform: Platform
+  fromVersion: string
+  toVersion: string
+  timestamp: string
+  changes: {
+    messages?: {
+      addedFields: string[]
+      removedFields: string[]
+      changedFields: string[]
+    }
+    matches?: {
+      addedFields: string[]
+      removedFields: string[]
+      changedFields: string[]
+    }
+    profiles?: {
+      addedFields: string[]
+      removedFields: string[]
+      changedFields: string[]
+    }
+  }
+}
+
+/**
+ * Compare two schema snapshots and generate a diff
+ */
+export function compareSchemas(
+  oldSnapshot: SchemaSnapshot | undefined,
+  newSnapshot: SchemaSnapshot,
+): SchemaDiff | null {
+  if (!oldSnapshot || oldSnapshot.platform !== newSnapshot.platform) {
+    return null
+  }
+
+  const diff: SchemaDiff = {
+    platform: newSnapshot.platform,
+    fromVersion: oldSnapshot.version,
+    toVersion: newSnapshot.version,
+    timestamp: new Date().toISOString(),
+    changes: {},
+  }
+
+  let hasChanges = false
+
+  // Compare messages
+  if (oldSnapshot.entities.messages || newSnapshot.entities.messages) {
+    const oldFields = new Set(oldSnapshot.entities.messages?.observedFields || [])
+    const newFields = new Set(newSnapshot.entities.messages?.observedFields || [])
+
+    const addedFields = Array.from(newFields).filter((f) => !oldFields.has(f))
+    const removedFields = Array.from(oldFields).filter((f) => !newFields.has(f))
+
+    if (addedFields.length > 0 || removedFields.length > 0) {
+      diff.changes.messages = {
+        addedFields,
+        removedFields,
+        changedFields: [],
+      }
+      hasChanges = true
+    }
+  }
+
+  // Compare matches
+  if (oldSnapshot.entities.matches || newSnapshot.entities.matches) {
+    const oldFields = new Set(oldSnapshot.entities.matches?.observedFields || [])
+    const newFields = new Set(newSnapshot.entities.matches?.observedFields || [])
+
+    const addedFields = Array.from(newFields).filter((f) => !oldFields.has(f))
+    const removedFields = Array.from(oldFields).filter((f) => !newFields.has(f))
+
+    if (addedFields.length > 0 || removedFields.length > 0) {
+      diff.changes.matches = {
+        addedFields,
+        removedFields,
+        changedFields: [],
+      }
+      hasChanges = true
+    }
+  }
+
+  // Compare profiles
+  if (oldSnapshot.entities.profiles || newSnapshot.entities.profiles) {
+    const oldFields = new Set(oldSnapshot.entities.profiles?.observedFields || [])
+    const newFields = new Set(newSnapshot.entities.profiles?.observedFields || [])
+
+    const addedFields = Array.from(newFields).filter((f) => !oldFields.has(f))
+    const removedFields = Array.from(oldFields).filter((f) => !newFields.has(f))
+
+    if (addedFields.length > 0 || removedFields.length > 0) {
+      diff.changes.profiles = {
+        addedFields,
+        removedFields,
+        changedFields: [],
+      }
+      hasChanges = true
+    }
+  }
+
+  return hasChanges ? diff : null
+}
+
+/**
+ * Log schema diff to console for debugging
+ */
+export function logSchemaDiff(diff: SchemaDiff): void {
+  console.group(
+    `[Schema Diff] ${diff.platform} v${diff.fromVersion} → v${diff.toVersion} (${diff.timestamp})`,
+  )
+
+  Object.entries(diff.changes).forEach(([entity, changes]) => {
+    if (changes.addedFields.length > 0) {
+      console.log(`✨ ${entity}: Added fields:`, changes.addedFields)
+    }
+    if (changes.removedFields.length > 0) {
+      console.warn(`⚠️  ${entity}: Removed fields:`, changes.removedFields)
+    }
+    if (changes.changedFields.length > 0) {
+      console.log(`🔄 ${entity}: Changed fields:`, changes.changedFields)
+    }
+  })
+
+  console.groupEnd()
+}
+
+/**
  * Capture schema snapshot from raw data
  */
 export function captureSchemaSnapshot(

@@ -12,7 +12,7 @@ import type {
 } from '@/types/data-model'
 import type { DataParser, ParseResult, ParseError } from './types'
 import { createParseError, createParseWarning, calculateDateRange } from './types'
-import { validateParseResult, validateRawSchema } from './validation'
+import { validateParseResult, validateRawSchema, extractUnknownFields } from './validation'
 
 const PARSER_VERSION = '1.0.0'
 
@@ -296,6 +296,12 @@ export class TinderParser implements DataParser {
       }
     }
 
+    // Known fields that are mapped to normalized structure
+    const knownFields = ['_id', 'name', 'birth_date', 'gender', 'bio', 'jobs', 'schools']
+
+    // Extract unknown fields into attributes
+    const attributes = extractUnknownFields(person as unknown as Record<string, unknown>, knownFields)
+
     return {
       id: person._id,
       platform: 'tinder',
@@ -304,6 +310,7 @@ export class TinderParser implements DataParser {
       genderLabel: person.gender !== undefined ? this.parseGender(person.gender) : undefined,
       traits: traits.length > 0 ? traits : undefined,
       isUser: false,
+      attributes,
       raw: {
         platform: 'tinder',
         entity: 'profile',
@@ -323,6 +330,29 @@ export class TinderParser implements DataParser {
     matchPersonId: string,
     source: string,
   ): MatchContext {
+    // Known fields that are mapped to normalized structure
+    const knownFields = [
+      '_id',
+      'person',
+      'created_date',
+      'last_activity_date',
+      'is_super_like',
+      'is_boost_match',
+      'is_tutorial',
+      'closed',
+    ]
+
+    // Extract unknown fields into attributes
+    const unknownAttrs = extractUnknownFields(match as unknown as Record<string, unknown>, knownFields)
+
+    // Combine known attributes with unknown fields
+    const attributes = {
+      is_super_like: match.is_super_like ?? false,
+      is_boost_match: match.is_boost_match ?? false,
+      is_tutorial: match.is_tutorial ?? false,
+      ...unknownAttrs,
+    }
+
     return {
       id: match._id,
       platform: 'tinder',
@@ -331,11 +361,7 @@ export class TinderParser implements DataParser {
       origin: match.is_super_like ? 'super-like' : match.is_boost_match ? 'boost' : 'like',
       status: match.closed ? 'closed' : 'active',
       participants: [userId, matchPersonId],
-      attributes: {
-        is_super_like: match.is_super_like ?? false,
-        is_boost_match: match.is_boost_match ?? false,
-        is_tutorial: match.is_tutorial ?? false,
-      },
+      attributes,
       raw: {
         platform: 'tinder',
         entity: 'match',
@@ -350,6 +376,21 @@ export class TinderParser implements DataParser {
    * Parse message
    */
   private parseMessage(msg: TinderMessage, userId: string, source: string): NormalizedMessage {
+    // Known fields that are mapped to normalized structure
+    const knownFields = [
+      '_id',
+      'match_id',
+      'sent_date',
+      'message',
+      'from',
+      'to',
+      'liked',
+      'reactions',
+    ]
+
+    // Extract unknown fields into attributes
+    const attributes = extractUnknownFields(msg as unknown as Record<string, unknown>, knownFields)
+
     return {
       id: msg._id,
       matchId: msg.match_id,
@@ -365,6 +406,7 @@ export class TinderParser implements DataParser {
               sentAt: r.sent_date,
             }))
           : undefined,
+      attributes,
       raw: {
         platform: 'tinder',
         entity: 'message',
