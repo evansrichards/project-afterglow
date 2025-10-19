@@ -3,7 +3,7 @@
 ## 1. Product & Experience Foundations
 - [x] 1.1 Finalize tone/brand guidelines and copy pillars for warm, validating voice across UI (per PRD).
 - [x] 1.2 Draft landing page content covering value proposition, privacy assurances, and upload instructions.
-- [ ] 1.3 Define MVP success metrics dashboard (onboarding completion, deep-dive engagement, reflection notes, NPS).
+- [x] 1.3 Define MVP success metrics dashboard (onboarding completion, deep-dive engagement, reflection notes, NPS).
 
 ## 2. Project Setup & Infrastructure
 - [ ] 2.1 Scaffold React + TypeScript + Vite frontend with Tailwind CSS theme aligned to brand.
