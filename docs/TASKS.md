@@ -25,26 +25,34 @@
 
 ## 5. Basic Analytics Pipeline (MVP Scope)
 - [x] 5.1 Build simple message processing utilities for sanitized data (basic cleanup, timestamp extraction, message counting).
-- [ ] 5.2 Implement 3 core metrics calculations:
+- [x] 5.2 Implement 3 core metrics calculations:
   - Message volume balance (ratio of user to match messages per conversation)
   - Response timing patterns (average response times between exchanges)
   - Conversation length distribution (number of messages per conversation)
 - [ ] 5.3 Create basic pattern recognition for message imbalances and timing categories.
 - [ ] 5.4 Generate simple insights with friendly summaries and sanitized examples.
 
-## 6. Simple Insight Layer & Basic Charts (MVP Scope)
-- [ ] 6.1 Design basic insight card component with title, simple metric, gentle observation, and encouraging note.
-- [ ] 6.2 Implement simple visualizations using `recharts`:
-  - Bar chart showing message counts per conversation
-  - Basic timeline of response frequency
-  - Simple distribution of conversation lengths
-- [ ] 6.3 Build straightforward dashboard layout showing cards and charts.
-- [ ] 6.4 Add local data management with simple clear data toggle.
+## 6. Minimal Dashboard (Email-First Approach)
+- [ ] 6.1 Design high-level statistics overview (total matches, messages, conversations).
+- [ ] 6.2 Create prominent "Email Insights Status" card showing:
+  - Next delivery date (First Tuesday)
+  - Email preferences toggle
+  - Subscription status
+- [ ] 6.3 Build 2-3 basic starter insights to demonstrate value immediately.
+- [ ] 6.4 Add data management controls (clear data, pause insights).
 
 ## 7. Post-MVP: Reflection Workspace & Recap (Phase 3)
 - [ ] 7.1 Implement rich-text reflection workspace with guided prompts and local persistence.
 - [ ] 7.2 Enable export of recap (PDF via `react-pdf`) summarizing insights and user notes.
 - [ ] 7.3 Add gentle wrap-up flow allowing note saving, recap download, and optional future check-ins.
+
+## 7. Email System & Monthly Insights (Core MVP Feature)
+- [ ] 7.1 Build email verification system requiring verified email before data upload
+- [ ] 7.2 Create email template system for monthly insight delivery
+- [ ] 7.3 Implement "First Tuesday" scheduling system for consistent monthly delivery
+- [ ] 7.4 Build user email preference management (pause/resume insights)
+- [ ] 7.5 Create first 2-3 insight types that can be applied to any user's static data
+- [ ] 7.6 Set up email delivery infrastructure (SendGrid/Mailgun integration)
 
 ## 8. Privacy & Security (Simplified MVP Strategy)
 - [x] 8.1 Update landing page with privacy-focused copy and interactive PII demo component
@@ -52,19 +60,16 @@
 - [ ] 8.3 Build client-side PII sanitization pipeline with regex detection for emails, phones, names, locations
 - [ ] 8.4 Create contextual redaction system using typed placeholders ([PERSON], [PLACE], [EMAIL], [WORKPLACE])
 - [ ] 8.5 Implement auto-sanitization summary display showing removal counts by type
-- [ ] 8.6 Add simple "Stay local only" vs "Sync sanitized data" toggle
-- [ ] 8.7 Create basic manual override: text input for custom words to redact
-- [ ] 8.8 Add anonymous authentication options (Sign in with Apple, magic links)
-- [ ] 8.9 Build cloud storage for sanitized data only with encryption at rest and automatic expiration
-- [ ] 8.10 Provide instant data purge control that clears IndexedDB and remote records
-- [ ] 8.11 Open-source PII detection code for user audit and transparency
+- [ ] 8.6 Require email verification before allowing data upload
+- [ ] 8.7 Build cloud storage for sanitized data linked to verified email accounts
+- [ ] 8.8 Provide data purge control that clears cloud records and cancels insight emails
 
-## 9. Cloud Sync with PII Sanitization
-- [ ] 9.1 Set up Supabase Edge Functions and Postgres schema for sanitized data storage
-- [ ] 9.2 Implement opt-in cloud sync toggle with clear privacy messaging
-- [ ] 9.3 Build upload flow: sanitize → show summary → user toggle → encrypt → upload sanitized data only
-- [ ] 9.4 Implement Row Level Security policies and user data isolation
-- [ ] 9.5 Add sync orchestration with offline-first approach and conflict handling
+## 9. Email-Linked Data Storage
+- [ ] 9.1 Set up Supabase schema for sanitized data linked to verified email accounts
+- [ ] 9.2 Implement automatic cloud storage after data sanitization (no opt-in needed)
+- [ ] 9.3 Build upload flow: email verification → sanitize → show summary → store for monthly insights
+- [ ] 9.4 Implement Row Level Security policies isolating data by email/user ID
+- [ ] 9.5 Create data retention policies and user-initiated deletion flows
 
 ## 10. Analytics & Telemetry
 - [ ] 10.1 Integrate privacy-friendly analytics (self-hosted Plausible) capturing anonymized events only.
@@ -79,10 +84,11 @@
 - [ ] 11.5 Basic deployment validation and smoke tests.
 
 ## 12. MVP Launch Preparation
-- [ ] 12.1 Create basic documentation for setup and PII sanitization process.
-- [ ] 12.2 Set up deployment pipeline to Netlify or Vercel with Supabase integration.
-- [ ] 12.3 Create simple privacy policy reflecting MVP data handling approach.
-- [ ] 12.4 Basic error monitoring and logging setup.
+- [ ] 12.1 Create basic documentation for setup and email-first approach.
+- [ ] 12.2 Set up deployment pipeline to Netlify or Vercel with email system integration.
+- [ ] 12.3 Create privacy policy reflecting email-linked data storage and monthly insights.
+- [ ] 12.4 Set up email deliverability monitoring and engagement tracking.
+- [ ] 12.5 Prepare first month's insight email template and schedule first delivery.
 
 ## Post-MVP: Advanced Features & Quality (Phase 2+)
 - [ ] Advanced NLP Pipeline: Add `wink-nlp`, sentiment analysis, and sophisticated pattern detection

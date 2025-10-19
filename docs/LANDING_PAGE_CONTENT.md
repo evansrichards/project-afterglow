@@ -1,24 +1,24 @@
 # Landing Page Content Outline
 
 ## Hero
-- **Headline:** "Turn your dating chats into insights that cheer you on."
-- **Subheadline:** "Project Afterglow transforms Tinder and Hinge exports into a warm reflection space that highlights your strengths, spots gentle growth edges, and protects your privacy every step of the way."
-- **Primary CTA Button:** "Upload your data"
+- **Headline:** "Your emotional bodyguard for dating."
+- **Subheadline:** "Upload your dating history once, get fresh insights about your patterns every month. Project Afterglow protects you from toxic behaviors while gently reflecting your growth opportunities."
+- **Primary CTA Button:** "Get my first insights"
 - **Secondary CTA Link:** "Try the privacy demo"
 - **Tertiary CTA Link:** "Browse a sample first"
-- **Supporting Note:** "PII stripped client-side. Optional encrypted sync. Clear data anytime."
+- **Supporting Note:** "Monthly insights delivered every First Tuesday. Email required. Privacy-first approach."
 
 ## Social Proof / Reassurance Ribbon
 - "Designed with therapists and mindful daters to celebrate what’s working and soften the sticky spots."
 - Include subtle trust indicators (e.g., icons for "Local Processing", "You’re in Control", "Compassionate Insights").
 
 ## Value Proposition Section
-- **Section Title:** "See your dating story with more kindness"
-- **Intro Paragraph:** "Instead of endless scrolling through old chats, Afterglow gathers the patterns that help you feel confident about how you show up."
+- **Section Title:** "Your emotional bodyguard & gentle mirror"
+- **Intro Paragraph:** "Get fresh insights about your dating patterns every month, delivered via email. Each analysis applies new research and algorithms to your data."
 - **Three Pillars:**
-  1. **Celebrate your strengths.** "Spot the moments where curiosity, humor, or clear boundaries moved conversations forward."
-  2. **Understand your rhythms.** "Visualize response tempo, conversation arcs, and when you’re carrying the energy solo."
-  3. **Try gentle experiments.** "Get reflection prompts that invite small tweaks—never prescriptions or judgment."
+  1. **Stay safe from toxic patterns.** "Identify red flags, manipulation tactics, and boundary violations you might have missed."
+  2. **Discover your authentic strengths.** "See when you're most genuine, what conversation styles work for you, and how you naturally connect."
+  3. **Evolve with monthly insights.** "Every First Tuesday, receive new discoveries about your static data as our analysis gets more sophisticated."
 
 ## Privacy & Data Security Section
 - **Section Title:** "See exactly how we protect your privacy"
@@ -50,11 +50,11 @@
 - **No Analytics on Content:** "We track usage patterns (like 'insight viewed') but never message content"
 
 ## How It Works Section
-- **Section Title:** "Upload, explore, reflect"
-- **Step 1:** "Gather your export. Download your Tinder JSON bundle or Hinge ZIP from the app’s privacy center."
-- **Step 2:** "Drag and drop the file into Afterglow. We’ll guide you through a friendly checklist and offer a sample file if you’d like to practice first."
-- **Step 3:** "Review your insights. See momentum snapshots, emotional cues, and conversation highlights ready for reflection."
-- **Step 4:** "Capture takeaways. Save notes for yourself or export a recap when you’re ready to wrap up."
+- **Section Title:** "Upload once, discover monthly"
+- **Step 1:** "Verify your email. We'll send your insights here every First Tuesday."
+- **Step 2:** "Upload your export. Download your Tinder JSON bundle or Hinge ZIP from the app's privacy center and drag it into Afterglow."
+- **Step 3:** "Get instant basics. See your conversation patterns immediately with high-level statistics and starter insights."
+- **Step 4:** "Anticipate monthly discoveries. Every month, we apply new analytical lenses to your data and email you fresh insights about patterns you couldn't see before."
 
 ## Upload Instructions Detail
 - **Supported Formats:** "Tinder JSON export (.json or .zip) and Hinge data export (.zip)."
@@ -64,20 +64,23 @@
   - "Need a practice run? Download the sample data set to see the experience before sharing your own."
 - **Troubleshooting Note:** "If something looks off, the upload log points out missing fields and how to try again without losing your data."
 
-## Reflection Invitation Section
-- **Section Title:** "Let’s notice the bright spots"
-- **Paragraph:** "Afterglow’s insights are designed to leave you encouraged. Wrap up each session by jotting what energized you, what you want to try next, and any boundaries you want to honor moving forward."
-- **CTA Button:** "Start your reflection"
+## Email Insight Preview Section
+- **Section Title:** "Every First Tuesday in your inbox"
+- **Paragraph:** "Join thousands of people discovering new patterns in their dating life. Each month brings fresh insights as our analysis evolves—attachment styles, communication strengths, red flag detection, and more."
+- **Sample Insight Preview:** Mock email template showing "This month: Your Conversation Starter Analysis"
+- **CTA Button:** "Get my monthly insights"
 
 ## FAQ Preview
-- **Q:** "Do you store my dating data?"
-  - **A:** "Raw messages never leave your device. If you choose cloud sync, only PII-stripped data is uploaded with encryption."
+- **Q:** "How often do I get insights?"
+  - **A:** "Every First Tuesday of the month. We apply new analytical frameworks to your existing data and email you fresh discoveries."
+- **Q:** "Do I need to keep uploading new data?"
+  - **A:** "No! Upload once and get insights forever. Each month reveals new patterns in your static dating history."
 - **Q:** "Can I see how PII protection works before uploading?"
   - **A:** "Yes—try our interactive demo above or load the sample export to see the full experience."
-- **Q:** "What if I don't trust your PII detection?"
-  - **A:** "Review every redaction before syncing. Choose local-only mode, or manually redact additional content. Our detection code is open source."
+- **Q:** "What if I want to stop receiving insights?"
+  - **A:** "You can pause or cancel anytime from your dashboard, or click unsubscribe in any email."
 - **Q:** "Which dating apps are next?"
-  - **A:** "We're focused on Tinder and Hinge for the MVP. Vote on the next integrations from your dashboard."
+  - **A:** "We're focused on Tinder and Hinge for the MVP. Bumble and OKCupid coming soon."
 
 ## Footer Reminder
 - Gentle sign-off: "You deserve insights that feel like support, not scrutiny. When you’re ready, Afterglow is here to notice what’s already working."
