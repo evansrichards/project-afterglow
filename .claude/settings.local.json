@@ -10,7 +10,11 @@
       "Bash(npm test -- --run)",
       "Bash(npm run format)",
       "Bash(npm test -- --run src/lib/db/queries.test.ts)",
-      "Bash(npm test -- --run src/lib/upload/validation.test.ts src/components/upload/FileUploadZone.test.tsx)"
+      "Bash(npm test -- --run src/lib/upload/validation.test.ts src/components/upload/FileUploadZone.test.tsx)",
+      "Bash(npm install jszip)",
+      "Bash(npm install --save-dev @types/jszip)",
+      "Bash(npm test -- --run src/lib/upload/zip-extractor.test.ts)",
+      "Bash(npm test -- --run src/pages/UploadPage.test.tsx)"
     ],
     "deny": [],
     "ask": []

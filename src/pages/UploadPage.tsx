@@ -12,20 +12,73 @@ import FileUploadZone from '@components/upload/FileUploadZone'
 import SampleDataLinks from '@components/upload/SampleDataLinks'
 import ExportInstructions from '@components/upload/ExportInstructions'
 import type { FileValidationResult } from '@lib/upload/validation'
+import {
+  extractZipFile,
+  detectPlatformFromFiles,
+  formatExtractionSummary,
+  type ExtractedFile,
+} from '@lib/upload/zip-extractor'
 
 export default function UploadPage() {
   const [error, setError] = useState<string | null>(null)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [validation, setValidation] = useState<FileValidationResult | null>(null)
+  const [extractedFiles, setExtractedFiles] = useState<ExtractedFile[]>([])
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [detectedPlatform, setDetectedPlatform] = useState<'tinder' | 'hinge' | 'unknown' | null>(
+    null
+  )
 
-  const handleFileSelect = (file: File, validationResult: FileValidationResult) => {
+  const handleFileSelect = async (file: File, validationResult: FileValidationResult) => {
     console.log('File selected:', file.name, validationResult)
     setSelectedFile(file)
     setValidation(validationResult)
     setError(null)
+    setIsProcessing(true)
 
-    // TODO: In next task, we'll handle parsing the file
-    // For now, just show success feedback
+    try {
+      // If it's a ZIP file, extract it
+      if (file.type === 'application/zip' || file.name.endsWith('.zip')) {
+        const result = await extractZipFile(file)
+
+        if (!result.success) {
+          setError(result.error || 'Failed to extract ZIP file')
+          setIsProcessing(false)
+          return
+        }
+
+        if (result.files.length === 0) {
+          setError('ZIP file contains no valid data files (JSON or CSV)')
+          setIsProcessing(false)
+          return
+        }
+
+        setExtractedFiles(result.files)
+        const platform = detectPlatformFromFiles(result.files)
+        setDetectedPlatform(platform)
+
+        console.log('ZIP extraction summary:', formatExtractionSummary(result))
+        console.log('Detected platform:', platform)
+      } else {
+        // For JSON files, store as-is (will be parsed in next task)
+        const content = await file.text()
+        setExtractedFiles([
+          {
+            filename: file.name,
+            content,
+            extension: 'json',
+            size: content.length,
+          },
+        ])
+        setDetectedPlatform(validationResult.platform || 'unknown')
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to process file')
+    } finally {
+      setIsProcessing(false)
+    }
+
+    // TODO: In next task (3.3), we'll parse the extracted files
   }
 
   const handleError = (errorMessage: string) => {
@@ -44,6 +97,9 @@ export default function UploadPage() {
     setSelectedFile(null)
     setValidation(null)
     setError(null)
+    setExtractedFiles([])
+    setDetectedPlatform(null)
+    setIsProcessing(false)
   }
 
   return (
@@ -95,8 +151,33 @@ export default function UploadPage() {
                 </div>
               )}
 
+              {/* Processing message */}
+              {isProcessing && (
+                <div className="mt-4 animate-slide-up rounded-xl bg-blue-50 p-4">
+                  <div className="flex gap-3">
+                    <svg
+                      className="h-5 w-5 flex-shrink-0 animate-spin text-blue-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
+                    </svg>
+                    <div>
+                      <h4 className="font-semibold text-blue-900">Processing your file...</h4>
+                      <p className="text-sm text-blue-700">Extracting and validating your data</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Success message */}
-              {selectedFile && validation && (
+              {selectedFile && validation && !isProcessing && (
                 <div className="mt-4 animate-slide-up rounded-xl bg-green-50 p-4">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex gap-3">
@@ -117,8 +198,17 @@ export default function UploadPage() {
                         <h4 className="font-semibold text-green-900">File ready to process</h4>
                         <p className="text-sm text-green-700">
                           {selectedFile.name}
-                          {validation.platform && ` · Detected: ${validation.platform}`}
+                          {detectedPlatform && detectedPlatform !== 'unknown' && (
+                            <> · Detected: {detectedPlatform}</>
+                          )}
                         </p>
+                        {extractedFiles.length > 0 && (
+                          <p className="mt-1 text-sm text-green-600">
+                            Extracted {extractedFiles.length} file
+                            {extractedFiles.length !== 1 ? 's' : ''}:{' '}
+                            {extractedFiles.map((f) => f.filename).join(', ')}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <button
@@ -133,7 +223,7 @@ export default function UploadPage() {
                   <div className="mt-4">
                     <button
                       className="btn-primary w-full sm:w-auto"
-                      onClick={() => console.log('Process file:', selectedFile.name)}
+                      onClick={() => console.log('Process files:', extractedFiles)}
                     >
                       Process File →
                     </button>
