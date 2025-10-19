@@ -23,11 +23,11 @@
 - [ ] 4.2 Create data persistence layer saving normalized entities to IndexedDB with efficient query helpers.
 - [ ] 4.3 Generate derived metrics (response times, word counts, conversation length) using memoized selectors.
 
-## 5. Conversation Analyzer Pipeline
-- [ ] 5.1 Build preprocessing utilities for message cleanup, tokenization via `wink-nlp`, language detection, and metadata merging.
-- [ ] 5.2 Implement feature extraction modules (response latency, initiation patterns, sentiment, thematic keywords, behavioral annotations).
-- [ ] 5.3 Develop pattern detection engines: Momentum Tracker, Emotional Climate Monitor, Boundary & Respect Scanner, Self-Reflection Mirrors, Reciprocity Gauge.
-- [ ] 5.4 Store representative snippets for flagged patterns with redaction utilities for personal data.
+## 5. Conversation Analyzer Pipeline (Updated for Sanitized Data)
+- [ ] 5.1 Build preprocessing utilities for sanitized message cleanup, tokenization via `wink-nlp`, language detection, and metadata merging.
+- [ ] 5.2 Implement feature extraction modules (response latency, initiation patterns, sentiment, thematic keywords, behavioral annotations) working with tokenized data.
+- [ ] 5.3 Develop pattern detection engines adapted for sanitized content: Momentum Tracker, Emotional Climate Monitor, Boundary & Respect Scanner, Self-Reflection Mirrors, Reciprocity Gauge.
+- [ ] 5.4 Store representative snippets for flagged patterns using sanitized data with typed placeholders for context.
 
 ## 6. Insight Layer & Visualization
 - [ ] 6.1 Design insight card component with title, metric summary, evidence snippets, reflective prompts, and suggestions.
@@ -40,15 +40,23 @@
 - [ ] 7.2 Enable export of recap (PDF via `react-pdf`) summarizing insights and user notes.
 - [ ] 7.3 Add gentle wrap-up flow allowing note saving, recap download, and optional future check-ins.
 
-## 8. Privacy & Security
-- [ ] 8.1 Display inline privacy nudges and clear language that processing happens locally.
-- [ ] 8.2 Provide instant data purge control that clears IndexedDB and any cached files.
-- [ ] 8.3 If sync is enabled, encrypt exports with user-supplied passphrase before Supabase upload and enforce RLS policies.
+## 8. Privacy & Security (Updated MVP Strategy)
+- [x] 8.1 Update landing page with privacy-focused copy and interactive PII demo component
+- [x] 8.2 Implement MVP privacy section with detailed guarantees and technical safeguards
+- [ ] 8.3 Build client-side PII sanitization pipeline with regex detection for emails, phones, names, locations
+- [ ] 8.4 Create contextual redaction system using typed placeholders ([PERSON], [PLACE], [EMAIL], [WORKPLACE])
+- [ ] 8.5 Implement user review interface showing side-by-side original vs sanitized data with manual redaction tools
+- [ ] 8.6 Add anonymous authentication options (Sign in with Apple, magic links)
+- [ ] 8.7 Build cloud storage for sanitized data only with encryption at rest and automatic expiration
+- [ ] 8.8 Provide instant data purge control that clears IndexedDB and remote records
+- [ ] 8.9 Open-source PII detection code for user audit and transparency
 
-## 9. Optional Secure Sync (Stretch)
-- [ ] 9.1 Prototype Supabase Edge Function endpoints and Postgres schema for storing encrypted user datasets.
-- [ ] 9.2 Implement opt-in toggle and onboarding messaging that explains benefits and risks.
-- [ ] 9.3 Build sync orchestration (upload/download, conflict handling) respecting offline-first defaults.
+## 9. Cloud Sync with PII Sanitization
+- [ ] 9.1 Set up Supabase Edge Functions and Postgres schema for sanitized data storage
+- [ ] 9.2 Implement opt-in cloud sync toggle with clear privacy messaging
+- [ ] 9.3 Build upload flow: sanitize → user review → encrypt → upload sanitized data only
+- [ ] 9.4 Implement Row Level Security policies and user data isolation
+- [ ] 9.5 Add sync orchestration with offline-first approach and conflict handling
 
 ## 10. Analytics & Telemetry
 - [ ] 10.1 Integrate privacy-friendly analytics (self-hosted Plausible) capturing anonymized events only.
@@ -56,12 +64,15 @@
 - [ ] 10.3 Ensure telemetry can be disabled entirely by the user.
 
 ## 11. Testing & Quality Assurance
-- [ ] 11.1 Author unit tests for parsers, normalization utilities, analyzer modules, and derived metric selectors.
-- [ ] 11.2 Create Cypress component/integration tests that run sample ZIPs through upload-to-insight flow.
-- [ ] 11.3 Schedule manual review sessions with subject-matter experts to vet tone and sensitive pattern handling.
-- [ ] 11.4 Establish regression test checklist and automated CI pipeline.
+- [ ] 11.1 Author unit tests for parsers, PII sanitization, normalization utilities, analyzer modules, and derived metric selectors.
+- [ ] 11.2 Create Cypress component/integration tests that run sample ZIPs through upload → sanitize → insight flow.
+- [ ] 11.3 Test PII detection accuracy with various edge cases and international name patterns.
+- [ ] 11.4 Schedule manual review sessions with subject-matter experts to vet tone and sensitive pattern handling.
+- [ ] 11.5 Establish regression test checklist and automated CI pipeline including privacy protection tests.
 
 ## 12. Launch Preparation
-- [ ] 12.1 Prepare documentation for setup, privacy promises, and troubleshooting common import issues.
-- [ ] 12.2 Set up deployment pipeline to Netlify or Vercel with environment configuration guidelines.
-- [ ] 12.3 Craft onboarding emails or in-app copy for optional future check-ins post-MVP launch.
+- [ ] 12.1 Prepare documentation for setup, updated privacy promises, PII sanitization process, and troubleshooting common import issues.
+- [ ] 12.2 Set up deployment pipeline to Netlify or Vercel with environment configuration for Supabase integration.
+- [ ] 12.3 Create privacy policy and terms of service reflecting new data handling approach.
+- [ ] 12.4 Craft onboarding emails or in-app copy for optional future check-ins post-MVP launch.
+- [ ] 12.5 Prepare open-source repository for PII detection code and documentation.
