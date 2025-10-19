@@ -19,7 +19,7 @@
 - [x] 3.6 Capture unknown fields into `CustomAttribute` metadata and log schema diffs with adapter versioning.
 
 ## 4. Unified Data Model & Storage
-- [ ] 4.1 Implement TypeScript interfaces for normalized data (participants, matches, messages, raw records, field mappings).
+- [x] 4.1 Implement TypeScript interfaces for normalized data (participants, matches, messages, raw records, field mappings).
 - [ ] 4.2 Create data persistence layer saving normalized entities to IndexedDB with efficient query helpers.
 - [ ] 4.3 Generate derived metrics (response times, word counts, conversation length) using memoized selectors.
 
@@ -40,21 +40,23 @@
 - [ ] 7.2 Enable export of recap (PDF via `react-pdf`) summarizing insights and user notes.
 - [ ] 7.3 Add gentle wrap-up flow allowing note saving, recap download, and optional future check-ins.
 
-## 8. Privacy & Security (Updated MVP Strategy)
+## 8. Privacy & Security (Simplified MVP Strategy)
 - [x] 8.1 Update landing page with privacy-focused copy and interactive PII demo component
 - [x] 8.2 Implement MVP privacy section with detailed guarantees and technical safeguards
 - [ ] 8.3 Build client-side PII sanitization pipeline with regex detection for emails, phones, names, locations
 - [ ] 8.4 Create contextual redaction system using typed placeholders ([PERSON], [PLACE], [EMAIL], [WORKPLACE])
-- [ ] 8.5 Implement user review interface showing side-by-side original vs sanitized data with manual redaction tools
-- [ ] 8.6 Add anonymous authentication options (Sign in with Apple, magic links)
-- [ ] 8.7 Build cloud storage for sanitized data only with encryption at rest and automatic expiration
-- [ ] 8.8 Provide instant data purge control that clears IndexedDB and remote records
-- [ ] 8.9 Open-source PII detection code for user audit and transparency
+- [ ] 8.5 Implement auto-sanitization summary display showing removal counts by type
+- [ ] 8.6 Add simple "Stay local only" vs "Sync sanitized data" toggle
+- [ ] 8.7 Create basic manual override: text input for custom words to redact
+- [ ] 8.8 Add anonymous authentication options (Sign in with Apple, magic links)
+- [ ] 8.9 Build cloud storage for sanitized data only with encryption at rest and automatic expiration
+- [ ] 8.10 Provide instant data purge control that clears IndexedDB and remote records
+- [ ] 8.11 Open-source PII detection code for user audit and transparency
 
 ## 9. Cloud Sync with PII Sanitization
 - [ ] 9.1 Set up Supabase Edge Functions and Postgres schema for sanitized data storage
 - [ ] 9.2 Implement opt-in cloud sync toggle with clear privacy messaging
-- [ ] 9.3 Build upload flow: sanitize → user review → encrypt → upload sanitized data only
+- [ ] 9.3 Build upload flow: sanitize → show summary → user toggle → encrypt → upload sanitized data only
 - [ ] 9.4 Implement Row Level Security policies and user data isolation
 - [ ] 9.5 Add sync orchestration with offline-first approach and conflict handling
 

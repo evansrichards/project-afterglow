@@ -161,12 +161,12 @@ interface ParserAdapter {
    - Emails → `[EMAIL]`
    - Phone numbers → `[PHONE]`
    - Organizations → `[WORKPLACE]`, `[SCHOOL]`
-3. **User Review Interface:** Show side-by-side diff of original vs sanitized data with:
-   - Highlighted redactions with counts by type
-   - Manual redaction tools for additional privacy
-   - Option to skip cloud sync and stay local-only
-4. **Anonymous Authentication:** Sign in with Apple or magic links for privacy-preserving accounts
-5. **Cloud Storage:** Upload only sanitized data with encryption at rest
+3. **Auto-Sanitization Summary:** Show removal counts by type (e.g., "Removed: 15 names, 3 emails, 8 locations")
+4. **Simple User Control:**
+   - Toggle: "Stay local only" vs "Sync sanitized data to cloud"
+   - Basic manual override: text input for custom words to redact
+5. **Anonymous Authentication:** Sign in with Apple or magic links for privacy-preserving accounts
+6. **Cloud Storage:** Upload only sanitized data with encryption at rest
 
 ### Security Features
 - Leverage Supabase Row Level Security to isolate user data
@@ -189,6 +189,7 @@ interface ParserAdapter {
   - Add journaling timeline to correlate insights with real-life outcomes.
   - Introduce optional AI coach (GPT-4o mini) for reflective prompts.
 - **Advanced Privacy Features (Post-MVP):**
+  - Full user review interface with side-by-side diff view
   - Sophisticated entity tokenization with consistent identifiers across conversations
   - Cross-match entity resolution for mutual friends/places
   - Zero-knowledge encryption options
