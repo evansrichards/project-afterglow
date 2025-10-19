@@ -20,7 +20,7 @@
 
 ## 4. Simplified Data Model & Storage (MVP Scope)
 - [x] 4.1 Implement TypeScript interfaces for normalized data (participants, matches, messages, raw records, field mappings).
-- [ ] 4.2 Create basic data persistence layer for sanitized entities in both IndexedDB (local) and Supabase (cloud).
+- [x] 4.2 Create basic data persistence layer for sanitized entities in both IndexedDB (local) and Supabase (cloud).
 - [ ] 4.3 Generate simple derived metrics (message counts, basic response times, conversation length) with straightforward calculations.
 
 ## 5. Basic Analytics Pipeline (MVP Scope)

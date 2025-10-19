@@ -146,6 +146,36 @@ export async function getMessagesInDateRange(
 }
 
 // ============================================================================
+// Raw Records
+// ============================================================================
+
+export async function saveRawRecord(record: import('@/types/data-model').RawRecord): Promise<void> {
+  const db = await getDB()
+  await db.add('rawRecords', record)
+}
+
+export async function saveRawRecords(records: import('@/types/data-model').RawRecord[]): Promise<void> {
+  const db = await getDB()
+  const tx = db.transaction('rawRecords', 'readwrite')
+  await Promise.all([...records.map((r) => tx.store.add(r)), tx.done])
+}
+
+export async function getAllRawRecords(): Promise<import('@/types/data-model').RawRecord[]> {
+  const db = await getDB()
+  return db.getAll('rawRecords')
+}
+
+export async function getRawRecordsByPlatform(platform: Platform): Promise<import('@/types/data-model').RawRecord[]> {
+  const db = await getDB()
+  return db.getAllFromIndex('rawRecords', 'by-platform', platform)
+}
+
+export async function getRawRecordsByEntity(entity: 'match' | 'message' | 'profile'): Promise<import('@/types/data-model').RawRecord[]> {
+  const db = await getDB()
+  return db.getAllFromIndex('rawRecords', 'by-entity', entity)
+}
+
+// ============================================================================
 // Datasets
 // ============================================================================
 
@@ -213,22 +243,42 @@ export async function importDataset(data: {
   participants: ParticipantProfile[]
   matches: MatchContext[]
   messages: NormalizedMessage[]
+  rawRecords?: import('@/types/data-model').RawRecord[]
 }): Promise<void> {
   const db = await getDB()
 
   // Use a single transaction for atomicity
-  const tx = db.transaction(['datasets', 'participants', 'matches', 'messages'], 'readwrite')
+  const stores: Array<'datasets' | 'participants' | 'matches' | 'messages' | 'rawRecords'> = [
+    'datasets',
+    'participants',
+    'matches',
+    'messages',
+  ]
+  if (data.rawRecords && data.rawRecords.length > 0) {
+    stores.push('rawRecords')
+  }
+
+  const tx = db.transaction(stores, 'readwrite')
 
   try {
     // Save metadata
     await tx.objectStore('datasets').put(data.metadata)
 
     // Save all entities
-    await Promise.all([
+    const operations = [
       ...data.participants.map((p) => tx.objectStore('participants').put(p)),
       ...data.matches.map((m) => tx.objectStore('matches').put(m)),
       ...data.messages.map((msg) => tx.objectStore('messages').put(msg)),
-    ])
+    ]
+
+    // Add raw records if provided
+    if (data.rawRecords && data.rawRecords.length > 0) {
+      operations.push(
+        ...data.rawRecords.map((r) => tx.objectStore('rawRecords').add(r))
+      )
+    }
+
+    await Promise.all(operations)
 
     await tx.done
     console.log(`[DB] Imported dataset ${data.metadata.id}`)
