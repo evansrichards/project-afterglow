@@ -7,6 +7,7 @@
 
 export { runSafetyScreener } from './safety-screener'
 export { runPatternRecognizer } from './pattern-recognizer'
+export { runChronologyMapper } from './chronology-mapper'
 export type {
   AnalyzerInput,
   AnalyzerOutput,
