@@ -21,7 +21,9 @@
       "Bash(npx eslint src/lib/evaluators/risk-evaluator.ts src/lib/evaluators/risk-evaluator.test.ts src/lib/evaluators/types.ts)",
       "Bash(npx eslint src/lib/evaluators/)",
       "Bash(npm test -- --run src/lib/reports/stage1-report-generator.test.ts)",
-      "Bash(npx eslint src/lib/reports/stage1-report-generator.ts src/lib/reports/stage1-report-generator.test.ts)"
+      "Bash(npx eslint src/lib/reports/stage1-report-generator.ts src/lib/reports/stage1-report-generator.test.ts)",
+      "Bash(npm test -- --run src/lib/analyzers/stage2-comprehensive.test.ts)",
+      "Bash(npx eslint src/lib/analyzers/stage2-types.ts src/lib/analyzers/stage2-comprehensive.ts src/lib/analyzers/stage2-comprehensive.test.ts)"
     ],
     "deny": [],
     "ask": []
