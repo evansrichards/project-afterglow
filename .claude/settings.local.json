@@ -14,7 +14,14 @@
       "Bash(npx eslint src/lib/analyzers/safety-screener.test.ts)",
       "Bash(npx eslint src/lib/analyzers/safety-screener.ts)",
       "Bash(npm test -- --run src/lib/analyzers/pattern-recognizer.test.ts)",
-      "Bash(npx eslint src/lib/analyzers/pattern-recognizer.ts src/lib/analyzers/pattern-recognizer.test.ts)"
+      "Bash(npx eslint src/lib/analyzers/pattern-recognizer.ts src/lib/analyzers/pattern-recognizer.test.ts)",
+      "Bash(npm test -- --run src/lib/analyzers/chronology-mapper.test.ts)",
+      "Bash(npx eslint src/lib/analyzers/chronology-mapper.ts src/lib/analyzers/chronology-mapper.test.ts)",
+      "Bash(npm test -- --run src/lib/evaluators/risk-evaluator.test.ts)",
+      "Bash(npx eslint src/lib/evaluators/risk-evaluator.ts src/lib/evaluators/risk-evaluator.test.ts src/lib/evaluators/types.ts)",
+      "Bash(npx eslint src/lib/evaluators/)",
+      "Bash(npm test -- --run src/lib/reports/stage1-report-generator.test.ts)",
+      "Bash(npx eslint src/lib/reports/stage1-report-generator.ts src/lib/reports/stage1-report-generator.test.ts)"
     ],
     "deny": [],
     "ask": []
