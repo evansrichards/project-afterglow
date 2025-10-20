@@ -12,7 +12,9 @@
       "Bash(npm test -- --run src/lib/analyzers/safety-screener.test.ts)",
       "Bash(npx tsc --noEmit --project tsconfig.json)",
       "Bash(npx eslint src/lib/analyzers/safety-screener.test.ts)",
-      "Bash(npx eslint src/lib/analyzers/safety-screener.ts)"
+      "Bash(npx eslint src/lib/analyzers/safety-screener.ts)",
+      "Bash(npm test -- --run src/lib/analyzers/pattern-recognizer.test.ts)",
+      "Bash(npx eslint src/lib/analyzers/pattern-recognizer.ts src/lib/analyzers/pattern-recognizer.test.ts)"
     ],
     "deny": [],
     "ask": []

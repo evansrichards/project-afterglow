@@ -6,6 +6,7 @@
  */
 
 export { runSafetyScreener } from './safety-screener'
+export { runPatternRecognizer } from './pattern-recognizer'
 export type {
   AnalyzerInput,
   AnalyzerOutput,
