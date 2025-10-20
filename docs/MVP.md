@@ -110,24 +110,48 @@ interface ParserAdapter {
 - Store normalized data in IndexedDB via `idb` library for snappy offline queries.
 - Generate derived metrics (response times, word counts, conversation length) using memoized selectors to avoid recomputation.
 
-## AI-Heavy Analytics Pipeline (One-Time Analysis MVP)
-1. **Comprehensive One-Time Analysis ($3-5 per user):**
-   - **Deep Conversation Analysis:** GPT-4 analysis of entire dating history for attachment styles, red flags, and communication patterns
-   - **Personalized Insight Generation:** AI-crafted insights tailored to individual patterns and growth opportunities
-   - **Safety Pattern Detection:** Sophisticated manipulation and emotional abuse identification
-   - **Authentic Voice Analysis:** Recognition of when users are most genuine vs. performative
-2. **Tiered Analysis System:**
-   - **Tier 1 (80% of users):** Foundational safety analysis using GPT-3.5 and Claude Haiku ($0.50)
-   - **Tier 2 (15% of users):** Deep dive analysis for complex patterns using GPT-4 ($2.00)
-   - **Tier 3 (5% of users):** Crisis intervention for high-risk situations ($5.00)
-3. **Processing Pipeline:**
-   - **Immediate Upload Processing:** Basic validation and sanitization feedback
-   - **Background Analysis:** Asynchronous AI processing with status updates
-   - **Email Notification:** Summary notification when complete with report access link
-4. **Cost Framework:**
-   - **Budget:** $2,000 over 6 months (75% for AI analysis)
-   - **Capacity:** 400-500 users with full AI treatment
-   - **Average Cost:** ~$1.00 per user across all tiers
+## Two-Stage AI Analysis Pipeline (Cost-Optimized MVP)
+
+### Architecture Overview
+Instead of a complex multi-component pipeline (3 analyzers + 4 evaluators = 7 API calls), we use a streamlined two-stage approach that reduces costs by 50-80% while maintaining quality:
+
+1. **Stage 1: Quick Triage (All Users - 80% Complete Here)**
+   - **Model:** GPT-3.5 Turbo
+   - **Cost:** ~$0.50 per user
+   - **Time:** 10-20 seconds
+   - **Purpose:** Fast safety screening and basic pattern detection
+   - **Outputs:**
+     - Safety risk level (green/yellow/orange/red)
+     - Basic communication patterns
+     - Attachment style indicators
+     - Escalation decision (proceed to Stage 2 or complete)
+   - **Result:** Green/yellow cases receive actionable insights and complete here
+
+2. **Stage 2: Comprehensive Deep Analysis (20% Who Need It)**
+   - **Model:** GPT-4 Turbo
+   - **Cost:** ~$1.50-2.00 per escalated user
+   - **Time:** 30-60 seconds
+   - **Purpose:** ONE comprehensive call combining all deep analysis
+   - **Triggers:** Orange/red safety risk from Stage 1
+   - **Outputs in Single Call:**
+     - **Safety Deep Dive:** Manipulation tactics (DARVO, gaslighting, love-bombing), coercive control, trauma bonding, crisis resources
+     - **Attachment Analysis:** Sophisticated style determination, triggers, coping mechanisms, relationship dynamics
+     - **Growth Trajectory:** Time-weighted chronology (18+ months), development progression, customized recommendations
+     - **Coherent Synthesis:** Narrative combining all insights with prioritized, evidence-based recommendations
+
+### Cost Framework
+- **Budget:** $2,000 over 6 months (75% for AI analysis = $1,500)
+- **Average Cost:** ~$0.90 per user (80% @ $0.50 + 20% @ $2.50)
+- **Capacity:** ~1,650 users (vs 400-500 with original multi-component approach)
+- **Efficiency:** 3x more users served with same budget
+
+### Processing Pipeline
+1. **Upload & Sanitization:** Immediate PII detection and data validation
+2. **Stage 1 Execution:** Quick triage for all users (10-20s)
+3. **Decision Point:**
+   - Green/Yellow → Stage 1 Report → Email notification → Done
+   - Orange/Red → Stage 2 Comprehensive Analysis → Stage 2 Report → Email notification
+4. **User Experience:** Clear status updates showing current stage and why Stage 2 triggered (if applicable)
 
 ## Processing Dashboard & Report System
 
@@ -137,24 +161,35 @@ interface ParserAdapter {
   - Total messages processed
   - Average conversation length
   - Data upload date and sanitization summary
-- **Processing Status Card:** Shows analysis progress:
-  - "🔍 Analysis Status: [In Progress/Complete]"
-  - "📧 Report notification sent to: [user email]"
+- **Processing Status Card:** Shows analysis progress with stage awareness:
+  - **Stage 1:** "🔍 Running safety assessment and pattern analysis..."
+  - **Stage 2 (if triggered):** "🔍 Running comprehensive deep analysis..."
+  - Stage-specific completion estimates (10-20s vs 30-60s)
+  - "📧 Email notification will be sent when complete"
   - "⏱️ Processing started: [timestamp]"
-  - "📊 Analysis tier assigned: [Tier 1/2/3]"
-- **Immediate Insights:** 2-3 basic patterns available instantly:
+- **Immediate Insights:** 2-3 basic patterns available instantly while processing:
   - Conversation balance overview
   - Response timing patterns
   - Most active conversation periods
 
 ### Authenticated Report Dashboard
-- **Comprehensive Analysis Results:** Full AI-generated insights accessible only when authenticated:
-  - Attachment style analysis with detailed explanations
-  - Safety assessment with specific examples (when relevant)
-  - Communication strengths and growth opportunities
-  - Personalized recommendations based on patterns
-- **Report Sections:** Organized by analysis type for easy navigation
-- **Data Management:** Options to download report or delete all data
+- **Stage 1 Report (80% of users):**
+  - Safety assessment with risk level (green/yellow)
+  - Basic communication patterns and attachment indicators
+  - Actionable recommendations for healthy patterns
+  - "Your analysis is complete" confirmation
+  - Processing metadata (Stage 1 only, ~$0.50)
+
+- **Stage 2 Report (20% of users):**
+  - All Stage 1 content PLUS:
+  - Detailed safety analysis with manipulation tactics and examples
+  - Comprehensive attachment style assessment with triggers and dynamics
+  - Growth trajectory visualization (if 18+ months data available)
+  - Crisis intervention resources (if relevant)
+  - Evidence-based examples from conversations
+  - Full processing transparency (both stages, ~$2.00-2.50)
+
+- **Data Management:** Options to download report or delete all data (both stage types)
 
 
 ## Data Security & Privacy
@@ -189,48 +224,73 @@ interface ParserAdapter {
 - **Integration Tests:** Cypress component tests for upload-to-insight flow with sample ZIPs.
 - **Manual Review:** Involve subject-matter experts (dating coaches, therapists) to vet tone of flagged snippets.
 
-## 2-Week MVP Timeline (One-Time Analysis)
+## 2-Week MVP Timeline (Two-Stage Analysis)
 
-### Week 1: Core Infrastructure + Analysis Pipeline
+### Week 1: Core Infrastructure + Stage 1 Quick Triage
 - **Days 1-2:** Email verification system, user accounts, and OpenRouter API integration
 - **Days 3-4:** PII sanitization pipeline with typed placeholders
-- **Days 5-7:** Cloud storage setup and tiered AI analysis pipeline foundation
+- **Days 5-7:** Build Stage 1 Quick Triage analyzer with GPT-3.5 Turbo
+  - Safety screening (green/yellow/orange/red)
+  - Basic pattern detection
+  - Escalation logic to Stage 2
+  - Stage 1 report generation
 
-### Week 2: AI Processing + Report System
-- **Days 8-10:** Implement tiered AI analysis system with OpenRouter model selection
-- **Days 11-12:** Email notification system and authenticated report dashboard
-- **Days 13-14:** Processing status display, report viewing, and deployment
+### Week 2: Stage 2 Deep Analysis + Report System
+- **Days 8-10:** Build Stage 2 Comprehensive Analyzer with GPT-4 Turbo
+  - Single-call deep analysis (safety, attachment, growth)
+  - Coherent synthesis and narrative generation
+  - Stage 2 report generation
+  - Crisis resource inclusion
+- **Days 11-12:** Email notification system with stage-specific templates
+  - Stage 1 completion emails (green/yellow)
+  - Stage 2 completion emails (orange/red)
+  - Authenticated report dashboard for both stages
+- **Days 13-14:** Processing orchestrator, status display, and deployment
+  - Two-stage orchestration logic
+  - Stage transition messaging
+  - Cost tracking per stage
+  - Production deployment
 
-### Post-Launch: One-Time Analysis Flow
+### Post-Launch: Two-Stage Analysis Flow
 - **User Upload:** Data processing and immediate basic insights
-- **Background Analysis:** Asynchronous AI processing with email notification
-- **Report Access:** Users access full analysis through authenticated dashboard
-- **Future Enhancement:** Optional monthly re-analysis with new frameworks
+- **Stage 1 Processing:** Quick triage (10-20s) for all users
+- **Decision Point:** 80% complete at Stage 1, 20% escalate to Stage 2
+- **Stage 2 Processing (if needed):** Comprehensive analysis (30-60s)
+- **Email Notification:** Stage-specific summary with report link
+- **Report Access:** Stage-appropriate insights via authenticated dashboard
 
 ### Budget Management
-- **Per-analysis cost tracking:** Monitor AI usage per user analysis
-- **Tiered cost optimization:** Balance analysis depth with cost efficiency
-- **Quality metrics:** Track user satisfaction and report engagement
+- **Stage-based cost tracking:** Monitor Stage 1 vs Stage 2 costs separately
+- **Escalation rate monitoring:** Target 20% Stage 2 escalation
+- **Quality vs cost optimization:** Balance depth with efficiency
+- **Capacity projection:** ~1,650 users with $1,500 AI budget (3x original capacity)
 
-## Post-MVP Roadmap (One-Time to Recurring Evolution)
-- **Phase 2 (Month 1-3):** Enhanced One-Time Analysis
-  - Improve tiered analysis accuracy and user satisfaction
-  - Add expert review integration for high-risk cases
-  - Implement user feedback collection and analysis quality improvement
-  - Optional premium deep-dive analysis tier
-- **Phase 3 (Month 4-6):** Recurring Analysis Option
-  - Introduce optional monthly re-analysis with new frameworks
-  - AI-generated monthly themes based on evolving research
-  - User choice between one-time and recurring analysis models
-  - Cost optimization through hybrid AI/rule-based approach
-- **Phase 4 (Month 7-9):** Full Service Expansion
+## Post-MVP Roadmap (Two-Stage Evolution)
+- **Phase 2 (Month 1-3):** Two-Stage Refinement
+  - Optimize Stage 2 escalation thresholds based on user data
+  - Improve Stage 1 triage accuracy to reduce unnecessary escalations
+  - Enhance Stage 2 comprehensive analysis quality with expert feedback
+  - Add confidence scores to guide escalation decisions
+  - Fine-tune target escalation rate (currently 20%)
+  - Monitor cost efficiency vs original multi-component approach
+
+- **Phase 3 (Month 4-6):** Advanced Features
+  - Introduce Stage 1.5: Medium-depth analysis for borderline cases (~$1.00)
+  - Interactive report features with deeper Stage 2 insight exploration
+  - Comparative analysis (track changes if user re-uploads data)
+  - Optional monthly re-analysis with evolving frameworks
+  - Expert review integration for Stage 2 high-stakes cases
+
+- **Phase 4 (Month 7-9):** Scale & Optimize
+  - Hybrid AI/rule-based Stage 1 for even faster/cheaper triage
+  - Template-based Stage 1 insights for common secure patterns
   - Multi-platform support (Bumble, OKCupid) with platform-specific analysis
   - Expert partnership integration (therapists, dating coaches)
-  - Template-based analysis for common patterns
-  - Target cost reduction while maintaining quality
+  - Target further cost reduction: Stage 1 < $0.30, Stage 2 < $1.50
+
 - **Future Releases:**
   - Interactive report features and progress tracking
   - Community features and anonymized insights sharing
-  - International expansion with culturally-aware AI analysis
+  - International expansion with culturally-aware analysis per stage
   - Enterprise partnerships and B2B insight offerings
 

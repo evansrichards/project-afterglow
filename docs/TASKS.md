@@ -1,13 +1,11 @@
 # MVP TODOs
 
 ---
-## 🎯 DEMO FOCUS - Essential Tasks to Process First Dataset
+## 🎯 MVP PROGRESS - Production Web App
 
-**Goal:** Get the two-stage AI analysis pipeline working end-to-end with your first dataset.
+**Goal:** Get the two-stage AI analysis pipeline working through a web interface with backend API.
 
-**✅ DEMO COMPLETE - All Essential Tasks Done!**
-
-**What's Working:**
+**✅ Phase 1: Core Pipeline (COMPLETE)**
 - ✅ Data ingestion & normalization (Sections 1-4)
 - ✅ Stage 1: Quick Triage (Safety Screener + Report Generator)
 - ✅ Stage 2: Comprehensive Analysis (Deep Dive Analyzer + Report Generator)
@@ -15,19 +13,31 @@
 - ✅ Console demo script with report display
 - ✅ OpenRouter integration
 - ✅ All unit tests passing (549 tests total)
+- ✅ File upload UI with Tinder/Hinge parsing
 
-**Ready to Run:**
+**Demo Available:**
 ```bash
-npm run demo
+npm run demo  # Command-line demo with example data
 ```
 
-**What's Deferred:**
-- All UI/dashboard features (Section 6.2-6.4)
+**✅ Phase 2: Web App Integration (COMPLETE - Section 6)**
+**Essential for production web application:**
+- ✅ **6.1** Backend API Setup (Express server with /api/analyze endpoint)
+- ✅ **6.2** Frontend Integration (UploadPage calls backend, displays results)
+- ✅ **6.3** Console demo (Already working)
+
+**🎉 MVP READY FOR TESTING!**
+```bash
+npm run dev:all  # Start both frontend (3000) and backend (3001)
+```
+Upload → Parse → Analyze → Display flow is complete!
+
+**What's Still Deferred:**
 - Email notifications & authentication (Section 7)
-- Privacy & security (Section 8)
-- Data storage (Section 9)
+- Privacy & security enhancements (Section 8)
+- Data storage & persistence (Section 9)
 - Cost monitoring & analytics (Section 10)
-- Integration testing (Section 11.2-11.5)
+- Advanced testing (Section 11.2-11.5)
 - Launch preparation (Section 12)
 
 ---
@@ -97,25 +107,115 @@ npm run demo
 - [ ] 5.4.3 Processing configuration system (DEFERRED)
 -->
 
-## 6. Basic Report Display (DEMO FOCUS)
+## 6. Backend API & Analysis Integration (ESSENTIAL FOR WEB APP)
 
-### 6.1 Simple Console/File Output (ESSENTIAL FOR DEMO) ✅
-- [x] 6.1.1 Display analysis results in console:
+### 6.1 Backend API Setup (ESSENTIAL FOR PRODUCTION)
+- [x] 6.1.1 Set up backend API server:
+  - ✅ Chose Express framework
+  - ✅ Configured CORS for frontend communication (localhost:3000)
+  - ✅ Set up environment variables for OpenRouter API key
+  - ✅ Added error handling middleware
+  - ✅ Added request validation middleware
+  - ✅ Added request logging middleware
+  - ✅ Created npm scripts: `server:dev`, `dev:all`
+
+- [x] 6.1.2 Create analysis API endpoint:
+  - ✅ POST `/api/analyze` endpoint to receive parsed data
+  - ✅ Accept: { messages, matches, participants, userId, platform }
+  - ✅ Validate request payload (schema-based validation)
+  - ✅ Run synchronously for MVP (calls runTwoStageAnalysis)
+  - ✅ Return: { result, metadata } with complete analysis results
+
+- [x] 6.1.3 Integrate two-stage orchestrator:
+  - ✅ Import `runTwoStageAnalysis` from lib/orchestrator
+  - ✅ Pass user data to orchestrator
+  - ✅ Handle analysis completion
+  - ✅ Return formatted results to frontend
+  - Note: Completed as part of 6.1.2 (synchronous processing)
+
+- [ ] 6.1.4 Add result retrieval endpoint (OPTIONAL - DEFERRED):
+  - GET `/api/results/:jobId` to fetch analysis results
+  - Only needed if switching to async/job queue architecture
+  - Currently using synchronous processing (6.1.2)
+
+### 6.2 Frontend Integration (ESSENTIAL FOR WEB APP)
+- [x] 6.2.1 Update UploadPage to call backend API:
+  - ✅ Created API client utility (src/api/client.ts)
+  - ✅ Replaced "Process File" with "Analyze Data" button
+  - ✅ Sends parsed data to `/api/analyze` endpoint
+  - ✅ Shows loading state with progress indicators during analysis
+  - ✅ Handles API errors gracefully with retry option
+  - ✅ Displays analysis results (risk level, summary, insights)
+  - ✅ Updated privacy message to reflect server-side processing
+
+- [x] 6.2.2 Create results display component:
+  - ✅ Created AnalysisResultsDisplay component (src/components/results/)
+  - ✅ Display Stage 1 report (safety assessment, risk level, insights, recommendations)
+  - ✅ Stage 2 report placeholder (ready for comprehensive analysis display)
+  - ✅ Show processing metadata (stage durations, costs, models used)
+  - ✅ Formatted with proper styling (cards, color-coded badges, responsive grid)
+  - ✅ Integrated into UploadPage with onNewAnalysis callback
+
+- [x] 6.2.3 Add analysis state management:
+  - ✅ Track analysis status (idle, processing, complete, error)
+  - ✅ Store analysis results in component state
+  - ✅ Using synchronous processing (no polling needed)
+  - Note: Completed as part of 6.2.1
+
+### 6.3 Simple Console/File Output (DEMO - ALREADY WORKING) ✅
+- [x] 6.3.1 Display analysis results in console:
   - Print Stage 1 report (markdown or text format)
   - Print Stage 2 report if triggered (markdown or text format)
   - Show which stage completed
 
+### 6.4 Implementation Notes
+
+**Backend Options:**
+1. **Option A: Express.js standalone server**
+   - Pros: Simple, flexible, well-documented
+   - Cons: Requires separate deployment
+   - Setup: `npm install express cors dotenv`
+
+2. **Option B: Next.js API routes** (RECOMMENDED for MVP)
+   - Pros: Same deployment as frontend, serverless-ready
+   - Cons: Need to migrate from Vite to Next.js
+   - Setup: Convert to Next.js app
+
+3. **Option C: Vite + Express hybrid**
+   - Pros: Keep existing Vite setup, add Express API
+   - Cons: More complex development setup
+   - Setup: Add `server/` directory with Express app
+
+**Data Flow:**
+```
+User uploads file → Frontend parses data →
+Send to POST /api/analyze → Backend runs orchestrator →
+Frontend polls GET /api/results/:jobId → Display results
+```
+
+**Key Files to Create:**
+- `server/api/analyze.ts` - Analysis endpoint
+- `server/api/results.ts` - Results retrieval endpoint
+- `src/api/client.ts` - Frontend API client
+- `src/components/AnalysisResults.tsx` - Results display component
+
+**Environment Variables Needed:**
+```
+VITE_OPENROUTER_API_KEY=sk-or-... (move to backend only)
+VITE_API_BASE_URL=http://localhost:3001 (for development)
+```
+
 <!-- DEFERRED: Full dashboard UI, authentication, real-time status -->
 <!--
-### 6.2 Upload Dashboard (DEFERRED)
+### 6.5 Upload Dashboard (DEFERRED)
 - [ ] Basic stats overview
 - [ ] Instant insights
 
-### 6.3 Processing Status Display (DEFERRED)
+### 6.6 Processing Status Display (DEFERRED)
 - [ ] Real-time status card
 - [ ] Stage transition messaging
 
-### 6.4 Authenticated Report Dashboard (DEFERRED)
+### 6.7 Authenticated Report Dashboard (DEFERRED)
 - [ ] Secure report viewing interface
 - [ ] Processing metadata display
 - [ ] Data management controls
