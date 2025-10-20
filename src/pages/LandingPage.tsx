@@ -1,11 +1,8 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Header from '@components/layout/Header'
 import Footer from '@components/layout/Footer'
 import Container from '@components/layout/Container'
-
-export interface LandingPageProps {
-  onNavigate?: () => void
-}
 
 // Interactive PII Demo Component
 function PIIDemo() {
@@ -122,7 +119,8 @@ function PIIDemo() {
   )
 }
 
-export default function LandingPage({ onNavigate }: LandingPageProps) {
+export default function LandingPage() {
+  const navigate = useNavigate()
   return (
     <div className="flex min-h-screen flex-col">
       <Header variant="transparent" />
@@ -141,7 +139,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
             </p>
 
             <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row">
-              <button onClick={onNavigate} className="btn-primary px-8 py-4 text-lg">
+              <button onClick={() => navigate('/upload')} className="btn-primary px-8 py-4 text-lg">
                 Upload your data
               </button>
               <button
@@ -153,7 +151,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
               >
                 Try the privacy demo
               </button>
-              <button onClick={onNavigate} className="btn-ghost px-6 py-3 text-base">
+              <button onClick={() => navigate('/upload')} className="btn-ghost px-6 py-3 text-base">
                 Browse a sample first
               </button>
             </div>
@@ -474,7 +472,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
 
             <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row">
               <button
-                onClick={onNavigate}
+                onClick={() => navigate('/upload')}
                 className="btn bg-white px-8 py-4 text-lg text-afterglow-600 shadow-soft-lg hover:bg-warm-50"
               >
                 Start Your Reflection

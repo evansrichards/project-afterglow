@@ -74,7 +74,7 @@ describe('Two-Stage Orchestrator', () => {
         insights: [],
         recommendations: [],
         processingInfo: {
-          stage: 'Stage 1: Quick Triage',
+          stage: 'Stage 1: Quick Triage' as const,
           completedAt: '2025-01-15T10:00:00Z',
           durationSeconds: 12,
           costUsd: 0.5,
@@ -128,7 +128,7 @@ describe('Two-Stage Orchestrator', () => {
         insights: [],
         recommendations: [],
         processingInfo: {
-          stage: 'Stage 1: Quick Triage',
+          stage: 'Stage 1: Quick Triage' as const,
           completedAt: '2025-01-15T10:00:00Z',
           durationSeconds: 13,
           costUsd: 0.52,
@@ -182,7 +182,7 @@ describe('Two-Stage Orchestrator', () => {
         insights: [],
         recommendations: [],
         processingInfo: {
-          stage: 'Stage 1: Quick Triage',
+          stage: 'Stage 1: Quick Triage' as const,
           completedAt: '2025-01-15T10:00:00Z',
           durationSeconds: 15,
           costUsd: 0.55,
@@ -268,7 +268,7 @@ describe('Two-Stage Orchestrator', () => {
           prioritizedRecommendations: [],
         },
         processingInfo: {
-          stage: 'Stage 2: Comprehensive Analysis',
+          stage: 'Stage 2: Comprehensive Analysis' as const,
           completedAt: '2025-01-15T10:01:00Z',
           durationSeconds: 45,
           costUsd: 1.8,
@@ -333,7 +333,7 @@ describe('Two-Stage Orchestrator', () => {
         insights: [],
         recommendations: [],
         processingInfo: {
-          stage: 'Stage 1: Quick Triage',
+          stage: 'Stage 1: Quick Triage' as const,
           completedAt: '2025-01-15T10:00:00Z',
           durationSeconds: 18,
           costUsd: 0.6,
@@ -431,7 +431,7 @@ describe('Two-Stage Orchestrator', () => {
           prioritizedRecommendations: [],
         },
         processingInfo: {
-          stage: 'Stage 2: Comprehensive Analysis',
+          stage: 'Stage 2: Comprehensive Analysis' as const,
           completedAt: '2025-01-15T10:01:00Z',
           durationSeconds: 50,
           costUsd: 2.1,
@@ -482,7 +482,7 @@ describe('Two-Stage Orchestrator', () => {
         insights: [],
         recommendations: [],
         processingInfo: {
-          stage: 'Stage 1: Quick Triage',
+          stage: 'Stage 1: Quick Triage' as const,
           completedAt: '2025-01-15T10:00:00Z',
           durationSeconds: 12,
           costUsd: 0.5,
@@ -524,7 +524,7 @@ describe('Two-Stage Orchestrator', () => {
           insights: [],
           recommendations: [],
           processingInfo: {
-            stage: 'Stage 1: Quick Triage',
+            stage: 'Stage 1: Quick Triage' as const,
             completedAt: '2025-01-15T10:00:00Z',
             durationSeconds: 12,
             costUsd: 0.5,
@@ -572,7 +572,7 @@ describe('Two-Stage Orchestrator', () => {
           insights: [],
           recommendations: [],
           processingInfo: {
-            stage: 'Stage 1: Quick Triage',
+            stage: 'Stage 1: Quick Triage' as const,
             completedAt: '2025-01-15T10:00:00Z',
             durationSeconds: 15,
             costUsd: 0.6,
@@ -625,7 +625,7 @@ describe('Two-Stage Orchestrator', () => {
             prioritizedRecommendations: [],
           },
           processingInfo: {
-            stage: 'Stage 2: Comprehensive Analysis',
+            stage: 'Stage 2: Comprehensive Analysis' as const,
             completedAt: '2025-01-15T10:01:00Z',
             durationSeconds: 50,
             costUsd: 2.1,

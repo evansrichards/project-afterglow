@@ -179,34 +179,58 @@ export async function extractZipFile(
  * Detects the platform (Tinder or Hinge) from extracted files
  */
 export function detectPlatformFromFiles(files: ExtractedFile[]): 'tinder' | 'hinge' | 'unknown' {
-  // Check filenames for platform indicators
-  const hasHingeFiles = files.some(
+  // Check for Hinge-specific patterns first
+  const hasHingeExportFolder = files.some((f) => f.filename.startsWith('export/'))
+  const hasHingeMatchesJson = files.some((f) =>
+    f.filename.toLowerCase().endsWith('export/matches.json')
+  )
+  const hasHingeUserJson = files.some((f) =>
+    f.filename.toLowerCase().endsWith('export/user.json')
+  )
+
+  // Hinge exports have a specific structure with export/ folder
+  if (hasHingeExportFolder || hasHingeMatchesJson || hasHingeUserJson) {
+    return 'hinge'
+  }
+
+  // Check for Hinge CSV files
+  const hasHingeCsvFiles = files.some(
     (f) =>
       f.filename.toLowerCase().includes('hinge') ||
       f.filename.toLowerCase().includes('matches.csv') ||
       f.filename.toLowerCase().includes('messages.csv')
   )
 
-  const hasTinderFiles = files.some((f) => f.filename.toLowerCase().includes('tinder'))
-
-  // Hinge typically uses CSV files, Tinder uses JSON
-  if (hasHingeFiles) {
+  if (hasHingeCsvFiles) {
     return 'hinge'
   }
 
-  if (hasTinderFiles) {
+  // Check for Tinder-specific patterns
+  const hasTinderFiles = files.some((f) => f.filename.toLowerCase().includes('tinder'))
+  // Tinder data.json is typically in a dated folder (e.g., "2025-07-22/data.json")
+  const hasTinderDataJson = files.some((f) => {
+    const lower = f.filename.toLowerCase()
+    return lower.endsWith('data.json') && lower.includes('/')
+  })
+
+  if (hasTinderFiles || hasTinderDataJson) {
     return 'tinder'
   }
 
-  // Check by file types - only if exclusively one type
+  // Fallback: Check by file types - only if exclusively one type
   const hasCSV = files.some((f) => f.extension === 'csv')
   const hasJSON = files.some((f) => f.extension === 'json')
 
-  if (hasCSV && !hasJSON) {
+  // If mixed file types, we can't determine the platform
+  if (hasCSV && hasJSON) {
+    return 'unknown'
+  }
+
+  if (hasCSV) {
     return 'hinge'
   }
 
-  if (hasJSON && !hasCSV) {
+  if (hasJSON) {
     return 'tinder'
   }
 

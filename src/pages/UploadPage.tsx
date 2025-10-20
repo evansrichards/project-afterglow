@@ -125,10 +125,35 @@ export default function UploadPage() {
     setValidation(null)
   }
 
-  const handleSampleSelect = (platform: 'tinder' | 'hinge') => {
+  const handleSampleSelect = async (platform: 'tinder' | 'hinge') => {
     console.log('Sample selected:', platform)
-    // TODO: In next task, load sample data from examples folder
     setError(null)
+    setIsProcessing(true)
+
+    try {
+      // Load sample data from examples folder
+      const filename = platform === 'tinder' ? 'tinder-data.zip' : 'hinge-data.zip'
+      const response = await fetch(`/examples/${filename}`)
+
+      if (!response.ok) {
+        throw new Error(`Failed to load sample ${platform} data`)
+      }
+
+      const blob = await response.blob()
+      const file = new File([blob], filename, { type: 'application/zip' })
+
+      // Use the same validation result as for uploaded files
+      const validationResult: FileValidationResult = {
+        valid: true,
+        platform: undefined, // Will be detected from ZIP contents
+      }
+
+      // Process the file using the existing handler
+      await handleFileSelect(file, validationResult)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load sample data')
+      setIsProcessing(false)
+    }
   }
 
   const handleClearFile = () => {

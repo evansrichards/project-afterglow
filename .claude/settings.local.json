@@ -1,33 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm test -- --run src/lib/analytics/)",
-      "Bash(perl -pi -e \"s/''/''/g\" /Users/evanrichards/Code/project-afterglow/src/lib/analytics/insight-generation.ts)",
-      "Bash(git checkout /Users/evanrichards/Code/project-afterglow/src/lib/analytics/insight-generation.ts)",
-      "Bash(npm test -- --run src/lib/analytics/insight-generation.test.ts)",
-      "Bash(npm install openai)",
-      "Bash(npm test -- --run src/lib/ai/)",
-      "Bash(npm test -- --run src/lib/ai/ai-insights.test.ts)",
-      "Bash(tree -L 3 -I 'node_modules|dist|.git' src)",
-      "Bash(npm test -- --run src/lib/analyzers/safety-screener.test.ts)",
-      "Bash(npx tsc --noEmit --project tsconfig.json)",
-      "Bash(npx eslint src/lib/analyzers/safety-screener.test.ts)",
-      "Bash(npx eslint src/lib/analyzers/safety-screener.ts)",
-      "Bash(npm test -- --run src/lib/analyzers/pattern-recognizer.test.ts)",
-      "Bash(npx eslint src/lib/analyzers/pattern-recognizer.ts src/lib/analyzers/pattern-recognizer.test.ts)",
-      "Bash(npm test -- --run src/lib/analyzers/chronology-mapper.test.ts)",
-      "Bash(npx eslint src/lib/analyzers/chronology-mapper.ts src/lib/analyzers/chronology-mapper.test.ts)",
-      "Bash(npm test -- --run src/lib/evaluators/risk-evaluator.test.ts)",
-      "Bash(npx eslint src/lib/evaluators/risk-evaluator.ts src/lib/evaluators/risk-evaluator.test.ts src/lib/evaluators/types.ts)",
-      "Bash(npx eslint src/lib/evaluators/)",
-      "Bash(npm test -- --run src/lib/reports/stage1-report-generator.test.ts)",
-      "Bash(npx eslint src/lib/reports/stage1-report-generator.ts src/lib/reports/stage1-report-generator.test.ts)",
-      "Bash(npm test -- --run src/lib/analyzers/stage2-comprehensive.test.ts)",
-      "Bash(npx eslint src/lib/analyzers/stage2-types.ts src/lib/analyzers/stage2-comprehensive.ts src/lib/analyzers/stage2-comprehensive.test.ts)",
-      "Bash(npm test -- --run src/lib/reports/stage2-report-generator.test.ts)",
-      "Bash(npx eslint src/lib/reports/stage2-report-generator.ts src/lib/reports/stage2-report-generator.test.ts)",
-      "Bash(npm test -- --run src/lib/orchestrator/two-stage-orchestrator.test.ts)",
-      "Bash(npx eslint src/lib/orchestrator/two-stage-orchestrator.ts src/lib/orchestrator/two-stage-orchestrator.test.ts)"
+      "Bash(npm install react-router-dom)"
     ],
     "deny": [],
     "ask": []

@@ -271,7 +271,7 @@ IMPORTANT:
 async function analyzeWithGPT4Turbo(
   client: OpenAI,
   prompt: string
-): Promise<Stage2ComprehensiveOutput['safetyDeepDive'] & Stage2ComprehensiveOutput['attachmentAnalysis'] & { growthTrajectory: Stage2ComprehensiveOutput['growthTrajectory']; synthesis: Stage2ComprehensiveOutput['synthesis'] }> {
+): Promise<Omit<Stage2ComprehensiveOutput, 'analyzer' | 'metadata'>> {
   const response = await client.chat.completions.create({
     model: STAGE2_CONFIG.model,
     messages: [{ role: 'user', content: prompt }],

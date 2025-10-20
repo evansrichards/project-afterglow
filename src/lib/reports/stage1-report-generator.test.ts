@@ -361,7 +361,7 @@ describe('Stage 1 Report Generator', () => {
         riskLevel: 'orange',
         redFlags: [
           {
-            type: 'manipulation',
+            type: 'explicit-manipulation',
             severity: 'medium',
             description: 'Manipulation detected',
             examples: ['Example 1', 'Example 2'],

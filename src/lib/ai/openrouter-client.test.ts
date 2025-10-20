@@ -290,7 +290,7 @@ describe('OpenRouter Client', () => {
 
   describe('Model Configurations', () => {
     it('all models have valid configurations', () => {
-      Object.entries(MODEL_CONFIGS).forEach(([_key, config]) => {
+      Object.entries(MODEL_CONFIGS).forEach(([, config]) => {
         expect(config.id).toBeTruthy()
         expect(config.name).toBeTruthy()
         expect(config.provider).toBeTruthy()
