@@ -7,7 +7,12 @@
       "Bash(npm test -- --run src/lib/analytics/insight-generation.test.ts)",
       "Bash(npm install openai)",
       "Bash(npm test -- --run src/lib/ai/)",
-      "Bash(npm test -- --run src/lib/ai/ai-insights.test.ts)"
+      "Bash(npm test -- --run src/lib/ai/ai-insights.test.ts)",
+      "Bash(tree -L 3 -I 'node_modules|dist|.git' src)",
+      "Bash(npm test -- --run src/lib/analyzers/safety-screener.test.ts)",
+      "Bash(npx tsc --noEmit --project tsconfig.json)",
+      "Bash(npx eslint src/lib/analyzers/safety-screener.test.ts)",
+      "Bash(npx eslint src/lib/analyzers/safety-screener.ts)"
     ],
     "deny": [],
     "ask": []
