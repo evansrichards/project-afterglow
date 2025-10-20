@@ -25,7 +25,9 @@
       "Bash(npm test -- --run src/lib/analyzers/stage2-comprehensive.test.ts)",
       "Bash(npx eslint src/lib/analyzers/stage2-types.ts src/lib/analyzers/stage2-comprehensive.ts src/lib/analyzers/stage2-comprehensive.test.ts)",
       "Bash(npm test -- --run src/lib/reports/stage2-report-generator.test.ts)",
-      "Bash(npx eslint src/lib/reports/stage2-report-generator.ts src/lib/reports/stage2-report-generator.test.ts)"
+      "Bash(npx eslint src/lib/reports/stage2-report-generator.ts src/lib/reports/stage2-report-generator.test.ts)",
+      "Bash(npm test -- --run src/lib/orchestrator/two-stage-orchestrator.test.ts)",
+      "Bash(npx eslint src/lib/orchestrator/two-stage-orchestrator.ts src/lib/orchestrator/two-stage-orchestrator.test.ts)"
     ],
     "deny": [],
     "ask": []
