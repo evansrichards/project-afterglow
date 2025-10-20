@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm install react-router-dom)"
+      "Bash(npm install react-router-dom)",
+      "Bash(unzip -p examples/tinder-data.zip \"*/data.json\")",
+      "Bash(npm test -- --run src/lib/parsers/tinder-parser.test.ts)",
+      "Bash(node -e \"\nconst fs = require(''fs'');\nconst { tinderParser } = require(''./dist/lib/parsers/tinder-parser.js'');\n\n// This won''t work because we need to build first\nconsole.log(''Need to test with actual file...'');\n\")",
+      "Bash(npx eslint src/lib/parsers/tinder-parser.ts)",
+      "Bash(unzip -p examples/hinge-data.zip \"export/matches.json\")",
+      "Bash(npx eslint src/lib/parsers/hinge-parser.ts src/lib/parsers/index.ts)"
     ],
     "deny": [],
     "ask": []

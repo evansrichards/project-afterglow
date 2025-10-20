@@ -90,7 +90,56 @@ export class TinderParser implements DataParser {
       // Parse JSON
       let data: TinderExport
       try {
-        data = JSON.parse(content)
+        const rawData = JSON.parse(content) as Record<string, unknown>
+
+        // Normalize field names: Tinder exports may have capitalized field names
+        // Convert Messages -> messages, User -> user, etc.
+        data = {
+          messages: (rawData.messages || rawData.Messages) as TinderMessage[] | undefined,
+          matches: (rawData.matches || rawData.Matches) as TinderMatch[] | undefined,
+          user: (rawData.user || rawData.User) as TinderUser | undefined,
+          data_creation: (rawData.data_creation || rawData.Data_creation) as string | undefined,
+        }
+
+        // Handle nested Messages structure: { Messages: [{ match_id, messages: [...] }] }
+        if (rawData.Messages && Array.isArray(rawData.Messages)) {
+          const messagesArray = rawData.Messages as Array<{
+            match_id?: string
+            messages?: Array<{
+              to?: string | number
+              from?: string | number
+              message?: string
+              sent_date?: string
+            }>
+          }>
+          const flatMessages: TinderMessage[] = []
+
+          for (const matchGroup of messagesArray) {
+            const matchId = matchGroup.match_id || `match_${flatMessages.length}`
+
+            if (matchGroup.messages && Array.isArray(matchGroup.messages)) {
+              for (let i = 0; i < matchGroup.messages.length; i++) {
+                const msg = matchGroup.messages[i]
+
+                // Convert nested message format to TinderMessage format
+                const normalizedMessage: TinderMessage = {
+                  _id: `${matchId}_msg_${i}`,
+                  match_id: matchId,
+                  sent_date: msg.sent_date || new Date().toISOString(),
+                  message: msg.message || '',
+                  from: String(msg.from || ''),
+                  to: String(msg.to || ''),
+                }
+
+                flatMessages.push(normalizedMessage)
+              }
+            }
+          }
+
+          if (flatMessages.length > 0) {
+            data.messages = flatMessages
+          }
+        }
       } catch (err) {
         return {
           success: false,

@@ -86,23 +86,24 @@ export async function parseExtractedFiles(
     return result
   }
 
-  // For Hinge, parse CSV files and merge results
+  // For Hinge, parse CSV or JSON files and merge results
   if (platform === 'hinge') {
-    const csvFiles = files.filter((f) => f.extension === 'csv')
-    if (csvFiles.length === 0) {
+    // Modern Hinge exports use JSON, legacy exports use CSV
+    const dataFiles = files.filter((f) => f.extension === 'csv' || f.extension === 'json')
+    if (dataFiles.length === 0) {
       return {
         success: false,
         errors: [
-          createParseError('NO_CSV_FILES', 'Hinge export must contain CSV files', {
+          createParseError('NO_DATA_FILES', 'Hinge export must contain CSV or JSON files', {
             severity: 'critical',
           }),
         ],
       }
     }
 
-    // Parse each CSV file
+    // Parse each file
     const results = await Promise.all(
-      csvFiles.map((file) => parser.parse(file.content, file.filename)),
+      dataFiles.map((file) => parser.parse(file.content, file.filename)),
     )
 
     // Check if any parsing failed

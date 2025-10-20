@@ -30,6 +30,7 @@ export default function UploadPage() {
     null
   )
   const [parseResult, setParseResult] = useState<ParseResult | null>(null)
+  const [showAnalysisPreview, setShowAnalysisPreview] = useState(false)
 
   const handleFileSelect = async (file: File, validationResult: FileValidationResult) => {
     console.log('File selected:', file.name, validationResult)
@@ -290,14 +291,94 @@ export default function UploadPage() {
                     </button>
                   </div>
 
-                  {/* Next step button (for future implementation) */}
+                  {/* Next step button */}
                   <div className="mt-4">
                     <button
                       className="btn-primary w-full sm:w-auto"
-                      onClick={() => console.log('Process files:', extractedFiles)}
+                      onClick={() => setShowAnalysisPreview(true)}
+                      disabled={!parseResult?.data}
                     >
                       Process File →
                     </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Analysis Preview */}
+              {showAnalysisPreview && parseResult?.data && (
+                <div className="mt-6 animate-slide-up rounded-xl bg-purple-50 p-6">
+                  <div className="mb-4 flex items-start justify-between">
+                    <div>
+                      <h3 className="text-xl font-semibold text-purple-900">
+                        ✅ Data Successfully Parsed!
+                      </h3>
+                      <p className="mt-1 text-sm text-purple-700">
+                        Your data is ready for analysis
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setShowAnalysisPreview(false)}
+                      className="text-purple-600 hover:text-purple-800"
+                    >
+                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    <div className="rounded-lg bg-white p-4 shadow-soft">
+                      <div className="text-2xl font-bold text-purple-900">
+                        {parseResult.data.messages.length.toLocaleString()}
+                      </div>
+                      <div className="mt-1 text-sm text-purple-700">Messages</div>
+                    </div>
+                    <div className="rounded-lg bg-white p-4 shadow-soft">
+                      <div className="text-2xl font-bold text-purple-900">
+                        {parseResult.data.matches.length.toLocaleString()}
+                      </div>
+                      <div className="mt-1 text-sm text-purple-700">Matches</div>
+                    </div>
+                    <div className="rounded-lg bg-white p-4 shadow-soft">
+                      <div className="text-2xl font-bold text-purple-900">
+                        {parseResult.data.participants.length.toLocaleString()}
+                      </div>
+                      <div className="mt-1 text-sm text-purple-700">Participants</div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 rounded-lg bg-white p-4 shadow-soft">
+                    <h4 className="font-semibold text-purple-900">Platform Details</h4>
+                    <div className="mt-2 space-y-1 text-sm text-purple-700">
+                      <div>
+                        <span className="font-medium">Platform:</span>{' '}
+                        {parseResult.metadata?.platform || 'unknown'}
+                      </div>
+                      <div>
+                        <span className="font-medium">Parser Version:</span>{' '}
+                        {parseResult.metadata?.parserVersion || 'N/A'}
+                      </div>
+                      {parseResult.warnings && parseResult.warnings.length > 0 && (
+                        <div className="mt-2">
+                          <span className="font-medium">Warnings:</span> {parseResult.warnings.length}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-6 rounded-lg border-2 border-dashed border-purple-300 bg-purple-50/50 p-4 text-center">
+                    <p className="text-sm text-purple-700">
+                      <strong>Next Steps:</strong> The full analysis pipeline (AI-powered insights,
+                      safety screening, attachment analysis) is coming soon!
+                    </p>
+                    <p className="mt-2 text-xs text-purple-600">
+                      For now, you can see that your data was successfully parsed and validated.
+                    </p>
                   </div>
                 </div>
               )}

@@ -25,11 +25,18 @@ export class HingeParser implements DataParser {
   version = PARSER_VERSION
 
   /**
-   * Parse Hinge CSV exports (matches and messages)
+   * Parse Hinge exports (CSV or JSON format)
    */
   async parse(content: string, filename: string): Promise<ParseResult> {
     try {
-      // Determine if this is matches or messages file
+      // Check if this is JSON format (newer Hinge exports)
+      const isJsonFormat = filename.toLowerCase().endsWith('.json') || content.trim().startsWith('[') || content.trim().startsWith('{')
+
+      if (isJsonFormat) {
+        return this.parseJSON(content)
+      }
+
+      // Legacy CSV format
       const isMatchesFile = filename.toLowerCase().includes('match')
       const isMessagesFile = filename.toLowerCase().includes('message')
 
@@ -64,6 +71,131 @@ export class HingeParser implements DataParser {
         success: false,
         errors: [
           createParseError('PARSE_FAILED', `Unexpected parsing error: ${err instanceof Error ? err.message : 'Unknown error'}`, {
+            severity: 'critical',
+          }),
+        ],
+      }
+    }
+  }
+
+  /**
+   * Parse modern Hinge JSON export format
+   */
+  private parseJSON(content: string): ParseResult {
+    try {
+      const data = JSON.parse(content)
+
+      if (!Array.isArray(data)) {
+        return {
+          success: false,
+          errors: [
+            createParseError('INVALID_JSON', 'Hinge JSON export must be an array of matches', {
+              severity: 'critical',
+            }),
+          ],
+        }
+      }
+
+      const messages: NormalizedMessage[] = []
+      const matches: MatchContext[] = []
+      const participants = new Map<string, ParticipantProfile>()
+      const warnings: ReturnType<typeof createParseWarning>[] = []
+
+      // Add user profile
+      participants.set(USER_ID, {
+        id: USER_ID,
+        platform: 'hinge',
+        isUser: true,
+      })
+
+      // Process each match
+      for (let matchIndex = 0; matchIndex < data.length; matchIndex++) {
+        const matchData = data[matchIndex]
+        const matchId = `match_${matchIndex}`
+        const otherParticipantId = `participant_${matchIndex}`
+
+        // Extract match timestamp
+        const matchTimestamp = matchData.match?.[0]?.timestamp || matchData.like?.[0]?.timestamp
+        if (matchTimestamp) {
+          matches.push({
+            id: matchId,
+            platform: 'hinge',
+            createdAt: new Date(matchTimestamp).toISOString(),
+            status: 'active',
+            participants: [USER_ID, otherParticipantId],
+            attributes: {},
+          })
+        }
+
+        // Add participant
+        participants.set(otherParticipantId, {
+          id: otherParticipantId,
+          platform: 'hinge',
+          isUser: false,
+        })
+
+        // Process chats
+        if (matchData.chats && Array.isArray(matchData.chats)) {
+          for (let i = 0; i < matchData.chats.length; i++) {
+            const chat = matchData.chats[i]
+
+            if (chat.body && chat.timestamp) {
+              messages.push({
+                id: `${matchId}_msg_${i}`,
+                matchId,
+                senderId: USER_ID, // Hinge doesn't specify sender, assume user
+                sentAt: new Date(chat.timestamp).toISOString(),
+                body: chat.body,
+                direction: 'user',
+              })
+            }
+          }
+        }
+      }
+
+      // Capture schema snapshot
+      const schemaSnapshot = captureSchemaSnapshot(data, 'hinge', PARSER_VERSION)
+
+      // Validate result
+      const parseResult: ParseResult = {
+        success: true,
+        data: {
+          participants: Array.from(participants.values()),
+          matches,
+          messages,
+          rawRecords: [], // Not tracked for JSON format
+        },
+        metadata: {
+          platform: 'hinge',
+          parserVersion: PARSER_VERSION,
+          messageCount: messages.length,
+          matchCount: matches.length,
+          participantCount: participants.size,
+          dateRange: calculateDateRange(messages),
+        },
+        schemaSnapshot,
+      }
+
+      const validationResult = validateParseResult(parseResult)
+      warnings.push(...validationResult.warnings)
+
+      if (validationResult.errors.length > 0) {
+        return {
+          success: false,
+          errors: validationResult.errors,
+          warnings: warnings.length > 0 ? warnings : undefined,
+        }
+      }
+
+      return {
+        ...parseResult,
+        warnings: warnings.length > 0 ? warnings : undefined,
+      }
+    } catch (err) {
+      return {
+        success: false,
+        errors: [
+          createParseError('JSON_PARSE_ERROR', `Failed to parse JSON: ${err instanceof Error ? err.message : 'Unknown error'}`, {
             severity: 'critical',
           }),
         ],
