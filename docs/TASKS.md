@@ -51,7 +51,7 @@
   - Output: Time-weighted evolution data + growth flags
 
 ### 5.2 Conditional Evaluators (Triggered by Analysis)
-- [ ] 5.2.1 Build Risk Evaluator (triggered by yellow/orange/red safety flags):
+- [x] 5.2.1 Build Risk Evaluator (triggered by yellow/orange/red safety flags):
   - Advanced manipulation tactic detection
   - Coercive control pattern analysis
   - Trauma bonding indicator assessment
