@@ -38,6 +38,10 @@ export interface AnalyzerMetadata {
   durationMs: number
   /** Model used for AI analysis (if applicable) */
   model?: string
+  /** Number of conversations analyzed (if applicable) */
+  conversationsAnalyzed?: number
+  /** Number of messages analyzed (if applicable) */
+  messagesAnalyzed?: number
   /** Tokens consumed (if applicable) */
   tokensUsed?: {
     input: number

@@ -281,7 +281,7 @@ describe('Chronology Mapper Analyzer', () => {
       expect(result.segments.length).toBeGreaterThan(0)
       expect(result.growth.detected).toBe(false)
       expect(result.escalateToGrowthEvaluator).toBe(false)
-      expect(result.metadata.model).toBe('openai/gpt-4-turbo')
+      expect(result.metadata.model).toBe('openai/gpt-5')
     })
 
     it('should detect growth trajectory and escalate', async () => {
@@ -438,7 +438,7 @@ describe('Chronology Mapper Analyzer', () => {
 
       expect(result.metadata.analyzedAt).toBeDefined()
       expect(result.metadata.durationMs).toBeGreaterThanOrEqual(0)
-      expect(result.metadata.model).toBe('openai/gpt-4-turbo')
+      expect(result.metadata.model).toBe('openai/gpt-5')
       expect(result.metadata.tokensUsed).toBeDefined()
       expect(result.metadata.costUsd).toBeGreaterThan(0)
     })

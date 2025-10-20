@@ -11,6 +11,7 @@ import Container from '@components/layout/Container'
 import FileUploadZone from '@components/upload/FileUploadZone'
 import SampleDataLinks from '@components/upload/SampleDataLinks'
 import ExportInstructions from '@components/upload/ExportInstructions'
+import AnalysisResultsDisplay from '@components/results/AnalysisResultsDisplay'
 import type { FileValidationResult } from '@lib/upload/validation'
 import {
   extractZipFile,
@@ -19,6 +20,8 @@ import {
   type ExtractedFile,
 } from '@lib/upload/zip-extractor'
 import { parseExtractedFiles, type ParseResult } from '@lib/parsers'
+import { analyzeData, ApiError } from '@api/client'
+import type { AnalyzeResponse } from '../../server/types/api'
 
 export default function UploadPage() {
   const [error, setError] = useState<string | null>(null)
@@ -31,6 +34,11 @@ export default function UploadPage() {
   )
   const [parseResult, setParseResult] = useState<ParseResult | null>(null)
   const [showAnalysisPreview, setShowAnalysisPreview] = useState(false)
+
+  // Analysis state
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [analysisResult, setAnalysisResult] = useState<AnalyzeResponse | null>(null)
+  const [analysisError, setAnalysisError] = useState<string | null>(null)
 
   const handleFileSelect = async (file: File, validationResult: FileValidationResult) => {
     console.log('File selected:', file.name, validationResult)
@@ -165,6 +173,70 @@ export default function UploadPage() {
     setDetectedPlatform(null)
     setIsProcessing(false)
     setParseResult(null)
+    setAnalysisResult(null)
+    setAnalysisError(null)
+    setShowAnalysisPreview(false)
+  }
+
+  const handleAnalyze = async () => {
+    if (!parseResult?.data) {
+      setError('No parsed data available for analysis')
+      return
+    }
+
+    // Find the current user's ID from participants
+    console.log('🔍 All participants:', parseResult.data.participants)
+    const currentUser = parseResult.data.participants.find((p) => p.isUser)
+    console.log('🔍 Current user found:', currentUser)
+
+    if (!currentUser) {
+      setError('Could not identify current user in parsed data')
+      return
+    }
+
+    if (!currentUser.id) {
+      setError('Current user found but has no ID')
+      console.error('Current user object:', currentUser)
+      return
+    }
+
+    setIsAnalyzing(true)
+    setAnalysisError(null)
+    setShowAnalysisPreview(false)
+
+    try {
+      console.log('🔬 Starting analysis...')
+      console.log('   Sending to backend:', {
+        messages: parseResult.data.messages.length,
+        matches: parseResult.data.matches.length,
+        participants: parseResult.data.participants.length,
+        userId: currentUser.id,
+        platform: detectedPlatform,
+      })
+
+      const result = await analyzeData({
+        messages: parseResult.data.messages,
+        matches: parseResult.data.matches,
+        participants: parseResult.data.participants,
+        userId: currentUser.id,
+        platform: (detectedPlatform as 'tinder' | 'hinge' | 'other') || 'other',
+      })
+
+      console.log('✅ Analysis complete:', result)
+      setAnalysisResult(result)
+    } catch (err) {
+      console.error('❌ Analysis failed:', err)
+
+      if (err instanceof ApiError) {
+        setAnalysisError(`Analysis failed: ${err.message}`)
+      } else if (err instanceof Error) {
+        setAnalysisError(err.message)
+      } else {
+        setAnalysisError('An unknown error occurred during analysis')
+      }
+    } finally {
+      setIsAnalyzing(false)
+    }
   }
 
   return (
@@ -295,17 +367,102 @@ export default function UploadPage() {
                   <div className="mt-4">
                     <button
                       className="btn-primary w-full sm:w-auto"
-                      onClick={() => setShowAnalysisPreview(true)}
-                      disabled={!parseResult?.data}
+                      onClick={handleAnalyze}
+                      disabled={!parseResult?.data || isAnalyzing}
                     >
-                      Process File →
+                      {isAnalyzing ? 'Analyzing...' : 'Analyze Data →'}
                     </button>
                   </div>
                 </div>
               )}
 
+              {/* Analysis in progress */}
+              {isAnalyzing && (
+                <div className="mt-6 animate-slide-up rounded-xl bg-blue-50 p-6">
+                  <div className="flex gap-4">
+                    <svg
+                      className="h-8 w-8 flex-shrink-0 animate-spin text-blue-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
+                    </svg>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-semibold text-blue-900">
+                        Running AI Analysis...
+                      </h3>
+                      <p className="mt-1 text-sm text-blue-700">
+                        This may take 30-60 seconds as we analyze your conversations for patterns,
+                        safety concerns, and insights.
+                      </p>
+                      <div className="mt-4 space-y-2 text-sm text-blue-600">
+                        <div className="flex items-center gap-2">
+                          <div className="h-2 w-2 rounded-full bg-blue-400"></div>
+                          <span>Screening for safety concerns...</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="h-2 w-2 rounded-full bg-blue-300"></div>
+                          <span>Analyzing conversation patterns...</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="h-2 w-2 rounded-full bg-blue-200"></div>
+                          <span>Generating insights...</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Analysis error */}
+              {analysisError && !isAnalyzing && (
+                <div className="mt-6 animate-slide-up rounded-xl bg-red-50 p-6">
+                  <div className="flex gap-3">
+                    <svg
+                      className="h-6 w-6 flex-shrink-0 text-red-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <div>
+                      <h4 className="font-semibold text-red-900">Analysis Failed</h4>
+                      <p className="mt-1 text-sm text-red-700">{analysisError}</p>
+                      <button
+                        onClick={handleAnalyze}
+                        className="mt-3 text-sm font-medium text-red-800 underline hover:text-red-900"
+                      >
+                        Try Again
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Analysis results */}
+              {analysisResult && !isAnalyzing && (
+                <div className="mt-6">
+                  <AnalysisResultsDisplay
+                    result={analysisResult}
+                    onNewAnalysis={handleClearFile}
+                  />
+                </div>
+              )}
+
               {/* Analysis Preview */}
-              {showAnalysisPreview && parseResult?.data && (
+              {showAnalysisPreview && parseResult?.data && !isAnalyzing && !analysisResult && (
                 <div className="mt-6 animate-slide-up rounded-xl bg-purple-50 p-6">
                   <div className="mb-4 flex items-start justify-between">
                     <div>
@@ -432,12 +589,12 @@ export default function UploadPage() {
               </div>
               <div className="flex-1 space-y-2">
                 <h3 className="font-display text-lg font-semibold text-twilight-900">
-                  Your data never leaves your device
+                  Your privacy matters
                 </h3>
                 <p className="text-twilight-700">
-                  All file processing happens right here in your browser. We don't send your
-                  messages, matches, or any personal information to our servers. You can delete
-                  everything instantly at any time.
+                  File parsing happens in your browser. When you choose to analyze, we send your
+                  data to our secure server for AI analysis, then immediately delete it after
+                  generating your report. We never store your messages or personal information.
                 </p>
               </div>
             </div>

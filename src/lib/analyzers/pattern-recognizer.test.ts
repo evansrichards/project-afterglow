@@ -253,7 +253,7 @@ describe('Pattern Recognizer Analyzer', () => {
       expect(result.attachmentMarkers.secureMarkers.length).toBeGreaterThan(0)
       expect(result.authenticity.score).toBeGreaterThan(0.5)
       expect(result.escalateToAttachmentEvaluator).toBe(false)
-      expect(result.metadata.model).toBe('openai/gpt-4-turbo')
+      expect(result.metadata.model).toBe('openai/gpt-5')
       expect(result.metadata.costUsd).toBeGreaterThan(0)
     })
 
@@ -359,7 +359,7 @@ describe('Pattern Recognizer Analyzer', () => {
 
       expect(result.metadata.analyzedAt).toBeDefined()
       expect(result.metadata.durationMs).toBeGreaterThanOrEqual(0)
-      expect(result.metadata.model).toBe('openai/gpt-4-turbo')
+      expect(result.metadata.model).toBe('openai/gpt-5')
       expect(result.metadata.tokensUsed).toBeDefined()
       expect(result.metadata.costUsd).toBeGreaterThan(0)
     })

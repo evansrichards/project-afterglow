@@ -16,7 +16,7 @@ import { getOpenRouterApiKey, getOpenRouterSiteUrl, getOpenRouterAppName } from 
  */
 const PATTERN_RECOGNIZER_CONFIG = {
   /** Model to use for pattern recognition */
-  model: 'openai/gpt-4-turbo',
+  model: 'openai/gpt-5',
   /** Temperature for nuanced analysis */
   temperature: 0.4,
   /** Maximum messages to analyze */

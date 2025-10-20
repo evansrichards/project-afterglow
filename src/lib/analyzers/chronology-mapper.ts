@@ -16,7 +16,7 @@ import { getOpenRouterApiKey, getOpenRouterSiteUrl, getOpenRouterAppName } from 
  */
 const CHRONOLOGY_MAPPER_CONFIG = {
   /** Model to use for chronological analysis */
-  model: 'openai/gpt-4-turbo',
+  model: 'openai/gpt-5',
   /** Temperature for nuanced temporal analysis */
   temperature: 0.4,
   /** Minimum months of data to trigger Growth Evaluator */

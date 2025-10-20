@@ -97,7 +97,7 @@ describe('Risk Evaluator', () => {
       metadata: {
         analyzedAt: new Date().toISOString(),
         durationMs: 100,
-        model: 'gpt-4-turbo',
+        model: 'gpt-5',
         costUsd: 0.05,
       },
     },
@@ -123,7 +123,7 @@ describe('Risk Evaluator', () => {
       metadata: {
         analyzedAt: new Date().toISOString(),
         durationMs: 100,
-        model: 'gpt-4-turbo',
+        model: 'gpt-5',
         costUsd: 0.05,
       },
     },
@@ -346,7 +346,7 @@ describe('Risk Evaluator', () => {
       expect(result.evaluator).toBe('risk-evaluator')
       expect(result.manipulationTactics.length).toBeGreaterThan(0)
       expect(result.escalateToCrisisEvaluator).toBe(false)
-      expect(result.metadata.model).toBe('openai/gpt-4')
+      expect(result.metadata.model).toBe('openai/gpt-5')
       expect(result.metadata.triggerReason).toContain('Minor safety concerns')
     })
 
@@ -432,7 +432,7 @@ describe('Risk Evaluator', () => {
 
       expect(result.metadata.evaluatedAt).toBeDefined()
       expect(result.metadata.durationMs).toBeGreaterThanOrEqual(0)
-      expect(result.metadata.model).toBe('openai/gpt-4')
+      expect(result.metadata.model).toBe('openai/gpt-5')
       expect(result.metadata.tokensUsed).toBeDefined()
       expect(result.metadata.costUsd).toBeGreaterThan(0)
       expect(result.metadata.triggerReason).toBeDefined()

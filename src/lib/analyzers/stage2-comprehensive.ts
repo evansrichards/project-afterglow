@@ -18,7 +18,7 @@ import { getOpenRouterApiKey, getOpenRouterSiteUrl, getOpenRouterAppName } from 
  */
 const STAGE2_CONFIG = {
   /** Model for comprehensive analysis */
-  model: 'openai/gpt-4-turbo',
+  model: 'openai/gpt-5',
   /** Temperature for balanced creativity and accuracy */
   temperature: 0.3,
   /** Maximum messages to analyze */

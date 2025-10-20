@@ -37,6 +37,12 @@ export interface AnalyzeResponse {
     processingTimeMs: number
     /** Platform that data came from */
     platform: string
+    /** Data counts that were analyzed */
+    dataAnalyzed: {
+      messageCount: number
+      matchCount: number
+      participantCount: number
+    }
   }
 }
 

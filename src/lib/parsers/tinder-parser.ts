@@ -173,7 +173,7 @@ export class TinderParser implements DataParser {
 
       // Add user profile
       if (data.user) {
-        participantMap.set(userId, this.parseUserProfile(data.user, filename))
+        participantMap.set(userId, this.parseUserProfile(data.user, userId, filename))
       }
 
       // Parse matches and their participants
@@ -307,9 +307,9 @@ export class TinderParser implements DataParser {
   /**
    * Parse user profile
    */
-  private parseUserProfile(user: TinderUser, source: string): ParticipantProfile {
+  private parseUserProfile(user: TinderUser, userId: string, source: string): ParticipantProfile {
     return {
-      id: user._id,
+      id: userId,
       platform: 'tinder',
       isUser: true,
       age: user.birth_date ? this.calculateAge(user.birth_date) : undefined,

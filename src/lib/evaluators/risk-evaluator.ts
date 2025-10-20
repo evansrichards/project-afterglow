@@ -16,7 +16,7 @@ import { getOpenRouterApiKey, getOpenRouterSiteUrl, getOpenRouterAppName } from 
  */
 const RISK_EVALUATOR_CONFIG = {
   /** Model to use for risk evaluation */
-  model: 'openai/gpt-4',
+  model: 'openai/gpt-5',
   /** Temperature for focused safety analysis */
   temperature: 0.2,
   /** Maximum messages to analyze */

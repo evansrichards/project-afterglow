@@ -54,6 +54,15 @@ router.post(
     const requestStart = Date.now()
     const requestBody = req.body as AnalyzeRequest
 
+    console.log('📊 Raw request body keys:', Object.keys(req.body))
+    console.log('📊 Request body types:', {
+      messages: Array.isArray(req.body.messages) ? `array(${req.body.messages?.length})` : typeof req.body.messages,
+      matches: Array.isArray(req.body.matches) ? `array(${req.body.matches?.length})` : typeof req.body.matches,
+      participants: Array.isArray(req.body.participants) ? `array(${req.body.participants?.length})` : typeof req.body.participants,
+      userId: typeof req.body.userId,
+      platform: typeof req.body.platform,
+    })
+
     try {
       // Validate that we have data to analyze
       if (requestBody.messages.length === 0) {
@@ -65,6 +74,7 @@ router.post(
       console.log(`   Messages: ${requestBody.messages.length}`)
       console.log(`   Matches: ${requestBody.matches.length}`)
       console.log(`   Participants: ${requestBody.participants.length}`)
+      console.log(`   User ID: ${requestBody.userId}`)
 
       // Run two-stage analysis
       const result = await runTwoStageAnalysis(
@@ -92,6 +102,11 @@ router.post(
           requestedAt: new Date(requestStart).toISOString(),
           processingTimeMs: processingTime,
           platform: requestBody.platform,
+          dataAnalyzed: {
+            messageCount: requestBody.messages.length,
+            matchCount: requestBody.matches.length,
+            participantCount: requestBody.participants.length,
+          },
         },
       }
 

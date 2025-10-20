@@ -406,7 +406,7 @@ describe('Stage 2 Comprehensive Analyzer', () => {
 
       expect(result.metadata.analyzedAt).toBeDefined()
       expect(result.metadata.durationMs).toBeGreaterThanOrEqual(0)
-      expect(result.metadata.model).toBe('openai/gpt-4-turbo')
+      expect(result.metadata.model).toBe('openai/gpt-5')
       expect(result.metadata.tokensUsed).toBeDefined()
       expect(result.metadata.costUsd).toBeGreaterThan(0)
     })

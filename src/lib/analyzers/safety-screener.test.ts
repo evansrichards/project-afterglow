@@ -10,7 +10,7 @@ import { runSafetyScreener, _testing } from './safety-screener'
 import type { AnalyzerInput } from './types'
 import type { NormalizedMessage } from '@/types/data-model'
 
-const { filterRecentMessages, sampleMessages, shouldEscalateToRiskEvaluator } = _testing
+const { sampleConversations, shouldEscalateToRiskEvaluator, chunkMessages } = _testing
 
 // Mock the AI modules
 vi.mock('../ai/openrouter-client', () => ({
@@ -30,160 +30,205 @@ vi.mock('../ai/config', () => ({
 }))
 
 describe('Safety Screener Analyzer', () => {
-  const createMessage = (id: string, body: string, daysAgo: number): NormalizedMessage => ({
-    id,
-    matchId: 'match-1',
-    senderId: 'user-1',
-    sentAt: new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000).toISOString(),
-    body,
-    direction: 'user',
-  })
+  describe('sampleConversations', () => {
+    const createConversationMessage = (
+      id: string,
+      matchId: string,
+      body: string,
+      daysAgo: number,
+      direction: 'user' | 'match' = 'user'
+    ): NormalizedMessage => ({
+      id,
+      matchId,
+      senderId: direction === 'user' ? 'user-1' : matchId,
+      sentAt: new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000).toISOString(),
+      body,
+      direction,
+    })
 
-  describe('filterRecentMessages (90-day filter)', () => {
-    it('should only include messages from the past 90 days', () => {
+    it('should prioritize conversations with recent activity', () => {
       const input: AnalyzerInput = {
         messages: [
-          createMessage('1', 'Recent message', 10),
-          createMessage('2', 'Old message', 100),
-          createMessage('3', 'Very recent message', 1),
-          createMessage('4', 'Ancient message', 365),
-          createMessage('5', 'Message at boundary', 90),
+          // Match 1: last message 10 days ago
+          createConversationMessage('1', 'match-1', 'Old message from match 1', 50),
+          createConversationMessage('2', 'match-1', 'Newer message from match 1', 10),
+          // Match 2: last message 1 day ago
+          createConversationMessage('3', 'match-2', 'Recent message from match 2', 5),
+          createConversationMessage('4', 'match-2', 'Latest from match 2', 1),
+          // Match 3: last message 30 days ago
+          createConversationMessage('5', 'match-3', 'Medium old from match 3', 30),
         ],
         matches: [],
         participants: [],
         userId: 'user-1',
       }
 
-      const filtered = filterRecentMessages(input)
+      const result = sampleConversations(input, 3)
 
-      expect(filtered).toHaveLength(3)
-      expect(filtered.find((m) => m.id === '1')).toBeDefined() // 10 days ago
-      expect(filtered.find((m) => m.id === '3')).toBeDefined() // 1 day ago
-      expect(filtered.find((m) => m.id === '5')).toBeDefined() // 90 days ago (boundary)
-      expect(filtered.find((m) => m.id === '2')).toBeUndefined() // 100 days ago
-      expect(filtered.find((m) => m.id === '4')).toBeUndefined() // 365 days ago
+      // Should sample all 3 conversations
+      expect(result.conversationCount).toBe(3)
+      // Order should be match-2 (1 day), match-1 (10 days), match-3 (30 days)
+      const messagesText = result.sampledMessages.join('\n')
+      expect(messagesText).toContain('Latest from match 2')
+      expect(messagesText).toContain('Newer message from match 1')
+      expect(messagesText).toContain('Medium old from match 3')
+
+      // Verify match-2 appears before match-1 (most recent first)
+      const match2Index = messagesText.indexOf('Latest from match 2')
+      const match1Index = messagesText.indexOf('Newer message from match 1')
+      expect(match2Index).toBeLessThan(match1Index)
     })
 
-    it('should return empty array if all messages are older than 90 days', () => {
+    it('should limit to maxConversations', () => {
       const input: AnalyzerInput = {
         messages: [
-          createMessage('1', 'Old message 1', 100),
-          createMessage('2', 'Old message 2', 200),
-          createMessage('3', 'Old message 3', 365),
+          ...Array.from({ length: 10 }, (_, i) =>
+            createConversationMessage(`msg-1-${i}`, 'match-1', `Message ${i}`, i)
+          ),
+          ...Array.from({ length: 10 }, (_, i) =>
+            createConversationMessage(`msg-2-${i}`, 'match-2', `Message ${i}`, i)
+          ),
+          ...Array.from({ length: 10 }, (_, i) =>
+            createConversationMessage(`msg-3-${i}`, 'match-3', `Message ${i}`, i)
+          ),
         ],
         matches: [],
         participants: [],
         userId: 'user-1',
       }
 
-      const filtered = filterRecentMessages(input)
+      const result = sampleConversations(input, 2)
 
-      expect(filtered).toHaveLength(0)
+      // Should only sample 2 most recent conversations
+      expect(result.conversationCount).toBe(2)
     })
 
-    it('should return all messages if all are within 90 days', () => {
+    it('should limit messages per conversation to 50', () => {
       const input: AnalyzerInput = {
-        messages: [
-          createMessage('1', 'Recent 1', 1),
-          createMessage('2', 'Recent 2', 30),
-          createMessage('3', 'Recent 3', 60),
-          createMessage('4', 'Recent 4', 89),
-        ],
-        matches: [],
-        participants: [],
-        userId: 'user-1',
-      }
-
-      const filtered = filterRecentMessages(input)
-
-      expect(filtered).toHaveLength(4)
-    })
-  })
-
-  describe('sampleMessages', () => {
-    it('should prioritize recent messages within 90-day window', () => {
-      const input: AnalyzerInput = {
-        messages: [
-          createMessage('1', 'Medium old message', 80),
-          createMessage('2', 'Old message', 89),
-          createMessage('3', 'Recent message 1', 1),
-          createMessage('4', 'Recent message 2', 2),
-          createMessage('5', 'Recent message 3', 3),
-        ],
-        matches: [],
-        participants: [],
-        userId: 'user-1',
-      }
-
-      const sampled = sampleMessages(input, 5)
-
-      // Should include recent messages, all within 90 days
-      expect(sampled.join(' ')).toContain('Recent message')
-      expect(sampled).toHaveLength(5)
-    })
-
-    it('should filter out messages older than 90 days', () => {
-      const input: AnalyzerInput = {
-        messages: [
-          createMessage('1', 'Very old message', 365),
-          createMessage('2', 'Old message', 100),
-          createMessage('3', 'Recent message 1', 1),
-          createMessage('4', 'Recent message 2', 10),
-          createMessage('5', 'Recent message 3', 30),
-        ],
-        matches: [],
-        participants: [],
-        userId: 'user-1',
-      }
-
-      const sampled = sampleMessages(input, 10)
-
-      // Should only include the 3 recent messages (within 90 days)
-      expect(sampled).toHaveLength(3)
-      expect(sampled.join(' ')).not.toContain('Very old')
-      expect(sampled.join(' ')).not.toContain('Old message')
-      expect(sampled.join(' ')).toContain('Recent message')
-    })
-
-    it('should limit to maxMessages within 90-day window', () => {
-      const input: AnalyzerInput = {
-        // Create 150 messages within 90 days (0-89 days ago)
-        messages: Array.from({ length: 150 }, (_, i) =>
-          createMessage(`msg-${i}`, `Message ${i}`, i % 90)
+        // Create 100 messages in a single conversation
+        messages: Array.from({ length: 100 }, (_, i) =>
+          createConversationMessage(`msg-${i}`, 'match-1', `Message ${i}`, 1)
         ),
         matches: [],
         participants: [],
         userId: 'user-1',
       }
 
-      const sampled = sampleMessages(input, 100)
+      const result = sampleConversations(input, 1)
 
-      // Should limit to 100 even though 150 are available
-      expect(sampled).toHaveLength(100)
+      // Should have 1 conversation
+      expect(result.conversationCount).toBe(1)
+      // Should have max 50 messages (most recent ones)
+      expect(result.totalMessageCount).toBe(50)
     })
 
-    it('should include sender label in formatted message', () => {
+    it('should include conversation headers', () => {
       const input: AnalyzerInput = {
         messages: [
-          { ...createMessage('1', 'User says hi', 1), direction: 'user' },
-          { ...createMessage('2', 'Match responds', 1), direction: 'match' },
+          createConversationMessage('1', 'match-1', 'Message 1', 1),
+          createConversationMessage('2', 'match-2', 'Message 2', 1),
         ],
         matches: [],
         participants: [],
         userId: 'user-1',
       }
 
-      const sampled = sampleMessages(input, 10)
+      const result = sampleConversations(input, 2)
 
-      expect(sampled[0]).toContain('User:')
-      expect(sampled[1]).toContain('Match:')
+      // Should have conversation headers
+      expect(result.sampledMessages.some(m => m.includes('--- Conversation'))).toBe(true)
+      expect(result.sampledMessages.some(m => m.includes('messages) ---'))).toBe(true)
+    })
+
+    it('should include sender labels', () => {
+      const input: AnalyzerInput = {
+        messages: [
+          createConversationMessage('1', 'match-1', 'User message', 1, 'user'),
+          createConversationMessage('2', 'match-1', 'Match message', 1, 'match'),
+        ],
+        matches: [],
+        participants: [],
+        userId: 'user-1',
+      }
+
+      const result = sampleConversations(input, 1)
+
+      // Should have sender labels
+      const messagesText = result.sampledMessages.join('\n')
+      expect(messagesText).toContain('User:')
+      expect(messagesText).toContain('Match:')
+    })
+
+    it('should return correct counts', () => {
+      const input: AnalyzerInput = {
+        messages: [
+          createConversationMessage('1', 'match-1', 'Message 1', 1),
+          createConversationMessage('2', 'match-1', 'Message 2', 1),
+          createConversationMessage('3', 'match-2', 'Message 3', 1),
+        ],
+        matches: [],
+        participants: [],
+        userId: 'user-1',
+      }
+
+      const result = sampleConversations(input, 2)
+
+      expect(result.conversationCount).toBe(2)
+      expect(result.totalMessageCount).toBe(3)
+    })
+  })
+
+  describe('chunkMessages', () => {
+    it('should not chunk if messages fit within token limit', () => {
+      const messages = ['Short message 1', 'Short message 2', 'Short message 3']
+      const chunks = chunkMessages(messages, 1000)
+
+      expect(chunks).toHaveLength(1)
+      expect(chunks[0]).toEqual(messages)
+    })
+
+    it('should split messages into multiple chunks when exceeding token limit', () => {
+      // Create messages that are approximately 100 tokens each (400 chars)
+      const longMessage = 'x'.repeat(400)
+      const messages = Array.from({ length: 10 }, (_, i) => `Message ${i}: ${longMessage}`)
+
+      // With maxTokens of 200, each chunk should hold ~2 messages
+      const chunks = chunkMessages(messages, 200)
+
+      expect(chunks.length).toBeGreaterThan(1)
+      // Each chunk should have messages
+      chunks.forEach((chunk) => {
+        expect(chunk.length).toBeGreaterThan(0)
+      })
+      // All messages should be preserved
+      const totalMessages = chunks.flat().length
+      expect(totalMessages).toBe(messages.length)
+    })
+
+    it('should handle a single very large message', () => {
+      const veryLongMessage = 'x'.repeat(10000) // ~2500 tokens
+      const messages = [veryLongMessage]
+
+      const chunks = chunkMessages(messages, 1000)
+
+      // Should still create one chunk with the oversized message
+      expect(chunks).toHaveLength(1)
+      expect(chunks[0]).toEqual([veryLongMessage])
+    })
+
+    it('should preserve message order across chunks', () => {
+      const messages = Array.from({ length: 20 }, (_, i) => `Message ${i}: ${'x'.repeat(400)}`)
+      const chunks = chunkMessages(messages, 200)
+
+      const flattened = chunks.flat()
+      expect(flattened).toEqual(messages)
     })
   })
 
   describe('shouldEscalateToRiskEvaluator', () => {
-    it('should escalate on yellow risk level', () => {
+    it('should NOT escalate on yellow risk level (too minor)', () => {
       const result = shouldEscalateToRiskEvaluator('yellow', [])
-      expect(result).toBe(true)
+      expect(result).toBe(false)
     })
 
     it('should escalate on orange risk level', () => {
@@ -196,7 +241,7 @@ describe('Safety Screener Analyzer', () => {
       expect(result).toBe(true)
     })
 
-    it('should escalate on medium severity flag', () => {
+    it('should NOT escalate on medium severity flag (only high severity)', () => {
       const redFlags = [
         {
           type: 'explicit-manipulation' as const,
@@ -207,7 +252,7 @@ describe('Safety Screener Analyzer', () => {
       ]
 
       const result = shouldEscalateToRiskEvaluator('green', redFlags)
-      expect(result).toBe(true)
+      expect(result).toBe(false)
     })
 
     it('should escalate on high severity flag', () => {
@@ -315,7 +360,7 @@ describe('Safety Screener Analyzer', () => {
       expect(result.escalateToRiskEvaluator).toBe(false)
       expect(result.metadata.analyzedAt).toBeDefined()
       expect(result.metadata.durationMs).toBeGreaterThanOrEqual(0)
-      expect(result.metadata.model).toBe('openai/gpt-3.5-turbo')
+      expect(result.metadata.model).toBe('openai/gpt-5')
       expect(result.metadata.costUsd).toBeGreaterThan(0)
     })
 

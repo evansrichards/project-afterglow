@@ -29,12 +29,18 @@ export type ValidationSchema = {
 export function validateRequest(schema: ValidationSchema) {
   return (req: Request, _res: Response, next: NextFunction): void => {
     try {
+      // Debug logging
+      console.log('🔍 Validation - Request body keys:', Object.keys(req.body || {}))
+      console.log('🔍 Validation - Request body:', JSON.stringify(req.body).slice(0, 200))
+
       // Validate body
       if (schema.body) {
         for (const [key, rules] of Object.entries(schema.body)) {
           const value = req.body?.[key]
 
           if (rules.required && value === undefined) {
+            console.error(`❌ Validation failed: Missing ${key}`)
+            console.error('   Available keys:', Object.keys(req.body || {}))
             throw createError(`Missing required field: ${key}`, 400, 'VALIDATION_ERROR')
           }
 
