@@ -1,14 +1,13 @@
 /**
  * Two-Stage Orchestrator
  *
- * Coordinates the execution of Stage 1 (Quick Triage) and Stage 2 (Comprehensive Analysis)
- * based on risk assessment. Generates appropriate reports for each stage.
+ * Coordinates the execution of Stage 1 (Safety Screening) and Stage 2 (Comprehensive Analysis).
+ * Generates comprehensive reports for all users.
  *
  * Flow:
- * 1. Run Stage 1 Quick Triage on all users
- * 2. If green/yellow: Return Stage 1 report (80% of users)
- * 3. If orange/red: Run Stage 2 Comprehensive Analysis (20% of users)
- * 4. Return appropriate report with processing metadata
+ * 1. Run Stage 1: Safety Screening (quick check for serious safety issues)
+ * 2. Run Stage 2: Comprehensive Analysis (ALWAYS runs for full insights and patterns)
+ * 3. Return complete report with both safety assessment and comprehensive analysis
  */
 
 import type { AnalyzerInput } from '../analyzers/types'
@@ -82,41 +81,19 @@ export async function runTwoStageAnalysis(
   const stage1Report = generateStage1Report(safetyScreenerOutput)
 
   // ============================================================================
-  // DECISION POINT: Should we escalate to Stage 2?
+  // STAGE 2: COMPREHENSIVE ANALYSIS (Always runs for full insights)
   // ============================================================================
   const shouldEscalate = safetyScreenerOutput.escalateToRiskEvaluator
   const riskLevel = safetyScreenerOutput.riskLevel
 
-  if (!shouldEscalate) {
-    // Green/Yellow: Complete at Stage 1
-    if (verbose) {
-      console.log(`\n✨ Analysis complete at Stage 1`)
-      console.log(`   No escalation needed (${riskLevel} risk level)`)
-    }
-
-    return {
-      completedStage: 'stage1',
-      stage1Report,
-      stage2Report: null,
-      processing: {
-        stage1Duration,
-        stage2Duration: null,
-        totalDuration: Date.now() - startTime,
-        stage1Cost: safetyScreenerOutput.metadata.costUsd || 0,
-        stage2Cost: null,
-        totalCost: safetyScreenerOutput.metadata.costUsd || 0,
-        escalated: false,
-        escalationReason: null,
-      },
-    }
-  }
-
-  // ============================================================================
-  // STAGE 2: COMPREHENSIVE DEEP ANALYSIS (Orange/Red cases only)
-  // ============================================================================
   if (verbose) {
-    console.log(`\n⚠️  Escalating to Stage 2: Comprehensive Analysis`)
-    console.log(`   Reason: ${riskLevel.toUpperCase()} risk level detected`)
+    if (shouldEscalate) {
+      console.log(`\n⚠️  Escalating to Stage 2: Comprehensive Analysis`)
+      console.log(`   Reason: ${riskLevel.toUpperCase()} risk level detected`)
+    } else {
+      console.log(`\n✅ Moving to Stage 2: Comprehensive Analysis`)
+      console.log(`   Safety check passed (${riskLevel.toUpperCase()})`)
+    }
     console.log(`   Running deep analysis...`)
   }
 
@@ -163,8 +140,8 @@ export async function runTwoStageAnalysis(
       stage1Cost: safetyScreenerOutput.metadata.costUsd || 0,
       stage2Cost: stage2Output.metadata.costUsd || 0,
       totalCost,
-      escalated: true,
-      escalationReason: `${riskLevel.toUpperCase()} risk level detected in Stage 1`,
+      escalated: shouldEscalate,
+      escalationReason: shouldEscalate ? `${riskLevel.toUpperCase()} risk level detected in Stage 1` : null,
     },
   }
 }

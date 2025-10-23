@@ -1,11 +1,13 @@
 # MVP TODOs
 
 ---
+
 ## 🎯 MVP PROGRESS - Production Web App
 
 **Goal:** Get the two-stage AI analysis pipeline working through a web interface with backend API.
 
 **✅ Phase 1: Core Pipeline (COMPLETE)**
+
 - ✅ Data ingestion & normalization (Sections 1-4)
 - ✅ Stage 1: Quick Triage (Safety Screener + Report Generator)
 - ✅ Stage 2: Comprehensive Analysis (Deep Dive Analyzer + Report Generator)
@@ -16,23 +18,28 @@
 - ✅ File upload UI with Tinder/Hinge parsing
 
 **Demo Available:**
+
 ```bash
 npm run demo  # Command-line demo with example data
 ```
 
 **✅ Phase 2: Web App Integration (COMPLETE - Section 6)**
 **Essential for production web application:**
+
 - ✅ **6.1** Backend API Setup (Express server with /api/analyze endpoint)
 - ✅ **6.2** Frontend Integration (UploadPage calls backend, displays results)
 - ✅ **6.3** Console demo (Already working)
 
 **🎉 MVP READY FOR TESTING!**
+
 ```bash
 npm run dev:all  # Start both frontend (3000) and backend (3001)
 ```
+
 Upload → Parse → Analyze → Display flow is complete!
 
 **What's Still Deferred:**
+
 - Email notifications & authentication (Section 7)
 - Privacy & security enhancements (Section 8)
 - Data storage & persistence (Section 9)
@@ -72,16 +79,19 @@ Upload → Parse → Analyze → Display flow is complete!
 ## 5. Two-Stage AI Analysis Pipeline (DEMO FOCUS)
 
 ### 5.1 Foundation Components (Reusable Infrastructure) ✅
+
 - [x] 5.1.1 Build message processing utilities for sanitized data preparation for AI analysis
 - [x] 5.1.2 Implement basic metrics calculations as foundation for AI context
 - [x] 5.1.3 Integrate OpenRouter for dynamic AI model selection and cost optimization
 - [x] 5.1.4 Build analyzer/evaluator type system and infrastructure (reference implementations)
 
 ### 5.2 Stage 1: Quick Triage ✅
+
 - [x] 5.2.1 Build Quick Triage Analyzer using GPT-3.5 Turbo
 - [x] 5.2.2 Create Stage 1 Report Generator
 
 ### 5.3 Stage 2: Comprehensive Deep Analysis (ESSENTIAL FOR DEMO)
+
 - [x] 5.3.1 Build Comprehensive Analyzer using GPT-4 Turbo:
   - Safety deep dive (manipulation tactics, coercive control)
   - Attachment analysis (style determination, triggers, dynamics)
@@ -95,6 +105,7 @@ Upload → Parse → Analyze → Display flow is complete!
   - Show growth trajectory if applicable
 
 ### 5.4 Simple Orchestration (ESSENTIAL FOR DEMO) ✅
+
 - [x] 5.4.1 Build Basic Two-Stage Orchestrator:
   - Run Stage 1 on input data
   - If orange/red risk: Run Stage 2
@@ -110,6 +121,7 @@ Upload → Parse → Analyze → Display flow is complete!
 ## 6. Backend API & Analysis Integration (ESSENTIAL FOR WEB APP)
 
 ### 6.1 Backend API Setup (ESSENTIAL FOR PRODUCTION)
+
 - [x] 6.1.1 Set up backend API server:
   - ✅ Chose Express framework
   - ✅ Configured CORS for frontend communication (localhost:3000)
@@ -139,6 +151,7 @@ Upload → Parse → Analyze → Display flow is complete!
   - Currently using synchronous processing (6.1.2)
 
 ### 6.2 Frontend Integration (ESSENTIAL FOR WEB APP)
+
 - [x] 6.2.1 Update UploadPage to call backend API:
   - ✅ Created API client utility (src/api/client.ts)
   - ✅ Replaced "Process File" with "Analyze Data" button
@@ -163,6 +176,7 @@ Upload → Parse → Analyze → Display flow is complete!
   - Note: Completed as part of 6.2.1
 
 ### 6.3 Simple Console/File Output (DEMO - ALREADY WORKING) ✅
+
 - [x] 6.3.1 Display analysis results in console:
   - Print Stage 1 report (markdown or text format)
   - Print Stage 2 report if triggered (markdown or text format)
@@ -171,12 +185,13 @@ Upload → Parse → Analyze → Display flow is complete!
 ### 6.4 Implementation Notes
 
 **Backend Options:**
-1. **Option A: Express.js standalone server**
+
+1. **Option A: Express.js standalone server** ✅ CHOSEN
    - Pros: Simple, flexible, well-documented
    - Cons: Requires separate deployment
    - Setup: `npm install express cors dotenv`
 
-2. **Option B: Next.js API routes** (RECOMMENDED for MVP)
+2. **Option B: Next.js API routes**
    - Pros: Same deployment as frontend, serverless-ready
    - Cons: Need to migrate from Vite to Next.js
    - Setup: Convert to Next.js app
@@ -186,24 +201,175 @@ Upload → Parse → Analyze → Display flow is complete!
    - Cons: More complex development setup
    - Setup: Add `server/` directory with Express app
 
-**Data Flow:**
+**Current Data Flow:**
+
 ```
 User uploads file → Frontend parses data →
 Send to POST /api/analyze → Backend runs orchestrator →
-Frontend polls GET /api/results/:jobId → Display results
+Return complete results → Display results
 ```
 
-**Key Files to Create:**
-- `server/api/analyze.ts` - Analysis endpoint
-- `server/api/results.ts` - Results retrieval endpoint
-- `src/api/client.ts` - Frontend API client
-- `src/components/AnalysisResults.tsx` - Results display component
+**Key Files Created:**
 
-**Environment Variables Needed:**
+- ✅ `server/routes/analyze.ts` - Analysis endpoint
+- ✅ `src/api/client.ts` - Frontend API client
+- ✅ `src/components/results/AnalysisResultsDisplay.tsx` - Results display component
+
+**Environment Variables:**
+
 ```
-VITE_OPENROUTER_API_KEY=sk-or-... (move to backend only)
-VITE_API_BASE_URL=http://localhost:3001 (for development)
+OPENROUTER_API_KEY=sk-or-... (backend only, required)
+CORS_ORIGIN=http://localhost:3000 (backend CORS configuration)
 ```
+
+---
+
+## 7. Metadata Analysis & Multi-Page Processing Flow (NEXT PRIORITY)
+
+**Goal:** Add metadata analysis and split the upload flow into three pages:
+
+1. Upload Page (file selection and parsing)
+2. Processing Page (real-time progress + metadata preview)
+3. Results Page (full AI analysis report)
+
+### 7.1 Metadata Analyzer (NEW COMPONENT)
+
+- [x] 7.1.1 Create metadata analyzer utility:
+  - ✅ New file: `src/lib/analyzers/metadata-analyzer.ts`
+  - ✅ Input: Normalized `{ messages, matches, participants, userId }`
+  - ✅ Calculate volume metrics (match count, message count, active conversations)
+  - ✅ Calculate time span metrics (first activity, last activity, peak period, days since last use)
+  - ✅ Calculate activity distribution (matches/messages per month/year)
+  - ✅ Generate human-readable summary (no AI needed - pure calculation)
+  - ✅ Output: `MetadataAnalysisResult` interface
+  - ✅ Unit tests: 8 tests passing
+  - ✅ Demo script: `scripts/demo-metadata.ts`
+
+- [ ] 7.1.2 Add metadata analysis to backend API:
+  - Update `POST /api/analyze` endpoint
+  - Run metadata analyzer FIRST (before AI analysis)
+  - Return metadata immediately in response
+  - Include metadata in final analysis results
+
+- [ ] 7.1.3 Create TypeScript interfaces:
+  - Define `MetadataAnalysisResult` type
+  - Define volume, timeline, and distribution metric types
+  - Export from `src/lib/analyzers/types.ts`
+
+### 7.2 Processing Page (NEW PAGE)
+
+- [ ] 7.2.1 Create ProcessingPage component:
+  - New file: `src/pages/ProcessingPage.tsx`
+  - Route: `/processing`
+  - Accept analysis data via React Router state/props
+  - Show real-time processing status
+
+- [ ] 7.2.2 Build step-by-step progress display:
+  - Step 1: "Uploading data..." (immediate)
+  - Step 2: "Analyzing metadata..." (show basic stats as they arrive)
+  - Step 3: "Running safety screening..." (Stage 1)
+  - Step 4: "Performing comprehensive analysis..." (Stage 2)
+  - Step 5: "Generating your report..." (final)
+  - Visual progress indicator (stepper component or progress bar)
+
+- [ ] 7.2.3 Display metadata preview:
+  - Show metadata results as soon as they arrive
+  - Display: "You were active on [Platform] from [date] to [date]"
+  - Display: "[X] matches found, [Y] total messages"
+  - Display: "Peak activity period: [period]"
+  - Display: "Most recent activity: [X days/months/years ago]"
+  - Friendly assessment: "It appears you haven't used [Platform] in a few years..."
+
+- [ ] 7.2.4 Add polling/streaming for real-time updates:
+  - Option A: Server-Sent Events (SSE) for streaming progress
+  - Option B: Polling `/api/status/:jobId` endpoint for updates
+  - Option C: WebSocket connection for real-time updates
+  - For MVP: Simple state updates from single API call (show steps progressively)
+
+- [ ] 7.2.5 Auto-redirect to results page:
+  - When analysis completes, automatically navigate to `/results`
+  - Pass analysis results via React Router state
+  - Show "Analysis complete!" message before redirect
+
+### 7.3 Results Page (NEW PAGE)
+
+- [ ] 7.3.1 Create ResultsPage component:
+  - New file: `src/pages/ResultsPage.tsx`
+  - Route: `/results`
+  - Accept analysis results via React Router state/props
+  - Reuse existing `AnalysisResultsDisplay` component
+
+- [ ] 7.3.2 Display complete analysis:
+  - Show metadata summary at top
+  - Show Stage 1 safety assessment
+  - Show Stage 2 comprehensive analysis
+  - Show processing metadata (duration, cost, models used)
+
+- [ ] 7.3.3 Add navigation and actions:
+  - "Start New Analysis" button → navigate back to upload page
+  - "Download Report" button (future: export to PDF)
+  - "Share Feedback" button (future: feedback form)
+
+- [ ] 7.3.4 Handle missing results:
+  - If no results in state, show message
+  - "No analysis found. Please upload your data first."
+  - Button to navigate back to upload page
+
+### 7.4 Update Upload Page Flow
+
+- [ ] 7.4.1 Update UploadPage navigation:
+  - After file is parsed successfully
+  - Change "Analyze Data" button to trigger navigation
+  - Navigate to `/processing` with parsed data
+  - Remove inline analysis results display
+
+- [ ] 7.4.2 Move API call to ProcessingPage:
+  - ProcessingPage receives parsed data
+  - ProcessingPage calls `/api/analyze`
+  - ProcessingPage shows progress as analysis runs
+  - ProcessingPage navigates to `/results` when complete
+
+- [ ] 7.4.3 Update routing configuration:
+  - Add `/processing` route
+  - Add `/results` route
+  - Configure React Router properly
+  - Update navigation in `App.tsx` or router config
+
+### 7.5 Backend Enhancements (OPTIONAL FOR MVP)
+
+- [ ] 7.5.1 Add metadata-only endpoint (optional):
+  - `POST /api/metadata` - Quick metadata extraction
+  - Returns metadata without running AI analysis
+  - Useful for previewing data before committing to full analysis
+
+- [ ] 7.5.2 Add progress streaming (optional):
+  - Server-Sent Events endpoint: `GET /api/analyze/:jobId/stream`
+  - Emit progress events as analysis stages complete
+  - Frontend subscribes to stream and updates UI in real-time
+
+### 7.6 Testing
+
+- [ ] 7.6.1 Test metadata analyzer:
+  - Unit tests for volume calculations
+  - Unit tests for timeline calculations
+  - Unit tests for activity distribution
+  - Test with Tinder and Hinge sample data
+
+- [ ] 7.6.2 Test multi-page flow:
+  - Upload → Processing → Results navigation works
+  - Data passed correctly between pages
+  - Error handling at each stage
+  - Back button behavior
+
+**Implementation Priority:**
+
+1. Start with 7.1 (Metadata Analyzer) - foundation for everything else
+2. Then 7.2 (Processing Page) - shows metadata preview
+3. Then 7.3 (Results Page) - displays final results
+4. Then 7.4 (Update Upload Page) - connects the flow
+5. Defer 7.5 (Backend Enhancements) - nice-to-have, not essential
+
+---
 
 <!-- DEFERRED: Full dashboard UI, authentication, real-time status -->
 <!--
@@ -223,64 +389,64 @@ VITE_API_BASE_URL=http://localhost:3001 (for development)
 
 <!-- DEFERRED: Email system, authentication, report delivery -->
 <!--
-## 7. Email Notification & Report Access System (DEFERRED)
+## 8. Email Notification & Report Access System (DEFERRED)
 
-### 7.1 Email Verification & User Accounts (DEFERRED)
+### 8.1 Email Verification & User Accounts (DEFERRED)
 - [ ] Magic link authentication
 - [ ] Link data to verified accounts
 
-### 7.2 Analysis Completion Notification (DEFERRED)
+### 8.2 Analysis Completion Notification (DEFERRED)
 - [ ] Stage-specific email templates
 - [ ] Email delivery infrastructure
 
-### 7.3 Secure Report Access (DEFERRED)
+### 8.3 Secure Report Access (DEFERRED)
 - [ ] Token-based report access
 - [ ] Report access analytics
 
-### 7.4 Report Delivery & Management (DEFERRED)
+### 8.4 Report Delivery & Management (DEFERRED)
 - [ ] PDF export functionality
 - [ ] Feedback collection system
 -->
 
 <!-- DEFERRED: Privacy, security, data storage, cost monitoring -->
 <!--
-## 8. Privacy & Security (DEFERRED FOR DEMO)
-- [x] 8.1 Landing page privacy copy
-- [x] 8.2 MVP privacy section
-- [ ] 8.3-8.9 PII sanitization, cloud storage, authentication (DEFERRED)
+## 9. Privacy & Security (DEFERRED FOR DEMO)
+- [x] 9.1 Landing page privacy copy
+- [x] 9.2 MVP privacy section
+- [ ] 9.3-9.9 PII sanitization, cloud storage, authentication (DEFERRED)
 
-## 9. Data Storage (DEFERRED FOR DEMO)
-- [ ] 9.1-9.6 Supabase setup, RLS policies, data retention (DEFERRED)
+## 10. Data Storage (DEFERRED FOR DEMO)
+- [ ] 10.1-10.6 Supabase setup, RLS policies, data retention (DEFERRED)
 
-## 10. Cost Monitoring & Analytics (DEFERRED FOR DEMO)
-- [ ] 10.1 Two-Stage Cost Tracking (DEFERRED)
-- [ ] 10.2 Budget Protection & Capacity Management (DEFERRED)
-- [ ] 10.3 Quality & Optimization Metrics (DEFERRED)
-- [ ] 10.4 Cost Optimization Insights (DEFERRED)
+## 11. Cost Monitoring & Analytics (DEFERRED FOR DEMO)
+- [ ] 11.1 Two-Stage Cost Tracking (DEFERRED)
+- [ ] 11.2 Budget Protection & Capacity Management (DEFERRED)
+- [ ] 11.3 Quality & Optimization Metrics (DEFERRED)
+- [ ] 11.4 Cost Optimization Insights (DEFERRED)
 -->
 
 <!-- DEFERRED: Most testing until core pipeline works -->
 <!--
-## 11. Testing & Quality Assurance (MOSTLY DEFERRED)
+## 12. Testing & Quality Assurance (MOSTLY DEFERRED)
 
-### 11.1 Unit Testing (DONE FOR INDIVIDUAL COMPONENTS)
-- [x] 11.1.1 Test data parsers and normalization
+### 12.1 Unit Testing (DONE FOR INDIVIDUAL COMPONENTS)
+- [x] 12.1.1 Test data parsers and normalization
 - [x] Stage 1 analyzer tests (18 tests passing)
 - [x] Stage 1 report generator tests (14 tests passing)
-- [ ] 11.1.2 Stage 2 analyzer tests (AFTER 5.3.1)
-- [ ] 11.1.3 Stage 2 report generator tests (AFTER 5.3.2)
+- [ ] 12.1.2 Stage 2 analyzer tests (AFTER 5.3.1)
+- [ ] 12.1.3 Stage 2 report generator tests (AFTER 5.3.2)
 
-### 11.2-11.5 Integration Testing, AI Quality Testing, Performance Testing, Manual QA (DEFERRED)
+### 12.2-12.5 Integration Testing, AI Quality Testing, Performance Testing, Manual QA (DEFERRED)
 -->
 
 <!-- DEFERRED: Launch preparation, deployment, legal -->
 <!--
-## 12. MVP Launch Preparation (DEFERRED)
+## 13. MVP Launch Preparation (DEFERRED)
 
-### 12.1 Documentation & Configuration (DEFERRED)
-### 12.2 Deployment Pipeline (DEFERRED)
-### 12.3 Privacy & Legal (DEFERRED)
-### 12.4 Launch Readiness Checklist (DEFERRED)
+### 13.1 Documentation & Configuration (DEFERRED)
+### 13.2 Deployment Pipeline (DEFERRED)
+### 13.3 Privacy & Legal (DEFERRED)
+### 13.4 Launch Readiness Checklist (DEFERRED)
 
 ## Post-MVP: Enhancement Roadmap (FUTURE)
 - Phase 2: Two-Stage Refinement

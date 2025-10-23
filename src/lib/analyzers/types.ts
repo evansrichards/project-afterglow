@@ -190,6 +190,55 @@ export interface ChronologyMapperOutput extends BaseAnalyzerOutput {
 }
 
 /**
+ * Metadata Analysis Result
+ * Basic statistics about the user's dating activity
+ * Calculated BEFORE AI analysis begins
+ */
+export interface MetadataAnalysisResult {
+  /** Volume metrics */
+  volume: {
+    /** Total number of matches */
+    totalMatches: number
+    /** Total number of messages sent and received */
+    totalMessages: number
+    /** Number of conversations with 5+ messages */
+    activeConversations: number
+    /** Average messages per conversation */
+    averageMessagesPerConversation: number
+    /** Messages sent by user */
+    messagesSentByUser: number
+    /** Messages received from matches */
+    messagesReceived: number
+  }
+  /** Timeline metrics */
+  timeline: {
+    /** ISO timestamp of first activity (earliest match or message) */
+    firstActivity: string | null
+    /** ISO timestamp of last activity (most recent match or message) */
+    lastActivity: string | null
+    /** Total days the user was active on the platform */
+    totalDays: number
+    /** Days since last activity */
+    daysSinceLastActivity: number
+    /** Peak activity period (e.g., "2020-06 to 2020-09") */
+    peakActivityPeriod: string | null
+  }
+  /** Activity distribution over time */
+  distribution: {
+    /** Matches per month */
+    matchesByMonth: Array<{ month: string; count: number }>
+    /** Messages per month */
+    messagesByMonth: Array<{ month: string; count: number }>
+  }
+  /** Platform information */
+  platform: string
+  /** Human-readable summary */
+  summary: string
+  /** Human-readable assessment */
+  assessment: string
+}
+
+/**
  * Union type of all analyzer outputs
  */
 export type AnalyzerOutput =

@@ -1,173 +1,155 @@
-# Data Processor - High-Level Orchestration
+# Data Processing Pipeline
 
 ## Overview
-The Data Processor orchestrates the complete journey from raw dating data upload to final report delivery. It manages a series of **Analyzers** (always run) and **Evaluators** (conditionally triggered) that progressively build insights.
+When a user uploads their dating app data, we process it in two simple phases:
+1. **Data Ingestion** - Parse and normalize the raw export files
+2. **Metadata Analysis** - Extract basic statistics about their dating history
 
-## Processing Terminology
+This initial processing happens **before** any AI analysis begins, giving us a quick overview of what we're working with.
 
-### **Analyzers** (Always Execute)
-Core processing components that every user's data goes through:
-- **Data Ingestion Analyzer**: File parsing, validation, normalization
-- **Safety Screener**: Basic red flag detection and risk assessment
-- **Pattern Recognizer**: Communication style and behavior identification
-- **Chronology Mapper**: Time-based pattern analysis and growth tracking
-- **Insight Synthesizer**: Combines all analysis into coherent user insights
+---
 
-### **Evaluators** (Conditionally Triggered)
-Specialized deep-dive processors activated based on analysis findings:
-- **Risk Evaluator**: Advanced safety assessment for concerning patterns
-- **Attachment Evaluator**: Nuanced attachment style analysis for complex cases
-- **Growth Evaluator**: Detailed personal development analysis for rich datasets
-- **Crisis Evaluator**: Comprehensive safety planning for high-risk situations
+## 1. Data Ingestion
 
-## Processing Workflow
+**What happens:** Raw export files (Tinder JSON, Hinge ZIP) are parsed into a unified format.
 
-### Phase 1: Data Foundation
-```
-1. Data Ingestion Analyzer
-   ├── Parse uploaded files (Tinder JSON, Hinge ZIP)
-   ├── Validate data completeness and quality
-   ├── Normalize to unified conversation schema
-   └── ✅ Output: Clean conversation dataset
+**Where it happens:**
+- **Frontend parsing**: [src/lib/parsers/index.ts](../src/lib/parsers/index.ts)
+  - `tinderParser()` - [src/lib/parsers/tinder-parser.ts](../src/lib/parsers/tinder-parser.ts)
+  - `hingeParser()` - [src/lib/parsers/hinge-parser.ts](../src/lib/parsers/hinge-parser.ts)
 
-2. Safety Screener
-   ├── Scan for immediate red flags (threats, financial requests)
-   ├── Detect basic manipulation patterns
-   ├── Assess overall risk level (green/yellow/orange/red)
-   └── ✅ Output: Safety baseline + escalation flags
+**Input:**
+- Tinder: `data.json` from exported archive
+- Hinge: ZIP file containing `matches.json` and `conversations.json`
+
+**Output:** Normalized data structure
+```typescript
+{
+  messages: Message[]      // All messages across all conversations
+  matches: Match[]         // All matches/connections
+  participants: Participant[]  // All people the user interacted with
+  userId: string          // The user's own ID
+}
 ```
 
-### Phase 2: Core Analysis
-```
-3. Pattern Recognizer
-   ├── Analyze communication style and consistency
-   ├── Identify attachment behavioral markers
-   ├── Assess authenticity and vulnerability patterns
-   ├── Evaluate boundary setting and respect
-   └── ✅ Output: Core behavioral patterns
+**Key Functions:**
+- `parseFile()` - Entry point that detects platform and routes to correct parser
+- `tinderParser()` - Extracts Tinder data from JSON
+- `hingeParser()` - Unzips and extracts Hinge data
+- Data validation and deduplication happens inline during parsing
 
-4. Chronology Mapper
-   ├── Segment conversations by time periods
-   ├── Weight recent patterns more heavily
-   ├── Detect growth trajectories and transitions
-   ├── Map life stage context and evolution
-   └── ✅ Output: Time-weighted pattern evolution
-```
+---
 
-### Phase 3: Conditional Deep Dives
-```
-5. Risk Evaluator (if Safety Screener flags concerns)
-   ├── Advanced manipulation tactic detection
-   ├── Coercive control pattern analysis
-   ├── Trauma bonding indicator assessment
-   └── ✅ Output: Detailed safety analysis + resources
+## 2. Metadata Analysis
 
-6. Attachment Evaluator (if Pattern Recognizer finds complexity)
-   ├── Sophisticated attachment style determination
-   ├── Trigger and coping mechanism identification
-   ├── Relationship dynamic analysis
-   └── ✅ Output: Nuanced attachment insights
+**What happens:** Calculate basic statistics about the user's dating activity to provide immediate context.
 
-7. Growth Evaluator (if rich dataset or strong evolution detected)
-   ├── Detailed skill progression tracking
-   ├── Personal development opportunity identification
-   ├── Customized growth recommendation generation
-   └── ✅ Output: Personalized development roadmap
+**Where it happens:**
+- Currently: Basic counts during parsing
+- **TODO**: Create dedicated metadata analyzer ([src/lib/analyzers/metadata-analyzer.ts](../src/lib/analyzers/metadata-analyzer.ts))
 
-8. Crisis Evaluator (if high-risk indicators detected)
-   ├── Comprehensive threat assessment
-   ├── Professional resource identification
-   ├── Safety planning and support system analysis
-   └── ✅ Output: Crisis intervention recommendations
-```
+**Metrics to Calculate:**
 
-### Phase 4: Synthesis & Delivery
-```
-9. Insight Synthesizer
-   ├── Combine all analyzer and evaluator outputs
-   ├── Generate coherent narrative insights
-   ├── Prioritize findings by importance and actionability
-   ├── Create user-friendly report sections
-   └── ✅ Output: Complete analysis report
+### Volume Metrics
+- Total matches count
+- Total messages count
+- Average messages per conversation
+- Active conversation count (conversations with 5+ messages)
 
-10. Report Delivery System
-    ├── Generate secure access token
-    ├── Create analysis completion email
-    ├── Send notification with report summary
-    ├── Enable authenticated report dashboard access
-    └── ✅ Output: User receives report access
+### Time Span Analysis
+- First activity date (earliest match or message)
+- Last activity date (most recent match or message)
+- Total time span on platform
+- Most active period (month/year with most activity)
+- Time since last activity (days ago)
+
+### Activity Distribution
+- Matches per month/year breakdown
+- Messages per month/year breakdown
+- Activity heatmap data (when were they most active?)
+
+**Output Example:**
+```typescript
+{
+  summary: "You were active on Tinder from Jan 2020 to March 2022 (2.2 years)",
+  volume: {
+    totalMatches: 156,
+    totalMessages: 2847,
+    activeConversations: 43
+  },
+  timeline: {
+    firstActivity: "2020-01-15T10:23:00Z",
+    lastActivity: "2022-03-08T18:45:00Z",
+    totalDays: 783,
+    daysSinceLastActivity: 1324,
+    peakActivityPeriod: "2020-06 to 2020-09"
+  },
+  assessment: "It appears you haven't used Tinder in a few years, but we found 156 matches to analyze from your most active period around mid-2020."
+}
 ```
 
-## Trigger Conditions
+---
 
-### **Always Execute** (Core Pipeline)
-- Data Ingestion Analyzer
-- Safety Screener
-- Pattern Recognizer
-- Chronology Mapper
-- Insight Synthesizer
-- Report Delivery System
+## 3. Full Processing Flow
 
-### **Conditional Execution** (Based on Findings)
+### Entry Point: POST /api/analyze
 
-#### Risk Evaluator Triggers:
-- Safety Screener detects yellow/orange/red flags
-- Pattern Recognizer identifies concerning behaviors
-- Any manipulation or control indicators present
+**File:** [server/routes/analyze.ts](../server/routes/analyze.ts)
 
-#### Attachment Evaluator Triggers:
-- Pattern Recognizer finds mixed attachment signals
-- Complex or contradictory behavioral patterns
-- Rich conversational data warrants deeper analysis
-- User shows significant relationship pattern variations
-
-#### Growth Evaluator Triggers:
-- Chronology Mapper detects significant evolution
-- Dataset spans 2+ years with substantial growth evidence
-- Strong positive development patterns identified
-- User demonstrates advanced relationship skills
-
-#### Crisis Evaluator Triggers:
-- Risk Evaluator identifies severe safety concerns
-- Escalating dangerous patterns detected
-- Clear manipulation, coercion, or abuse indicators
-- Immediate safety planning recommended
-
-## Processing Status Tracking
-
-### User-Visible Status Updates
+**Request Flow:**
 ```
-📤 Upload Processing: "Analyzing your conversations..."
-🔍 Safety Check: "Running safety assessment..."
-🧠 Pattern Analysis: "Identifying communication patterns..."
-📊 Timeline Mapping: "Analyzing growth over time..."
-⚡ Deep Dive: "Running advanced analysis..." (if evaluators triggered)
-✨ Finalizing: "Generating your insights..."
-📧 Complete: "Analysis ready! Check your email."
+1. Frontend sends parsed data to POST /api/analyze
+   ↓
+2. Server validates request (server/middleware/validate-request.ts)
+   ↓
+3. Server calls runTwoStageAnalysis() (server/routes/analyze.ts:80)
+   ↓
+4. Orchestrator executes analysis pipeline (src/lib/orchestrator/two-stage-orchestrator.ts)
+   ↓
+5. Results returned to frontend
 ```
 
-### Processing Metadata Tracked
-- Which analyzers completed successfully
-- Which evaluators were triggered and why
-- Processing duration for each component
-- AI model usage and token consumption
-- Quality confidence scores for each output
-- Error handling and fallback usage
+### Current Analysis Pipeline
 
-## Configuration Management
+**File:** [src/lib/orchestrator/two-stage-orchestrator.ts](../src/lib/orchestrator/two-stage-orchestrator.ts)
 
-### Processing Rules (Configurable)
-```yaml
-# Processing thresholds can be adjusted
-safety_escalation_threshold: "yellow"  # When to trigger Risk Evaluator
-attachment_complexity_threshold: 0.3   # Mixed signal threshold for Attachment Evaluator
-growth_dataset_minimum: "18_months"    # Minimum history for Growth Evaluator
-crisis_risk_threshold: "orange"        # When to trigger Crisis Evaluator
+**Stage 1: Quick Triage** (Always runs)
+- Function: `runSafetyScreener()` - [src/lib/analyzers/safety-screener.ts](../src/lib/analyzers/safety-screener.ts)
+- Model: GPT-3.5 Turbo
+- Purpose: Fast safety check for immediate red flags
+- Duration: ~10-30 seconds
+- Output: Basic risk level (green/yellow/orange/red)
 
-# Resource limits
-max_processing_time: "30_minutes"
-fallback_mode_triggers: ["timeout", "api_error"]
-budget_protection_enabled: true
-```
+**Stage 2: Comprehensive Analysis** (Always runs)
+- Function: `runStage2Comprehensive()` - [src/lib/analyzers/stage2-comprehensive.ts](../src/lib/analyzers/stage2-comprehensive.ts)
+- Model: GPT-5
+- Purpose: Deep dive into patterns, attachment, growth trajectory
+- Duration: ~30-90 seconds
+- Output: Detailed insights, safety analysis, attachment patterns, growth assessment
 
-This orchestration system provides clear visibility into the complex analysis process while maintaining flexibility for future enhancements and debugging.
+**Report Generation:**
+- Stage 1 Report: `generateStage1Report()` - [src/lib/reports/stage1-report-generator.ts](../src/lib/reports/stage1-report-generator.ts)
+- Stage 2 Report: `generateStage2Report()` - [src/lib/reports/stage2-report-generator.ts](../src/lib/reports/stage2-report-generator.ts)
+
+---
+
+## What's Missing (TODO)
+
+The current pipeline jumps straight from data ingestion to AI analysis. We need to add:
+
+1. **Metadata Analyzer** (new file: [src/lib/analyzers/metadata-analyzer.ts](../src/lib/analyzers/metadata-analyzer.ts))
+   - Extract volume and timeline statistics
+   - Generate human-readable summary
+   - Return metadata **before** AI analysis begins
+
+2. **Processing Status Updates**
+   - Real-time progress updates during analysis
+   - Stream metadata results immediately
+   - Show AI analysis progress step-by-step
+
+3. **Separate Results Page**
+   - Move from single upload page to multi-page flow
+   - Processing page shows progress + metadata
+   - Results page shows full AI analysis report
+
+See [TASKS.md Step 7](./TASKS.md) for implementation plan.

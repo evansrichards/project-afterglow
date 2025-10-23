@@ -46,8 +46,8 @@ describe('Two-Stage Orchestrator', () => {
     userId: 'user1',
   }
 
-  describe('runTwoStageAnalysis - Green/Yellow (Stage 1 only)', () => {
-    it('should complete at Stage 1 for green risk level', async () => {
+  describe('runTwoStageAnalysis - Green/Yellow (Stage 2 always runs)', () => {
+    it('should run Stage 2 even for green risk level', async () => {
       const mockSafetyOutput = {
         analyzer: 'safety-screener' as const,
         riskLevel: 'green' as const,
@@ -58,8 +58,32 @@ describe('Two-Stage Orchestrator', () => {
         metadata: {
           analyzedAt: '2025-01-15T10:00:00Z',
           durationMs: 12000,
-          model: 'openai/gpt-3.5-turbo',
+          model: 'openai/gpt-5',
           costUsd: 0.5,
+        },
+      }
+
+      const mockStage2Output = {
+        analyzer: 'stage2-comprehensive' as const,
+        safetyDeepDive: {
+          crisisLevel: 'none' as const,
+          professionalSupport: [],
+          immediateConcerns: [],
+          riskTrajectory: 'stable' as const,
+          severity: {
+            overall: 'low' as const,
+            categories: {
+              emotional: 'low' as const,
+              physical: 'none' as const,
+              financial: 'none' as const,
+            },
+          },
+        },
+        metadata: {
+          analyzedAt: '2025-01-15T10:01:00Z',
+          durationMs: 25000,
+          model: 'openai/gpt-5',
+          costUsd: 2.1,
         },
       }
 
@@ -78,30 +102,44 @@ describe('Two-Stage Orchestrator', () => {
           completedAt: '2025-01-15T10:00:00Z',
           durationSeconds: 12,
           costUsd: 0.5,
-          model: 'openai/gpt-3.5-turbo',
+          model: 'openai/gpt-5',
         },
         escalation: undefined,
       }
 
+      const mockStage2Report = {
+        reportType: 'stage2-complete' as const,
+        safetyDeepDive: mockStage2Output.safetyDeepDive,
+        processingInfo: {
+          stage: 'Stage 2: Comprehensive Analysis' as const,
+          completedAt: '2025-01-15T10:01:00Z',
+          durationSeconds: 25,
+          costUsd: 2.1,
+          model: 'openai/gpt-5',
+        },
+      }
+
       vi.mocked(runSafetyScreener).mockResolvedValue(mockSafetyOutput)
+      vi.mocked(runStage2Comprehensive).mockResolvedValue(mockStage2Output as any)
       vi.mocked(generateStage1Report).mockReturnValue(mockStage1Report)
+      vi.mocked(generateStage2Report).mockReturnValue(mockStage2Report as any)
 
       const result = await runTwoStageAnalysis(mockInput)
 
-      expect(result.completedStage).toBe('stage1')
+      expect(result.completedStage).toBe('stage2')
       expect(result.stage1Report).toBeDefined()
-      expect(result.stage2Report).toBeNull()
-      expect(result.processing.escalated).toBe(false)
+      expect(result.stage2Report).toBeDefined()
+      expect(result.processing.escalated).toBe(false) // Not escalated, just always runs
       expect(result.processing.escalationReason).toBeNull()
-      expect(result.processing.stage2Duration).toBeNull()
-      expect(result.processing.stage2Cost).toBeNull()
-      expect(result.processing.totalCost).toBe(0.5)
+      expect(result.processing.stage2Duration).toBeGreaterThanOrEqual(0)
+      expect(result.processing.stage2Cost).toBe(2.1)
+      expect(result.processing.totalCost).toBeCloseTo(2.6, 1)
 
       expect(runSafetyScreener).toHaveBeenCalledWith(mockInput)
-      expect(runStage2Comprehensive).not.toHaveBeenCalled()
+      expect(runStage2Comprehensive).toHaveBeenCalled()
     })
 
-    it('should complete at Stage 1 for yellow risk level', async () => {
+    it('should run Stage 2 even for yellow risk level', async () => {
       const mockSafetyOutput = {
         analyzer: 'safety-screener' as const,
         riskLevel: 'yellow' as const,
@@ -112,8 +150,32 @@ describe('Two-Stage Orchestrator', () => {
         metadata: {
           analyzedAt: '2025-01-15T10:00:00Z',
           durationMs: 13000,
-          model: 'openai/gpt-3.5-turbo',
+          model: 'openai/gpt-5',
           costUsd: 0.52,
+        },
+      }
+
+      const mockStage2Output = {
+        analyzer: 'stage2-comprehensive' as const,
+        safetyDeepDive: {
+          crisisLevel: 'none' as const,
+          professionalSupport: [],
+          immediateConcerns: [],
+          riskTrajectory: 'stable' as const,
+          severity: {
+            overall: 'low' as const,
+            categories: {
+              emotional: 'low' as const,
+              physical: 'none' as const,
+              financial: 'none' as const,
+            },
+          },
+        },
+        metadata: {
+          analyzedAt: '2025-01-15T10:01:00Z',
+          durationMs: 24000,
+          model: 'openai/gpt-5',
+          costUsd: 2.0,
         },
       }
 
@@ -132,18 +194,32 @@ describe('Two-Stage Orchestrator', () => {
           completedAt: '2025-01-15T10:00:00Z',
           durationSeconds: 13,
           costUsd: 0.52,
-          model: 'openai/gpt-3.5-turbo',
+          model: 'openai/gpt-5',
         },
         escalation: undefined,
       }
 
+      const mockStage2Report = {
+        reportType: 'stage2-complete' as const,
+        safetyDeepDive: mockStage2Output.safetyDeepDive,
+        processingInfo: {
+          stage: 'Stage 2: Comprehensive Analysis' as const,
+          completedAt: '2025-01-15T10:01:00Z',
+          durationSeconds: 24,
+          costUsd: 2.0,
+          model: 'openai/gpt-5',
+        },
+      }
+
       vi.mocked(runSafetyScreener).mockResolvedValue(mockSafetyOutput)
+      vi.mocked(runStage2Comprehensive).mockResolvedValue(mockStage2Output as any)
       vi.mocked(generateStage1Report).mockReturnValue(mockStage1Report)
+      vi.mocked(generateStage2Report).mockReturnValue(mockStage2Report as any)
 
       const result = await runTwoStageAnalysis(mockInput)
 
-      expect(result.completedStage).toBe('stage1')
-      expect(result.processing.escalated).toBe(false)
+      expect(result.completedStage).toBe('stage2')
+      expect(result.processing.escalated).toBe(false) // Not escalated, just always runs
     })
   })
 
