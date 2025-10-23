@@ -38,7 +38,8 @@
       "Bash(npx tsx scripts/demo-metadata.ts)",
       "Bash(lsof -ti :3001)",
       "Bash(xargs kill -9)",
-      "Bash(npx tsx scripts/test-api-metadata.ts)"
+      "Bash(npx tsx scripts/test-api-metadata.ts)",
+      "Bash(npx tsc --noEmit src/pages/ProcessingPage.tsx)"
     ],
     "deny": [],
     "ask": []

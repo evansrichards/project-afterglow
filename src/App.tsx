@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import LandingPage from '@pages/LandingPage'
 import UploadPage from '@pages/UploadPage'
+import ProcessingPage from '@pages/ProcessingPage'
 
 function App() {
   return (
@@ -8,7 +9,8 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/upload" element={<UploadPage />} />
-        {/* Insights pages to be added in future tasks */}
+        <Route path="/processing" element={<ProcessingPage />} />
+        {/* Results page to be added in Task 7.3 */}
       </Routes>
     </div>
   )
