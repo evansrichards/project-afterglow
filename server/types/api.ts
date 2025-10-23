@@ -4,7 +4,7 @@
  * Type definitions for backend API endpoints
  */
 
-import type { AnalyzerInput } from '../../src/lib/analyzers/types'
+import type { AnalyzerInput, MetadataAnalysisResult } from '../../src/lib/analyzers/types'
 import type { OrchestratorResult } from '../../src/lib/orchestrator/two-stage-orchestrator'
 
 /**
@@ -27,7 +27,9 @@ export interface AnalyzeRequest {
  * Response from POST /api/analyze
  */
 export interface AnalyzeResponse {
-  /** Analysis results */
+  /** Metadata analysis (quick statistics computed first) */
+  metadataAnalysis: MetadataAnalysisResult
+  /** Full AI analysis results */
   result: OrchestratorResult
   /** Request metadata */
   metadata: {
@@ -35,6 +37,8 @@ export interface AnalyzeResponse {
     requestedAt: string
     /** Total processing time (ms) */
     processingTimeMs: number
+    /** Metadata analysis time (ms) */
+    metadataTimeMs: number
     /** Platform that data came from */
     platform: string
     /** Data counts that were analyzed */

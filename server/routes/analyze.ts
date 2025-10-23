@@ -9,6 +9,7 @@ import type { Request, Response } from 'express'
 import { validateRequest } from '../middleware/validate-request'
 import { createError } from '../middleware/error-handler'
 import { runTwoStageAnalysis } from '../../src/lib/orchestrator/two-stage-orchestrator'
+import { analyzeMetadata } from '../../src/lib/analyzers/metadata-analyzer'
 import type { AnalyzeRequest, AnalyzeResponse } from '../types/api'
 
 const router = Router()
@@ -76,7 +77,26 @@ router.post(
       console.log(`   Participants: ${requestBody.participants.length}`)
       console.log(`   User ID: ${requestBody.userId}`)
 
-      // Run two-stage analysis
+      // Step 1: Run metadata analysis FIRST (fast, no AI)
+      console.log('\n📈 Step 1: Analyzing metadata...')
+      const metadataStart = Date.now()
+      const metadataAnalysis = analyzeMetadata(
+        {
+          messages: requestBody.messages,
+          matches: requestBody.matches,
+          participants: requestBody.participants,
+          userId: requestBody.userId,
+        },
+        requestBody.platform
+      )
+      const metadataTimeMs = Date.now() - metadataStart
+
+      console.log(`✅ Metadata analysis complete in ${metadataTimeMs}ms`)
+      console.log(`   ${metadataAnalysis.summary}`)
+      console.log(`   ${metadataAnalysis.assessment}`)
+
+      // Step 2: Run two-stage AI analysis
+      console.log('\n🤖 Step 2: Running AI analysis...')
       const result = await runTwoStageAnalysis(
         {
           messages: requestBody.messages,
@@ -91,16 +111,19 @@ router.post(
 
       const processingTime = Date.now() - requestStart
 
-      console.log(`✅ Analysis complete in ${Math.round(processingTime / 1000)}s`)
+      console.log(`\n✅ Complete analysis finished in ${Math.round(processingTime / 1000)}s`)
       console.log(`   Stage: ${result.completedStage}`)
-      console.log(`   Total Cost: $${result.processing.totalCost.toFixed(4)}`)
+      console.log(`   Total AI Cost: $${result.processing.totalCost.toFixed(4)}`)
+      console.log(`   Metadata Time: ${metadataTimeMs}ms`)
 
       // Build response
       const response: AnalyzeResponse = {
+        metadataAnalysis,
         result,
         metadata: {
           requestedAt: new Date(requestStart).toISOString(),
           processingTimeMs: processingTime,
+          metadataTimeMs,
           platform: requestBody.platform,
           dataAnalyzed: {
             messageCount: requestBody.messages.length,
