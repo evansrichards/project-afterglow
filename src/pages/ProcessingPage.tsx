@@ -128,16 +128,57 @@ export default function ProcessingPage() {
     return 'pending'
   }
 
-  const getStepIcon = (status: 'complete' | 'current' | 'pending') => {
-    if (status === 'complete') return '✓'
-    if (status === 'current') return '⟳'
-    return '○'
-  }
-
-  const getStepColor = (status: 'complete' | 'current' | 'pending') => {
-    if (status === 'complete') return 'text-green-600'
-    if (status === 'current') return 'text-blue-600 animate-pulse'
-    return 'text-gray-400'
+  const renderStepIcon = (status: 'complete' | 'current' | 'pending') => {
+    if (status === 'complete') {
+      return (
+        <svg
+          className="w-6 h-6 text-green-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M5 13l4 4L19 7"
+          />
+        </svg>
+      )
+    }
+    if (status === 'current') {
+      return (
+        <svg
+          className="w-6 h-6 text-blue-600 animate-spin"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          />
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          />
+        </svg>
+      )
+    }
+    return (
+      <svg
+        className="w-6 h-6 text-gray-300"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <circle cx="12" cy="12" r="10" strokeWidth={2} />
+      </svg>
+    )
   }
 
   return (
@@ -179,11 +220,7 @@ export default function ProcessingPage() {
               <div className="space-y-6">
                 {/* Step 1: Uploading */}
                 <div className="flex items-start">
-                  <div
-                    className={`text-2xl mr-4 ${getStepColor(getStepStatus('uploading'))}`}
-                  >
-                    {getStepIcon(getStepStatus('uploading'))}
-                  </div>
+                  <div className="mr-4 mt-0.5">{renderStepIcon(getStepStatus('uploading'))}</div>
                   <div>
                     <h3 className="font-semibold text-gray-900">Uploading data</h3>
                     <p className="text-sm text-gray-600">Preparing your data for analysis</p>
@@ -192,11 +229,7 @@ export default function ProcessingPage() {
 
                 {/* Step 2: Metadata */}
                 <div className="flex items-start">
-                  <div
-                    className={`text-2xl mr-4 ${getStepColor(getStepStatus('metadata'))}`}
-                  >
-                    {getStepIcon(getStepStatus('metadata'))}
-                  </div>
+                  <div className="mr-4 mt-0.5">{renderStepIcon(getStepStatus('metadata'))}</div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900">Analyzing metadata</h3>
                     <p className="text-sm text-gray-600">
@@ -247,9 +280,7 @@ export default function ProcessingPage() {
 
                 {/* Step 3: Safety Screening */}
                 <div className="flex items-start">
-                  <div className={`text-2xl mr-4 ${getStepColor(getStepStatus('stage1'))}`}>
-                    {getStepIcon(getStepStatus('stage1'))}
-                  </div>
+                  <div className="mr-4 mt-0.5">{renderStepIcon(getStepStatus('stage1'))}</div>
                   <div>
                     <h3 className="font-semibold text-gray-900">Running safety screening</h3>
                     <p className="text-sm text-gray-600">
@@ -260,9 +291,7 @@ export default function ProcessingPage() {
 
                 {/* Step 4: Comprehensive Analysis */}
                 <div className="flex items-start">
-                  <div className={`text-2xl mr-4 ${getStepColor(getStepStatus('stage2'))}`}>
-                    {getStepIcon(getStepStatus('stage2'))}
-                  </div>
+                  <div className="mr-4 mt-0.5">{renderStepIcon(getStepStatus('stage2'))}</div>
                   <div>
                     <h3 className="font-semibold text-gray-900">
                       Performing comprehensive analysis
@@ -275,9 +304,7 @@ export default function ProcessingPage() {
 
                 {/* Step 5: Complete */}
                 <div className="flex items-start">
-                  <div className={`text-2xl mr-4 ${getStepColor(getStepStatus('complete'))}`}>
-                    {getStepIcon(getStepStatus('complete'))}
-                  </div>
+                  <div className="mr-4 mt-0.5">{renderStepIcon(getStepStatus('complete'))}</div>
                   <div>
                     <h3 className="font-semibold text-gray-900">Generating your report</h3>
                     <p className="text-sm text-gray-600">Preparing insights and recommendations</p>

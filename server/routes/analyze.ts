@@ -77,10 +77,10 @@ router.post(
       console.log(`   Participants: ${requestBody.participants.length}`)
       console.log(`   User ID: ${requestBody.userId}`)
 
-      // Step 1: Run metadata analysis FIRST (fast, no AI)
+      // Step 1: Run metadata analysis FIRST (includes AI-powered assessment)
       console.log('\n📈 Step 1: Analyzing metadata...')
       const metadataStart = Date.now()
-      const metadataAnalysis = analyzeMetadata(
+      const metadataAnalysis = await analyzeMetadata(
         {
           messages: requestBody.messages,
           matches: requestBody.matches,
@@ -95,6 +95,11 @@ router.post(
       console.log(`   ${metadataAnalysis.summary}`)
       console.log(`   ${metadataAnalysis.assessment}`)
 
+      // ============================================================================
+      // TEMPORARILY DISABLED: AI Analysis for faster testing
+      // ============================================================================
+      // TODO: Re-enable when ready for full analysis
+      /*
       // Step 2: Run two-stage AI analysis
       console.log('\n🤖 Step 2: Running AI analysis...')
       const result = await runTwoStageAnalysis(
@@ -115,11 +120,116 @@ router.post(
       console.log(`   Stage: ${result.completedStage}`)
       console.log(`   Total AI Cost: $${result.processing.totalCost.toFixed(4)}`)
       console.log(`   Metadata Time: ${metadataTimeMs}ms`)
+      */
+
+      // ============================================================================
+      // MOCK DATA: Return minimal mock result for testing
+      // ============================================================================
+      const processingTime = Date.now() - requestStart
+
+      // Create a minimal mock result for Stage 1 and Stage 2
+      const mockResult = {
+        completedStage: 'stage2' as const,
+        stage1Report: {
+          reportType: 'stage1-complete' as const,
+          safetyAssessment: {
+            riskLevel: 'green' as const,
+            headline: 'Your conversations show healthy patterns',
+            summary: 'No immediate safety concerns detected. This is a mock analysis for testing - AI analysis is temporarily disabled.',
+            riskLevelDescription: 'We found no significant safety concerns in your dating conversations. (Mock data)',
+          },
+          insights: [
+            {
+              category: 'safety' as const,
+              title: 'Mock Analysis Active',
+              description: 'AI analysis is temporarily disabled. This is placeholder data for testing the UI flow.',
+            },
+          ],
+          recommendations: [
+            {
+              priority: 'medium' as const,
+              recommendation: 'Re-enable AI analysis for full insights',
+              rationale: 'Uncomment the AI analysis code in server/routes/analyze.ts to get real analysis.',
+            },
+          ],
+          processingInfo: {
+            stage: 'Stage 1: Quick Triage' as const,
+            completedAt: new Date().toISOString(),
+            durationSeconds: 0,
+            costUsd: 0,
+            model: 'mock-model',
+          },
+        },
+        stage2Report: {
+          reportType: 'stage2-comprehensive' as const,
+          stage1Summary: {
+            riskLevel: 'green' as const,
+            headline: 'Your conversations show healthy patterns',
+            summary: 'Mock Stage 1 summary',
+          },
+          safetyDeepDive: {
+            crisisLevel: 'none' as const,
+            manipulationTactics: [],
+            coerciveControl: {
+              detected: false,
+              summary: 'No coercive control patterns detected (mock data)',
+              patterns: [],
+            },
+            traumaBonding: {
+              detected: false,
+              summary: 'No trauma bonding detected (mock data)',
+              cyclePhases: [],
+            },
+            professionalSupport: [],
+          },
+          attachmentAnalysis: {
+            primaryStyle: 'secure' as const,
+            confidence: 0.5,
+            styleDescription: 'Mock attachment style description',
+            evidence: ['Limited data available for analysis'],
+            triggers: [],
+            copingMechanisms: [],
+            relationshipDynamics: {
+              healthyAspects: ['Mock analysis - full analysis temporarily disabled'],
+              concerningAspects: [],
+              recommendations: [],
+            },
+          },
+          growthTrajectory: null,
+          synthesis: {
+            overallSummary: 'This is a mock analysis. AI analysis is temporarily disabled for faster testing. Re-enable in server/routes/analyze.ts to get full insights.',
+            keyThemes: ['Mock data'],
+            criticalInsights: [],
+            prioritizedRecommendations: [],
+          },
+          processingInfo: {
+            stage: 'Stage 2: Comprehensive Analysis' as const,
+            completedAt: new Date().toISOString(),
+            durationSeconds: 0,
+            costUsd: 0,
+            model: 'mock-model',
+          },
+        },
+        processing: {
+          stage1Duration: 0,
+          stage2Duration: 0,
+          totalDuration: processingTime,
+          stage1Cost: 0,
+          stage2Cost: 0,
+          totalCost: 0,
+          escalated: false,
+          escalationReason: null,
+        },
+      }
+
+      console.log(`\n✅ Metadata-only analysis finished in ${Math.round(processingTime / 1000)}s`)
+      console.log(`   Metadata Time: ${metadataTimeMs}ms`)
+      console.log(`   ⚠️  AI analysis is DISABLED (mock data returned)`)
 
       // Build response
       const response: AnalyzeResponse = {
         metadataAnalysis,
-        result,
+        result: mockResult,
         metadata: {
           requestedAt: new Date(requestStart).toISOString(),
           processingTimeMs: processingTime,

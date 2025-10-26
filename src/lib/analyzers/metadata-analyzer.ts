@@ -1,12 +1,15 @@
 /**
  * Metadata Analyzer
  *
- * Extracts basic statistics about dating app activity without AI analysis.
+ * Extracts basic statistics about dating app activity with AI-powered insights.
  * Provides quick insights into volume, timeline, and activity distribution.
- * This runs BEFORE any AI analysis to give immediate context.
+ * This runs BEFORE comprehensive AI analysis to give immediate context.
  */
 
+import type OpenAI from 'openai'
 import type { AnalyzerInput, MetadataAnalysisResult } from './types'
+import { createOpenRouterClient } from '../ai/openrouter-client'
+import { getOpenRouterApiKey, getOpenRouterSiteUrl, getOpenRouterAppName } from '../ai/config'
 
 /**
  * Format a date as YYYY-MM for monthly grouping
@@ -231,65 +234,98 @@ function generateSummary(
 }
 
 /**
- * Generate human-readable assessment
+ * Generate AI-powered natural language assessment
  */
-function generateAssessment(
+async function generateAssessmentWithAI(
+  client: OpenAI,
   platform: string,
   timeline: TimelineMetrics,
   volume: ReturnType<typeof calculateVolumeMetrics>,
-  distribution: ReturnType<typeof calculateActivityDistribution>
-): string {
+  distribution: ReturnType<typeof calculateActivityDistribution>,
+  dataExportedAt?: string
+): Promise<string> {
   if (!timeline.firstActivity || !timeline.lastActivity) {
     return `No activity found on ${platform}. Please check your data export.`
   }
 
-  const daysSince = timeline.daysSinceLastActivity
-  const totalMatches = volume.totalMatches
-  const activeConvos = volume.activeConversations
-
-  // Determine recency
-  let recencyPhrase: string
-  if (daysSince < 30) {
-    recencyPhrase = 'very recently'
-  } else if (daysSince < 90) {
-    recencyPhrase = 'in the past few months'
-  } else if (daysSince < 365) {
-    recencyPhrase = 'within the past year'
-  } else if (daysSince < 730) {
-    recencyPhrase = 'about a year ago'
-  } else {
-    const yearsAgo = Math.floor(daysSince / 365)
-    recencyPhrase = `about ${yearsAgo} years ago`
+  // Build context for AI
+  const context = {
+    platform,
+    timeline: {
+      firstActivity: new Date(timeline.firstActivity).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+      }),
+      lastActivity: new Date(timeline.lastActivity).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+      }),
+      totalDays: timeline.totalDays,
+      daysSinceLastActivity: timeline.daysSinceLastActivity,
+      peakActivityPeriod: timeline.peakActivityPeriod,
+    },
+    volume: {
+      totalMatches: volume.totalMatches,
+      totalMessages: volume.totalMessages,
+      activeConversations: volume.activeConversations,
+      averageMessagesPerConversation: volume.averageMessagesPerConversation,
+      messagesSentByUser: volume.messagesSentByUser,
+      messagesReceived: volume.messagesReceived,
+    },
   }
 
-  // Build assessment
-  const parts: string[] = []
+  // Calculate if data export is stale
+  const dataExportInfo = dataExportedAt
+    ? (() => {
+        const exportDate = new Date(dataExportedAt)
+        const daysSinceExport = Math.floor((Date.now() - exportDate.getTime()) / (1000 * 60 * 60 * 24))
+        const exportDateFormatted = exportDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+        return { daysSinceExport, exportDateFormatted }
+      })()
+    : null
 
-  // Recency statement
-  if (daysSince >= 365) {
-    parts.push(`It appears you haven't used ${platform} in a while`)
-  } else if (daysSince >= 90) {
-    parts.push(`You were active on ${platform} ${recencyPhrase}`)
-  } else {
-    parts.push(`You've been active on ${platform} ${recencyPhrase}`)
+  const prompt = `You are analyzing dating app activity data. Generate a warm, insightful, 2-3 sentence natural language summary.
+
+Data:
+- Platform: ${context.platform}
+- Active from ${context.timeline.firstActivity} to ${context.timeline.lastActivity}
+- Total days active: ${context.timeline.totalDays}
+- Most recent activity in data: ${context.timeline.lastActivity}${dataExportInfo ? `\n- Data was exported on: ${dataExportInfo.exportDateFormatted} (${dataExportInfo.daysSinceExport} days ago)` : ''}
+- Peak activity period: ${context.timeline.peakActivityPeriod || 'N/A'}
+- Total matches: ${context.volume.totalMatches}
+- Total messages: ${context.volume.totalMessages}
+- Active conversations (5+ messages): ${context.volume.activeConversations}
+- Average messages per conversation: ${context.volume.averageMessagesPerConversation}
+- Messages sent by user: ${context.volume.messagesSentByUser}
+- Messages received: ${context.volume.messagesReceived}
+
+Guidelines:
+- Be warm and conversational, not robotic
+- Focus on the most interesting insights${dataExportInfo && dataExportInfo.daysSinceExport > 30 ? '\n- IMPORTANT: The data export is from ' + dataExportInfo.exportDateFormatted + ', so activity may have occurred after that date. Note that the data snapshot is from that date.' : ''}
+- Do NOT say things like "it's been X days since you last used the app" based on the most recent message timestamp - the user may have been active after the data export
+- Instead, describe what the data snapshot shows (e.g., "In this data snapshot..." or "As of [export date]...")
+- Highlight meaningful engagement (active conversations vs total matches)
+- Keep it concise (2-3 sentences max)
+- Don't use clinical language or jargon
+- Make it feel like a friend is summarizing their data
+
+Generate ONLY the assessment text, no preamble or explanation.`
+
+  try {
+    const response = await client.chat.completions.create({
+      model: 'openai/gpt-4o-mini',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.7,
+      max_tokens: 150,
+    })
+
+    const assessment = response.choices[0].message.content?.trim()
+    return assessment || 'Unable to generate assessment at this time.'
+  } catch (error) {
+    console.error('❌ Failed to generate AI assessment:', error)
+    // Fallback to simple text if AI fails
+    return `You were active on ${platform} from ${context.timeline.firstActivity} to ${context.timeline.lastActivity}. We found ${context.volume.totalMatches} matches with ${context.volume.totalMessages} total messages.`
   }
-
-  // Volume statement
-  if (totalMatches > 0) {
-    parts.push(`We found ${totalMatches} match${totalMatches === 1 ? '' : 'es'} to analyze`)
-
-    if (activeConvos > 0) {
-      const percentage = Math.round((activeConvos / totalMatches) * 100)
-      parts.push(`with ${activeConvos} meaningful conversation${activeConvos === 1 ? '' : 's'} (${percentage}%)`)
-    }
-  }
-
-  // Peak activity mention
-  if (distribution.peakActivityPeriod && daysSince >= 365) {
-    parts.push(`Your most active period was around ${distribution.peakActivityPeriod}`)
-  }
-
-  return parts.join(', ') + '.'
 }
 
 /**
@@ -297,12 +333,14 @@ function generateAssessment(
  *
  * @param input - Normalized data (messages, matches, participants, userId)
  * @param platform - Platform name (e.g., "Tinder", "Hinge")
+ * @param dataExportedAt - Optional ISO timestamp when the data was exported/downloaded
  * @returns Metadata analysis result with volume, timeline, and distribution metrics
  */
-export function analyzeMetadata(
+export async function analyzeMetadata(
   input: AnalyzerInput,
-  platform: string = 'Unknown'
-): MetadataAnalysisResult {
+  platform: string = 'Unknown',
+  dataExportedAt?: string
+): Promise<MetadataAnalysisResult> {
   // Calculate metrics
   const volume = calculateVolumeMetrics(input)
   const timeline = calculateTimelineMetrics(input)
@@ -316,7 +354,14 @@ export function analyzeMetadata(
 
   // Generate human-readable text
   const summary = generateSummary(platform, timelineWithPeak)
-  const assessment = generateAssessment(platform, timelineWithPeak, volume, distribution)
+
+  // Create OpenAI client for AI-powered assessment
+  const client = createOpenRouterClient({
+    apiKey: getOpenRouterApiKey(),
+    siteUrl: getOpenRouterSiteUrl(),
+    appName: getOpenRouterAppName(),
+  })
+  const assessment = await generateAssessmentWithAI(client, platform, timelineWithPeak, volume, distribution, dataExportedAt)
 
   return {
     volume,

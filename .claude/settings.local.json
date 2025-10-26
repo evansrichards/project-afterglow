@@ -39,7 +39,13 @@
       "Bash(lsof -ti :3001)",
       "Bash(xargs kill -9)",
       "Bash(npx tsx scripts/test-api-metadata.ts)",
-      "Bash(npx tsc --noEmit src/pages/ProcessingPage.tsx)"
+      "Bash(npx tsc --noEmit src/pages/ProcessingPage.tsx)",
+      "Bash(npx tsc --noEmit src/lib/analyzers/metadata-analyzer.ts)",
+      "Bash(npx tsx scripts/test-export-timestamp.ts)",
+      "Bash(node -e \"\nconst { tinderParser } = require(''./dist/lib/parsers/tinder-parser.js'');\nconst { execSync } = require(''child_process'');\n\n// Extract Tinder data\nconst zipOutput = execSync(''unzip -p examples/tinder-data.zip \"\"*/data.json\"\"'', { encoding: ''utf-8'' });\n\n// Parse the data\nconst result = tinderParser.parse(zipOutput, ''data.json'');\n\nresult.then(parsed => {\n  if (parsed.success && parsed.data) {\n    console.log(''✅ Parse successful!'');\n    console.log(''Matches:'', parsed.metadata.matchCount);\n    console.log(''Messages:'', parsed.metadata.messageCount);\n    console.log(''Participants:'', parsed.metadata.participantCount);\n    console.log('''');\n    console.log(''First 3 match IDs:'', parsed.data.matches.slice(0, 3).map(m => m.id));\n  } else {\n    console.log(''❌ Parse failed:'', parsed.errors);\n  }\n}).catch(err => console.error(''Error:'', err));\n\")",
+      "Bash(npx tsx -e \"\nimport { tinderParser } from ''./src/lib/parsers/tinder-parser.ts'';\nimport { execSync } from ''child_process'';\n\n// Extract Tinder data\nconst zipOutput = execSync(''unzip -p examples/tinder-data.zip \"\"*/data.json\"\"'', { encoding: ''utf-8'' });\n\n// Parse the data\nconst result = await tinderParser.parse(zipOutput, ''data.json'');\n\nif (result.success && result.data) {\n  console.log(''✅ Parse successful!'');\n  console.log(''Matches:'', result.metadata.matchCount);\n  console.log(''Messages:'', result.metadata.messageCount);\n  console.log(''Participants:'', result.metadata.participantCount);\n  console.log('''');\n  console.log(''First 5 match IDs:'', result.data.matches.slice(0, 5).map(m => m.id));\n} else {\n  console.log(''❌ Parse failed:'', result.errors);\n}\n\")",
+      "Bash(npx tsx scripts/test-tinder-parser.ts)",
+      "Bash(npx tsx scripts/test-parser-fix.ts)"
     ],
     "deny": [],
     "ask": []

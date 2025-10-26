@@ -266,22 +266,66 @@ IMPORTANT:
 }
 
 /**
- * Analyze with GPT-4 Turbo
+ * Analyze with GPT-4 Turbo with retry logic
  */
 async function analyzeWithGPT4Turbo(
   client: OpenAI,
-  prompt: string
+  prompt: string,
+  retries = 2
 ): Promise<Omit<Stage2ComprehensiveOutput, 'analyzer' | 'metadata'>> {
-  const response = await client.chat.completions.create({
-    model: STAGE2_CONFIG.model,
-    messages: [{ role: 'user', content: prompt }],
-    temperature: STAGE2_CONFIG.temperature,
-    response_format: { type: 'json_object' },
-    stream: false,
-  })
+  let lastError: Error | null = null
 
-  const content = response.choices[0].message.content || '{}'
-  const result = JSON.parse(content)
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      if (attempt > 0) {
+        console.log(`🔄 Retrying Stage 2 analysis (attempt ${attempt + 1}/${retries + 1})...`)
+        // Wait before retrying (exponential backoff)
+        await new Promise((resolve) => setTimeout(resolve, 1000 * attempt))
+      }
+
+      const response = await client.chat.completions.create({
+        model: STAGE2_CONFIG.model,
+        messages: [{ role: 'user', content: prompt }],
+        temperature: STAGE2_CONFIG.temperature,
+        response_format: { type: 'json_object' },
+        stream: false,
+      })
+
+      const content = response.choices[0].message.content
+
+      if (!content || content.trim() === '') {
+        throw new Error('OpenAI returned empty response')
+      }
+
+      let result
+      try {
+        result = JSON.parse(content)
+      } catch (parseError) {
+        console.error('❌ Failed to parse OpenAI response:', content.substring(0, 200))
+        throw new Error(`Invalid JSON response from OpenAI: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`)
+      }
+
+      // Successfully parsed - return result
+      return parseAndValidateResult(result)
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error('Unknown error')
+      console.error(`❌ Stage 2 analysis attempt ${attempt + 1} failed:`, lastError.message)
+
+      // Don't retry on the last attempt
+      if (attempt === retries) {
+        break
+      }
+    }
+  }
+
+  // All retries failed - throw the last error
+  throw new Error(`Stage 2 analysis failed after ${retries + 1} attempts: ${lastError?.message || 'Unknown error'}`)
+}
+
+/**
+ * Parse and validate the AI result, providing safe defaults
+ */
+function parseAndValidateResult(result: any): Omit<Stage2ComprehensiveOutput, 'analyzer' | 'metadata'> {
 
   return {
     safetyDeepDive: result.safetyDeepDive || {

@@ -113,11 +113,42 @@ export class TinderParser implements DataParser {
             }>
           }>
           const flatMessages: TinderMessage[] = []
+          const syntheticMatches: TinderMatch[] = []
 
           for (const matchGroup of messagesArray) {
             const matchId = matchGroup.match_id || `match_${flatMessages.length}`
 
             if (matchGroup.messages && Array.isArray(matchGroup.messages)) {
+              // Extract match creation date (earliest message) and other participants
+              const messageDates = matchGroup.messages
+                .map(m => m.sent_date)
+                .filter((d): d is string => !!d)
+              const earliestDate = messageDates.length > 0
+                ? messageDates.reduce((earliest, current) =>
+                    new Date(current) < new Date(earliest) ? current : earliest
+                  )
+                : new Date().toISOString()
+
+              // Infer participant ID from messages (the "to" or "from" that isn't "You")
+              const participantIds = new Set<string | number>()
+              for (const msg of matchGroup.messages) {
+                if (msg.from !== 'You' && msg.from) participantIds.add(msg.from)
+                if (msg.to !== 'You' && msg.to) participantIds.add(msg.to)
+              }
+              const participantId = participantIds.size > 0
+                ? String(Array.from(participantIds)[0])
+                : `participant_${matchId}`
+
+              // Create a synthetic match object
+              syntheticMatches.push({
+                _id: matchId,
+                person: {
+                  _id: participantId,
+                  name: undefined, // Name not available in this format
+                },
+                created_date: earliestDate,
+              })
+
               for (let i = 0; i < matchGroup.messages.length; i++) {
                 const msg = matchGroup.messages[i]
 
@@ -138,6 +169,11 @@ export class TinderParser implements DataParser {
 
           if (flatMessages.length > 0) {
             data.messages = flatMessages
+          }
+
+          // If there are no explicit matches but we created synthetic ones, use them
+          if (syntheticMatches.length > 0 && !data.matches) {
+            data.matches = syntheticMatches
           }
         }
       } catch (err) {

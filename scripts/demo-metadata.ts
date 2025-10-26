@@ -133,7 +133,7 @@ const sampleData: AnalyzerInput = {
 }
 
 // Run metadata analysis
-const metadata = analyzeMetadata(sampleData, 'Tinder')
+const metadata = await analyzeMetadata(sampleData, 'Tinder')
 
 // Display results
 console.log('\n' + '='.repeat(80))
