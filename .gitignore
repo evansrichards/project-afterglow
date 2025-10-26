@@ -30,3 +30,5 @@ dist-ssr
 
 # Example data (large files)
 public/examples/*.zip
+# Example data files (too large for git)
+examples/*.zip
