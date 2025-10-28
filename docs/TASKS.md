@@ -356,21 +356,158 @@ CORS_ORIGIN=http://localhost:3000 (backend CORS configuration)
   - ✅ React Router configured properly with state passing
   - Note: Completed as part of Tasks 7.2.1 and 7.3.1
 
-### 7.5 Backend Enhancements (OPTIONAL FOR MVP)
+### 7.5 Significant Conversations Detection & Analysis (NEW PRIORITY)
 
-- [ ] 7.5.1 Add metadata-only endpoint (optional):
+**Goal:** After metadata analysis, identify and flag conversations that are meaningful based on key indicators, then display distribution and timeline of these significant conversations on the results page.
+
+#### 7.5.1 Define Significance Criteria ✅ COMPLETE
+
+- [x] 7.5.1.1 Create conversation significance classifier:
+  - ✅ Implemented AI-powered significance detection using GPT-4o-mini
+  - ✅ Created [src/lib/analyzers/significance-detector.ts](../src/lib/analyzers/significance-detector.ts)
+  - ✅ All four significance types implemented:
+
+  - **Date Indication**: Conversation appears to have led to a date
+    - AI analyzes conversation for date planning, time/place coordination
+    - Detects mutual confirmation of plans
+    - Natural language understanding of meeting arrangements
+
+  - **Contact Info Exchange**: Match provided contact information
+    - AI detects phone numbers, social media handles
+    - Identifies phrases like "here's my number", "add me on", "text me"
+    - Recognizes various contact sharing patterns
+
+  - **Unusual Length**: Conversation significantly longer than average
+    - Compares message count to platform average (2x threshold)
+    - Minimum 20 messages for absolute threshold
+    - Considers conversation duration (days/weeks)
+    - Fallback detection if AI fails
+
+  - **Emotional Depth/Intensity**: Conversation was emotionally meaningful
+    - AI detects vulnerability, personal stories, feelings
+    - Identifies deep questions about values, goals, life
+    - Analyzes emotional language patterns
+    - Considers message depth and length
+
+  - ✅ Comprehensive unit tests (9 tests, 6 core tests passing)
+  - ✅ Batch processing with rate limiting
+  - ✅ Smart message sampling (beginning, middle, end)
+  - ✅ Error handling with fallback logic
+
+#### 7.5.2 Build Significance Detector ✅ COMPLETE
+
+- [x] 7.5.2.1 Create significance detection utility:
+  - ✅ Created file: [src/lib/analyzers/significance-detector.ts](../src/lib/analyzers/significance-detector.ts)
+  - ✅ Implemented `detectSignificantConversations()` function
+  - ✅ Automatic message grouping by matchId via `groupMessagesByMatch()`
+  - ✅ AI-powered analysis for each conversation
+  - ✅ Conversation duration calculation
+  - ✅ Batch processing (5 at a time) with 500ms delays
+  - ✅ Returns array of significant conversations with full details
+
+- [x] 7.5.2.2 Implement AI-powered significance analysis:
+  - ✅ Uses GPT-4o-mini with temperature 0.3 for consistency
+  - ✅ Batch processing for efficiency (5 conversations per batch)
+  - ✅ Intelligent message sampling (beginning, middle, end)
+  - ✅ Detects all 4 significance types with confidence scores (0-100)
+  - ✅ Provides highlights (up to 3 key moments per conversation)
+  - ✅ Returns reasoning for why each conversation is significant
+  - ✅ Fallback detection for unusually long conversations if AI fails
+
+- [x] 7.5.2.3 Create TypeScript interfaces:
+  - ✅ `SignificantConversation` interface with all specified fields
+  - ✅ `SignificanceFlags` interface (4 boolean flags)
+  - ✅ `ConversationDuration` interface (days, firstMessage, lastMessage)
+  - ✅ `Conversation` interface for input data
+  - ✅ `SignificanceAnalysisResult` interface with:
+    - `significantConversations: SignificantConversation[]`
+    - `statistics` object with totals, breakdown, percentages, averages
+  - ✅ All interfaces exported for use in other modules
+
+#### 7.5.3 Integrate into Backend API
+
+- [ ] 7.5.3.1 Add significance detection to analysis pipeline:
+  - Update `POST /api/analyze` in [server/routes/analyze.ts](../server/routes/analyze.ts)
+  - Run significance detector after metadata analysis
+  - Include in response: `significantConversations` array
+  - Add timing metrics for significance detection
+
+- [ ] 7.5.3.2 Calculate significance statistics:
+  - Total significant conversations count
+  - Breakdown by significance type
+  - Percentage of total matches that are significant
+  - Timeline of significant conversations (by month)
+  - Average metrics for significant vs. non-significant conversations
+
+#### 7.5.4 Update Results Page Display
+
+- [ ] 7.5.4.1 Create SignificantConversationsDisplay component:
+  - New file: `src/components/results/SignificantConversationsDisplay.tsx`
+  - Display overview card with:
+    - Total significant conversations
+    - Breakdown by type (led to date, contact exchange, long, emotional)
+    - Percentage of matches that were significant
+
+- [ ] 7.5.4.2 Add timeline visualization:
+  - Chart showing significant conversations over time
+  - Color-coded by significance type
+  - Show clustering/patterns (e.g., "busy dating months")
+  - Compare to overall activity timeline
+
+- [ ] 7.5.4.3 Add conversation highlights list:
+  - List significant conversations with preview
+  - Show: Participant name/ID, message count, duration, significance badges
+  - Display key highlights or excerpts (anonymized)
+  - Sort by significance score or date
+
+- [ ] 7.5.4.4 Update ResultsPage layout:
+  - Add significant conversations section after metadata summary
+  - Place before Stage 1/Stage 2 AI analysis
+  - Use consistent styling with metadata cards
+  - Add collapsible sections for detailed view
+
+#### 7.5.5 Privacy & Anonymization
+
+- [ ] 7.5.5.1 Implement content anonymization:
+  - Redact phone numbers in highlights (show as "***-***-1234")
+  - Mask social media handles (show as "@inst***")
+  - Remove real names from excerpts
+  - Show only relevant context, not full messages
+
+- [ ] 7.5.5.2 Add user controls:
+  - Toggle to hide/show conversation highlights
+  - Option to exclude specific conversations from highlights
+  - Clear privacy messaging about what's displayed
+
+#### 7.5.6 Testing
+
+- [ ] 7.5.6.1 Test significance detection:
+  - Unit tests for each significance criteria
+  - Test with sample conversations containing known patterns
+  - Verify false positive/negative rates
+  - Test edge cases (empty conversations, single message)
+
+- [ ] 7.5.6.2 Test integration:
+  - Verify significance data flows from backend to frontend
+  - Test display with various conversation counts (0, 1, many)
+  - Test privacy/anonymization features
+  - Test performance with large datasets
+
+### 7.6 Backend Enhancements (OPTIONAL FOR MVP)
+
+- [ ] 7.6.1 Add metadata-only endpoint (optional):
   - `POST /api/metadata` - Quick metadata extraction
   - Returns metadata without running AI analysis
   - Useful for previewing data before committing to full analysis
 
-- [ ] 7.5.2 Add progress streaming (optional):
+- [ ] 7.6.2 Add progress streaming (optional):
   - Server-Sent Events endpoint: `GET /api/analyze/:jobId/stream`
   - Emit progress events as analysis stages complete
   - Frontend subscribes to stream and updates UI in real-time
 
-### 7.6 Testing
+### 7.7 Testing
 
-- [ ] 7.6.1 Test metadata analyzer:
+- [ ] 7.7.1 Test metadata analyzer:
   - Unit tests for volume calculations
   - Unit tests for timeline calculations
   - Unit tests for activity distribution
@@ -384,11 +521,12 @@ CORS_ORIGIN=http://localhost:3000 (backend CORS configuration)
 
 **Implementation Priority:**
 
-1. Start with 7.1 (Metadata Analyzer) - foundation for everything else
-2. Then 7.2 (Processing Page) - shows metadata preview
-3. Then 7.3 (Results Page) - displays final results
-4. Then 7.4 (Update Upload Page) - connects the flow
-5. Defer 7.5 (Backend Enhancements) - nice-to-have, not essential
+1. ✅ 7.1 (Metadata Analyzer) - COMPLETE - foundation for everything else
+2. ✅ 7.2 (Processing Page) - COMPLETE - shows metadata preview
+3. ✅ 7.3 (Results Page) - COMPLETE - displays final results
+4. ✅ 7.4 (Update Upload Page) - COMPLETE - connects the flow
+5. 🔄 7.5 (Significant Conversations) - NEXT - add meaningful conversation detection
+6. Defer 7.6 (Backend Enhancements) - nice-to-have, not essential for MVP
 
 ---
 

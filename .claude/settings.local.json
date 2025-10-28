@@ -48,7 +48,8 @@
       "Bash(npx tsx scripts/test-parser-fix.ts)",
       "Bash(git add -A)",
       "Bash(git diff-tree -r --no-commit-id --name-only --diff-filter=A origin/feature/mvp..HEAD)",
-      "Bash(xargs -I {} sh -c 'test -f \"\"\"\"{}\"\"\"\" && du -h \"\"\"\"{}\"\"\"\" || echo \"\"\"\"{} (deleted)\"\"\"\"')"
+      "Bash(xargs -I {} sh -c 'test -f \"\"\"\"{}\"\"\"\" && du -h \"\"\"\"{}\"\"\"\" || echo \"\"\"\"{} (deleted)\"\"\"\"')",
+      "Bash(npm test -- --run src/lib/analyzers/significance-detector.test.ts)"
     ],
     "deny": [],
     "ask": []
