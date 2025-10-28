@@ -54,7 +54,9 @@
       "Bash(npx tsc --noEmit src/pages/ResultsPage.tsx src/components/results/SignificantConversationsDisplay.tsx)",
       "Bash(npx eslint src/pages/ResultsPage.tsx src/components/results/SignificantConversationsDisplay.tsx)",
       "Bash(npm test -- --run src/lib/utils/anonymization.test.ts)",
-      "Bash(npx tsx scripts/test-anonymization-integration.ts)"
+      "Bash(npx tsx scripts/test-anonymization-integration.ts)",
+      "Bash(npm test -- --run src/lib/analyzers/significance-detector.test.ts src/lib/analyzers/significance-integration.test.ts)",
+      "Bash(npm test -- --run src/lib/analyzers/significance-integration.test.ts)"
     ],
     "deny": [],
     "ask": []

@@ -443,5 +443,285 @@ describe('Significance Detector', () => {
       expect(result.statistics.totalSignificant).toBe(0)
       expect(result.statistics.percentageSignificant).toBe(0)
     })
+
+    it('should handle single message conversation', async () => {
+      const messages: NormalizedMessage[] = [
+        {
+          id: '1',
+          matchId: 'match1',
+          from: 'user1',
+          to: 'other1',
+          body: 'Hi',
+          sentAt: '2024-01-01T10:00:00Z',
+        },
+      ]
+
+      const result = await detectSignificantConversations(messages, 'user1')
+
+      // Single message should not be significant
+      expect(result.significantConversations).toHaveLength(0)
+      expect(result.statistics.totalSignificant).toBe(0)
+    })
+
+    it('should handle conversation with only user messages (no replies)', async () => {
+      const messages: NormalizedMessage[] = [
+        {
+          id: '1',
+          matchId: 'match1',
+          from: 'user1',
+          to: 'other1',
+          body: 'Hey there!',
+          sentAt: '2024-01-01T10:00:00Z',
+        },
+        {
+          id: '2',
+          matchId: 'match1',
+          from: 'user1',
+          to: 'other1',
+          body: 'Want to meet up?',
+          sentAt: '2024-01-01T10:05:00Z',
+        },
+        {
+          id: '3',
+          matchId: 'match1',
+          from: 'user1',
+          to: 'other1',
+          body: 'Let me know!',
+          sentAt: '2024-01-01T10:10:00Z',
+        },
+      ]
+
+      const result = await detectSignificantConversations(messages, 'user1')
+
+      // One-sided conversation should not be significant
+      expect(result.significantConversations).toHaveLength(0)
+    })
+
+    it('should handle messages with missing timestamps', async () => {
+      const messages: NormalizedMessage[] = [
+        {
+          id: '1',
+          matchId: 'match1',
+          from: 'user1',
+          to: 'other1',
+          body: 'Hey',
+          sentAt: '2024-01-01T10:00:00Z',
+        },
+        {
+          id: '2',
+          matchId: 'match1',
+          from: 'other1',
+          to: 'user1',
+          body: 'Hi',
+          sentAt: '', // Empty timestamp
+        },
+      ]
+
+      const result = await detectSignificantConversations(messages, 'user1')
+
+      // Should handle gracefully without crashing
+      expect(result).toBeDefined()
+      expect(result.statistics).toBeDefined()
+    })
+
+    it('should correctly identify participantId for each conversation', async () => {
+      const messages: NormalizedMessage[] = [
+        {
+          id: '1',
+          matchId: 'match1',
+          from: 'user1',
+          to: 'other1',
+          body: 'Want to grab coffee?',
+          sentAt: '2024-01-01T10:00:00Z',
+        },
+        {
+          id: '2',
+          matchId: 'match1',
+          from: 'other1',
+          to: 'user1',
+          body: 'Yes, Saturday works!',
+          sentAt: '2024-01-01T10:05:00Z',
+        },
+        {
+          id: '3',
+          matchId: 'match2',
+          from: 'other2',
+          to: 'user1',
+          body: 'Let me know if you want to meet!',
+          sentAt: '2024-01-02T14:00:00Z',
+        },
+        {
+          id: '4',
+          matchId: 'match2',
+          from: 'user1',
+          to: 'other2',
+          body: 'Sounds great!',
+          sentAt: '2024-01-02T14:05:00Z',
+        },
+      ]
+
+      const result = await detectSignificantConversations(messages, 'user1')
+
+      // Check that participantIds are correct (not the userId)
+      for (const conv of result.significantConversations) {
+        expect(conv.participantId).not.toBe('user1')
+        expect(['other1', 'other2']).toContain(conv.participantId)
+      }
+    })
+
+    it('should handle very long messages (over 1000 chars)', async () => {
+      const longMessage = 'A'.repeat(2000) // 2000 character message
+
+      const messages: NormalizedMessage[] = [
+        {
+          id: '1',
+          matchId: 'match1',
+          from: 'user1',
+          to: 'other1',
+          body: longMessage,
+          sentAt: '2024-01-01T10:00:00Z',
+        },
+        {
+          id: '2',
+          matchId: 'match1',
+          from: 'other1',
+          to: 'user1',
+          body: 'Wow, that\'s a lot!',
+          sentAt: '2024-01-01T10:05:00Z',
+        },
+      ]
+
+      const result = await detectSignificantConversations(messages, 'user1')
+
+      // Should handle without crashing
+      expect(result).toBeDefined()
+    })
+
+    it('should properly sort conversations by significance score', async () => {
+      const messages: NormalizedMessage[] = [
+        // Conversation 1: Should have high score (date)
+        {
+          id: '1',
+          matchId: 'match1',
+          from: 'user1',
+          to: 'other1',
+          body: 'Want to meet for coffee?',
+          sentAt: '2024-01-01T10:00:00Z',
+        },
+        {
+          id: '2',
+          matchId: 'match1',
+          from: 'other1',
+          to: 'user1',
+          body: 'Yes! Saturday at 2pm?',
+          sentAt: '2024-01-01T10:05:00Z',
+        },
+        // Conversation 2: Should have medium score (contact exchange)
+        {
+          id: '3',
+          matchId: 'match2',
+          from: 'user1',
+          to: 'other2',
+          body: 'Can I get your number?',
+          sentAt: '2024-01-02T14:00:00Z',
+        },
+        {
+          id: '4',
+          matchId: 'match2',
+          from: 'other2',
+          to: 'user1',
+          body: 'Sure! 555-1234',
+          sentAt: '2024-01-02T14:05:00Z',
+        },
+      ]
+
+      const result = await detectSignificantConversations(messages, 'user1')
+
+      if (result.significantConversations.length > 1) {
+        // Check that conversations are sorted by score (descending)
+        for (let i = 0; i < result.significantConversations.length - 1; i++) {
+          expect(result.significantConversations[i].significanceScore).toBeGreaterThanOrEqual(
+            result.significantConversations[i + 1].significanceScore
+          )
+        }
+      }
+    })
+
+    it('should include conversation duration in results', async () => {
+      const messages: NormalizedMessage[] = [
+        {
+          id: '1',
+          matchId: 'match1',
+          from: 'user1',
+          to: 'other1',
+          body: 'Want to grab coffee?',
+          sentAt: '2024-01-01T10:00:00Z',
+        },
+        {
+          id: '2',
+          matchId: 'match1',
+          from: 'other1',
+          to: 'user1',
+          body: 'Yes!',
+          sentAt: '2024-01-05T15:00:00Z', // 4+ days later
+        },
+      ]
+
+      const result = await detectSignificantConversations(messages, 'user1')
+
+      if (result.significantConversations.length > 0) {
+        const conv = result.significantConversations[0]
+        expect(conv.duration).toBeDefined()
+        expect(conv.duration.days).toBeGreaterThan(0)
+        expect(conv.duration.firstMessage).toBeDefined()
+        expect(conv.duration.lastMessage).toBeDefined()
+      }
+    })
+
+    it('should apply anonymization to all highlights', async () => {
+      const messages: NormalizedMessage[] = [
+        {
+          id: '1',
+          matchId: 'match1',
+          from: 'user1',
+          to: 'other1',
+          body: 'Hey! Want to meet up?',
+          sentAt: '2024-01-01T10:00:00Z',
+        },
+        {
+          id: '2',
+          matchId: 'match1',
+          from: 'other1',
+          to: 'user1',
+          body: 'Sure! My number is 555-123-4567',
+          sentAt: '2024-01-01T10:05:00Z',
+        },
+        {
+          id: '3',
+          matchId: 'match1',
+          from: 'user1',
+          to: 'other1',
+          body: 'Great! Email me at john@example.com',
+          sentAt: '2024-01-01T10:10:00Z',
+        },
+      ]
+
+      const result = await detectSignificantConversations(messages, 'user1')
+
+      // Check that highlights don't contain raw PII
+      for (const conv of result.significantConversations) {
+        for (const highlight of conv.highlights) {
+          // Should not contain full phone number
+          expect(highlight).not.toMatch(/555-123-4567/)
+          // Should not contain full email
+          expect(highlight).not.toMatch(/john@example\.com/)
+
+          // Should contain anonymized versions if PII was present
+          if (highlight.toLowerCase().includes('number') || highlight.includes('555')) {
+            expect(highlight).toMatch(/\*\*\*-\*\*\*-\d{4}/)
+          }
+        }
+      }
+    })
   })
 })
