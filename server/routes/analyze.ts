@@ -10,6 +10,7 @@ import { validateRequest } from '../middleware/validate-request'
 import { createError } from '../middleware/error-handler'
 import { runTwoStageAnalysis } from '../../src/lib/orchestrator/two-stage-orchestrator'
 import { analyzeMetadata } from '../../src/lib/analyzers/metadata-analyzer'
+import { detectSignificantConversations } from '../../src/lib/analyzers/significance-detector'
 import type { AnalyzeRequest, AnalyzeResponse } from '../types/api'
 
 const router = Router()
@@ -95,8 +96,21 @@ router.post(
       console.log(`   ${metadataAnalysis.summary}`)
       console.log(`   ${metadataAnalysis.assessment}`)
 
+      // Step 2: Detect significant conversations
+      console.log('\n🔍 Step 2: Detecting significant conversations...')
+      const significanceStart = Date.now()
+      const significanceAnalysis = await detectSignificantConversations(
+        requestBody.messages,
+        requestBody.userId
+      )
+      const significanceTimeMs = Date.now() - significanceStart
+
+      console.log(`✅ Significance detection complete in ${significanceTimeMs}ms`)
+      console.log(`   Found ${significanceAnalysis.statistics.totalSignificant} significant conversations`)
+      console.log(`   Breakdown: ${significanceAnalysis.statistics.breakdown.ledToDate} dates, ${significanceAnalysis.statistics.breakdown.contactExchange} contacts, ${significanceAnalysis.statistics.breakdown.unusualLength} long, ${significanceAnalysis.statistics.breakdown.emotionalDepth} emotional`)
+
       // ============================================================================
-      // TEMPORARILY DISABLED: AI Analysis for faster testing
+      // TEMPORARILY DISABLED: Full AI Analysis for faster testing
       // ============================================================================
       // TODO: Re-enable when ready for full analysis
       /*
@@ -222,18 +236,21 @@ router.post(
         },
       }
 
-      console.log(`\n✅ Metadata-only analysis finished in ${Math.round(processingTime / 1000)}s`)
+      console.log(`\n✅ Analysis finished in ${Math.round(processingTime / 1000)}s`)
       console.log(`   Metadata Time: ${metadataTimeMs}ms`)
-      console.log(`   ⚠️  AI analysis is DISABLED (mock data returned)`)
+      console.log(`   Significance Time: ${significanceTimeMs}ms`)
+      console.log(`   ⚠️  Full AI analysis is DISABLED (mock data returned)`)
 
       // Build response
       const response: AnalyzeResponse = {
         metadataAnalysis,
+        significanceAnalysis,
         result: mockResult,
         metadata: {
           requestedAt: new Date(requestStart).toISOString(),
           processingTimeMs: processingTime,
           metadataTimeMs,
+          significanceTimeMs,
           platform: requestBody.platform,
           dataAnalyzed: {
             messageCount: requestBody.messages.length,

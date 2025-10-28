@@ -6,6 +6,7 @@
 
 import type { AnalyzerInput, MetadataAnalysisResult } from '../../src/lib/analyzers/types'
 import type { OrchestratorResult } from '../../src/lib/orchestrator/two-stage-orchestrator'
+import type { SignificanceAnalysisResult } from '../../src/lib/analyzers/significance-detector'
 
 /**
  * Request body for POST /api/analyze
@@ -29,6 +30,8 @@ export interface AnalyzeRequest {
 export interface AnalyzeResponse {
   /** Metadata analysis (quick statistics computed first) */
   metadataAnalysis: MetadataAnalysisResult
+  /** Significant conversations detection results */
+  significanceAnalysis: SignificanceAnalysisResult
   /** Full AI analysis results */
   result: OrchestratorResult
   /** Request metadata */
@@ -39,6 +42,8 @@ export interface AnalyzeResponse {
     processingTimeMs: number
     /** Metadata analysis time (ms) */
     metadataTimeMs: number
+    /** Significance detection time (ms) */
+    significanceTimeMs: number
     /** Platform that data came from */
     platform: string
     /** Data counts that were analyzed */

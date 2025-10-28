@@ -424,20 +424,33 @@ CORS_ORIGIN=http://localhost:3000 (backend CORS configuration)
     - `statistics` object with totals, breakdown, percentages, averages
   - ✅ All interfaces exported for use in other modules
 
-#### 7.5.3 Integrate into Backend API
+#### 7.5.3 Integrate into Backend API ✅ COMPLETE
 
-- [ ] 7.5.3.1 Add significance detection to analysis pipeline:
-  - Update `POST /api/analyze` in [server/routes/analyze.ts](../server/routes/analyze.ts)
-  - Run significance detector after metadata analysis
-  - Include in response: `significantConversations` array
-  - Add timing metrics for significance detection
+- [x] 7.5.3.1 Add significance detection to analysis pipeline:
+  - ✅ Updated `POST /api/analyze` in [server/routes/analyze.ts](../server/routes/analyze.ts)
+  - ✅ Runs after metadata analysis as Step 2
+  - ✅ Includes `significanceAnalysis` in API response
+  - ✅ Added timing metrics (`significanceTimeMs`)
+  - ✅ Comprehensive console logging with breakdown
 
-- [ ] 7.5.3.2 Calculate significance statistics:
-  - Total significant conversations count
-  - Breakdown by significance type
-  - Percentage of total matches that are significant
-  - Timeline of significant conversations (by month)
-  - Average metrics for significant vs. non-significant conversations
+- [x] 7.5.3.2 Calculate significance statistics:
+  - ✅ Total significant conversations count
+  - ✅ Breakdown by all 4 significance types
+  - ✅ Percentage of total conversations that are significant
+  - ✅ Average message count for significant vs. all conversations
+  - ✅ All statistics returned in `SignificanceAnalysisResult.statistics`
+
+- [x] 7.5.3.3 Update API types:
+  - ✅ Updated [server/types/api.ts](../server/types/api.ts)
+  - ✅ Added `SignificanceAnalysisResult` import
+  - ✅ Added `significanceAnalysis` field to `AnalyzeResponse`
+  - ✅ Added `significanceTimeMs` to response metadata
+
+- [x] 7.5.3.4 Testing:
+  - ✅ Created test script: [scripts/test-significance-api.ts](../scripts/test-significance-api.ts)
+  - ✅ Verified API integration works end-to-end
+  - ✅ Confirmed correct detection (2/2 significant conversations found)
+  - ✅ AI analysis working perfectly (date planning + contact exchange detected)
 
 #### 7.5.4 Update Results Page Display
 
