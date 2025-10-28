@@ -50,7 +50,9 @@
       "Bash(git diff-tree -r --no-commit-id --name-only --diff-filter=A origin/feature/mvp..HEAD)",
       "Bash(xargs -I {} sh -c 'test -f \"\"\"\"{}\"\"\"\" && du -h \"\"\"\"{}\"\"\"\" || echo \"\"\"\"{} (deleted)\"\"\"\"')",
       "Bash(npm test -- --run src/lib/analyzers/significance-detector.test.ts)",
-      "Bash(npx tsx scripts/test-significance-api.ts)"
+      "Bash(npx tsx scripts/test-significance-api.ts)",
+      "Bash(npx tsc --noEmit src/pages/ResultsPage.tsx src/components/results/SignificantConversationsDisplay.tsx)",
+      "Bash(npx eslint src/pages/ResultsPage.tsx src/components/results/SignificantConversationsDisplay.tsx)"
     ],
     "deny": [],
     "ask": []

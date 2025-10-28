@@ -10,6 +10,7 @@ import Header from '@components/layout/Header'
 import Footer from '@components/layout/Footer'
 import Container from '@components/layout/Container'
 import AnalysisResultsDisplay from '@components/results/AnalysisResultsDisplay'
+import { SignificantConversationsDisplay } from '@components/results/SignificantConversationsDisplay'
 import type { AnalyzeResponse } from '../../server/types/api'
 
 export default function ResultsPage() {
@@ -18,7 +19,6 @@ export default function ResultsPage() {
 
   // Get data passed from ProcessingPage via router state
   const result = location.state?.result as AnalyzeResponse | undefined
-  const platform = location.state?.platform as string | undefined
 
   // Handle missing results - redirect back to upload
   if (!result) {
@@ -135,6 +135,11 @@ export default function ResultsPage() {
                 )}
               </div>
             </div>
+          )}
+
+          {/* Significant Conversations Section */}
+          {result.significanceAnalysis && (
+            <SignificantConversationsDisplay significanceAnalysis={result.significanceAnalysis} />
           )}
 
           {/* Main Analysis Results */}
