@@ -14,6 +14,7 @@ import type OpenAI from 'openai'
 import type { NormalizedMessage } from '@/types/data-model'
 import { createOpenRouterClient } from '../ai/openrouter-client'
 import { getOpenRouterApiKey, getOpenRouterSiteUrl, getOpenRouterAppName } from '../ai/config'
+import { anonymizeHighlights } from '../utils/anonymization'
 
 /**
  * Significance flags for a conversation
@@ -249,7 +250,7 @@ If the conversation is NOT significant, return:
       duration,
       significanceFlags: result.flags,
       significanceScore: result.score,
-      highlights: result.highlights || [],
+      highlights: anonymizeHighlights(result.highlights || []),
       reasoning: result.reasoning || 'Conversation shows significant engagement',
     }
   } catch (error) {

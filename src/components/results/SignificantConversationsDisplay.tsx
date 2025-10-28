@@ -5,6 +5,7 @@
  * including overview statistics, breakdown by type, and individual conversation details.
  */
 
+import { useState } from 'react'
 import type { SignificanceAnalysisResult } from '../../lib/analyzers/significance-detector'
 
 interface SignificantConversationsDisplayProps {
@@ -15,6 +16,7 @@ export function SignificantConversationsDisplay({
   significanceAnalysis,
 }: SignificantConversationsDisplayProps) {
   const { significantConversations, statistics } = significanceAnalysis
+  const [showHighlights, setShowHighlights] = useState(true)
 
   if (statistics.totalSignificant === 0) {
     return (
@@ -64,7 +66,41 @@ export function SignificantConversationsDisplay({
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-4">💫 Significant Conversations</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold text-gray-800">💫 Significant Conversations</h2>
+        <button
+          onClick={() => setShowHighlights(!showHighlights)}
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+          title={showHighlights ? 'Hide conversation highlights' : 'Show conversation highlights'}
+        >
+          {showHighlights ? (
+            <>
+              <span>🔒</span>
+              <span>Hide Highlights</span>
+            </>
+          ) : (
+            <>
+              <span>👁️</span>
+              <span>Show Highlights</span>
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Privacy Notice */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <div className="flex items-start gap-2">
+          <span className="text-blue-600 text-xl">🔒</span>
+          <div>
+            <h3 className="font-semibold text-blue-900 mb-1">Privacy Protection</h3>
+            <p className="text-sm text-blue-800">
+              All conversation highlights have been automatically anonymized. Phone numbers, email
+              addresses, social media handles, and personal information are masked to protect
+              privacy. You can toggle highlights visibility using the button above.
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Overview Statistics */}
       <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-4 mb-6">
@@ -178,10 +214,10 @@ export function SignificantConversationsDisplay({
                 </div>
 
                 {/* Highlights */}
-                {conversation.highlights.length > 0 && (
+                {showHighlights && conversation.highlights.length > 0 && (
                   <div className="bg-gray-50 rounded-lg p-3">
                     <div className="text-xs font-semibold text-gray-600 uppercase mb-2">
-                      Key Moments
+                      Key Moments (Anonymized)
                     </div>
                     <ul className="space-y-2">
                       {conversation.highlights.map((highlight, idx) => (
@@ -191,6 +227,13 @@ export function SignificantConversationsDisplay({
                         </li>
                       ))}
                     </ul>
+                  </div>
+                )}
+                {!showHighlights && conversation.highlights.length > 0 && (
+                  <div className="bg-gray-50 rounded-lg p-3 text-center">
+                    <p className="text-sm text-gray-500 italic">
+                      Highlights hidden for privacy. Click "Show Highlights" above to view.
+                    </p>
                   </div>
                 )}
               </div>

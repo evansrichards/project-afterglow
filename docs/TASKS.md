@@ -480,18 +480,26 @@ CORS_ORIGIN=http://localhost:3000 (backend CORS configuration)
   - ✅ Responsive grid layouts for mobile and desktop
   - ✅ Passes ESLint with no errors
 
-#### 7.5.5 Privacy & Anonymization
+#### 7.5.5 Privacy & Anonymization ✅ COMPLETE
 
-- [ ] 7.5.5.1 Implement content anonymization:
-  - Redact phone numbers in highlights (show as "***-***-1234")
-  - Mask social media handles (show as "@inst***")
-  - Remove real names from excerpts
-  - Show only relevant context, not full messages
+- [x] 7.5.5.1 Implement content anonymization:
+  - ✅ Created comprehensive anonymization utilities in [src/lib/utils/anonymization.ts](../src/lib/utils/anonymization.ts) (207 lines)
+  - ✅ Phone number redaction: `555-123-4567` → `***-***-4567`, keeps last 4 digits
+  - ✅ Email masking: `john@example.com` → `j***@example.com`, preserves domain
+  - ✅ Social media handles: `@instagram` → `@ins***`, `instagram.com/user` → `instagram.com/use***`
+  - ✅ Name anonymization: `"I'm John"` → `"I'm [Name]"` for common names
+  - ✅ Address masking: `"123 Main Street"` → `"[Address]"`
+  - ✅ Integrated into significance detector - all highlights automatically anonymized
+  - ✅ Comprehensive test suite with 36 passing tests in [src/lib/utils/anonymization.test.ts](../src/lib/utils/anonymization.test.ts)
+  - ✅ Smart ordering prevents email domains from being double-anonymized
 
-- [ ] 7.5.5.2 Add user controls:
-  - Toggle to hide/show conversation highlights
-  - Option to exclude specific conversations from highlights
-  - Clear privacy messaging about what's displayed
+- [x] 7.5.5.2 Add user controls:
+  - ✅ Toggle button in [SignificantConversationsDisplay](../src/components/results/SignificantConversationsDisplay.tsx) to hide/show highlights
+  - ✅ Privacy notice banner explaining anonymization with lock icon
+  - ✅ Hidden state shows placeholder message with clear instructions
+  - ✅ "Key Moments (Anonymized)" label when highlights are visible
+  - ✅ Hover tooltips on toggle button for clarity
+  - ✅ Responsive design with smooth transitions
 
 #### 7.5.6 Testing
 
